@@ -1,45 +1,183 @@
 {
-  "name": "vscode-flexigpt",
+  "name": "flexigpt",
   "displayName": "FlexiGPT",
   "description": "Interact with GPT AI models (GPT3, ChatGPT, etc) as a power user",
   "version": "0.0.1",
+  "publisher": "ppipada",
+  "icon": "resources/extensionIcon.png",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/ppiapda/vscode-flexigpt"
+  },
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.74.0",
+    "node": "^19.0.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "openai",
+    "gpt3",
+    "chatgpt",
+    "ai",
+    "explain",
+    "find bugs",
+    "explain ",
+    "refactor",
+    "test generate",
+    "scripts"
+  ],
   "activationEvents": [
-    "onCommand:vscode-flexigpt.helloWorld"
+    "onView:flexigpt.chatView",
+    "onCommand:flexigpt.ask",
+    "onCommand:flexigpt.explain",
+    "onCommand:flexigpt.refactor",
+    "onCommand:flexigpt.optimize",
+    "onCommand:flexigpt.problems"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-flexigpt.helloWorld",
-        "title": "Hello World"
+        "command": "flexigpt.ask",
+        "title": "FlexiGPT: Ask anything"
+      },
+      {
+        "command": "flexigpt.explain",
+        "title": "FlexiGPT: Explain selection"
+      },
+      {
+        "command": "flexigpt.refactor",
+        "title": "FlexiGPT: Refactor selection"
+      },
+      {
+        "command": "flexigpt.findProblems",
+        "title": "FlexiGPT: Find problems"
+      },
+      {
+        "command": "flexigpt.optimize",
+        "title": "FlexiGPT: Optimize selection"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "flexigpt.ask",
+          "when": "editorTextFocus",
+          "group": "flexigpt-menu-group@1"
+        },
+        {
+          "command": "flexigpt.explain",
+          "when": "editorHasSelection",
+          "group": "flexigpt-menu-group@2"
+        },
+        {
+          "command": "flexigpt.refactor",
+          "when": "editorHasSelection",
+          "group": "flexigpt-menu-group@3"
+        },
+        {
+          "command": "flexigpt.findProblems",
+          "when": "editorHasSelection",
+          "group": "flexigpt-menu-group@4"
+        },
+        {
+          "command": "flexigpt.optimize",
+          "when": "editorHasSelection",
+          "group": "flexigpt-menu-group@5"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "flexigpt.ask"
+        },
+        {
+          "command": "flexigpt.explain",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "flexigpt.refactor",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "flexigpt.findProblems",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "flexigpt.optimize",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "flexigpt",
+          "title": "FlexiGPT",
+          "icon": "resources/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "flexigpt": [
+        {
+          "type": "webview",
+          "id": "flexigpt.chatView",
+          "name": "FlexiGPT"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "flexiGPT",
+      "type": "object",
+      "properties": {
+        "flexigpt.openai.apiKey": {
+          "type": "string",
+          "description": "Your openAI API key. Can be seen at https://beta.openai.com/account/api-keys",
+          "order": 1
+        },
+        "flexigpt.openai.timeout": {
+          "type": "integer",
+          "default": 60,
+          "description": "Timeout for OpenAI requests",
+          "order": 2
+        },
+        "flexigpt.promptConfigFiles": {
+          "type": "string",
+          "default": "",
+          "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
+          "order": 3
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
+    "@types/node": "^18.11.18",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
     "eslint": "^8.28.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
+    "openai": "^3.1.0",
+    "ts-loader": "^9.4.2",
     "typescript": "^4.9.3",
-    "@vscode/test-electron": "^2.2.0"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }
