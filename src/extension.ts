@@ -53,8 +53,8 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
-	const commandExplain = vscode.commands.registerCommand('flexigpt.explain', () => {	
-		commandHandler('promptPrefix.explain');
+	const commandDoc = vscode.commands.registerCommand('flexigpt.doc', () => {	
+		commandHandler('promptPrefix.doc');
 	});
 
 	const commandRefactor = vscode.commands.registerCommand('flexigpt.refactor', () => {
@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
 		commandHandler('promptPrefix.findProblems');
 	});
 
-	context.subscriptions.push(commandAsk, commandExplain, commandRefactor, commandOptimize, commandProblems);
+	context.subscriptions.push(commandAsk, commandDoc, commandRefactor, commandOptimize, commandProblems);
 
 
 	// Change the extension's openai token when configuration is changed

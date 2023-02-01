@@ -31,7 +31,7 @@
   "activationEvents": [
     "onView:flexigpt.chatView",
     "onCommand:flexigpt.ask",
-    "onCommand:flexigpt.explain",
+    "onCommand:flexigpt.doc",
     "onCommand:flexigpt.refactor",
     "onCommand:flexigpt.optimize",
     "onCommand:flexigpt.problems"
@@ -44,8 +44,8 @@
         "title": "FlexiGPT: Ask anything"
       },
       {
-        "command": "flexigpt.explain",
-        "title": "FlexiGPT: Explain selection"
+        "command": "flexigpt.doc",
+        "title": "FlexiGPT: Generate Documentation"
       },
       {
         "command": "flexigpt.refactor",
@@ -68,7 +68,7 @@
           "group": "flexigpt-menu-group@1"
         },
         {
-          "command": "flexigpt.explain",
+          "command": "flexigpt.doc",
           "when": "editorHasSelection",
           "group": "flexigpt-menu-group@2"
         },
@@ -93,7 +93,7 @@
           "command": "flexigpt.ask"
         },
         {
-          "command": "flexigpt.explain",
+          "command": "flexigpt.doc",
           "when": "editorHasSelection"
         },
         {
@@ -148,6 +148,30 @@
           "default": "",
           "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
           "order": 3
+        },
+        "flexigpt.promptPrefix.doc": {
+          "type": "string",
+          "default": "Generate documentation for this code in the languages standard format: ",
+          "description": "Generate documentation for the selected code",
+          "order": 4
+        },
+        "flexigpt.promptPrefix.refactor": {
+          "type": "string",
+          "default": "Refactor this code and explain what's changed: ",
+          "description": "Refactor the selected code",
+          "order": 5
+        },
+        "flexigpt.promptPrefix.findProblems": {
+          "type": "string",
+          "default": "Find problems with the following code, fix them and explain what was wrong (Do not change anything else): ",
+          "description": "Find problems in the selected code",
+          "order": 6
+        },
+        "flexigpt.promptPrefix.optimize": {
+          "type": "string",
+          "default": "Optimize the following code: ",
+          "description": "Optimize the selected code",
+          "order": 7
         }
       }
     }
