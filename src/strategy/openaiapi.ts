@@ -1,8 +1,8 @@
-import { Configuration, CreateImageRequest, OpenAIApi } from 'openai';
-import { Strategy } from './strategy';
-import { unescapeChars } from './regexmatcher';
+import { Configuration, CreateImageRequest, OpenAIApi } from "openai";
+import { Strategy } from "./strategy";
+import { unescapeChars } from "./regexmatcher";
 
-export default class Codex implements Strategy {
+export default class OpenAIAPIStrategy implements Strategy {
   #api: OpenAIApi;
   #timeout: BigInt;
 
@@ -14,13 +14,13 @@ export default class Codex implements Strategy {
 
   async generate(input: string) {
     const { data } = await this.#api.createCompletion({
-      model: 'text-davinci-003',
+      model: "text-davinci-003",
       prompt: input,
       temperature: 0,
       max_tokens: 1024,
       frequency_penalty: 0.5,
       presence_penalty: 0.0,
-      stream: false
+      stream: false,
     });
 
     // const { data } = await this.#api.createEdit({
@@ -35,10 +35,10 @@ export default class Codex implements Strategy {
 
   async refactor(input: string) {
     const { data } = await this.#api.createEdit({
-      model: 'code-davinci-edit-001',
+      model: "code-davinci-edit-001",
       input,
-      instruction: 'Refactor this function',
-      temperature: 0
+      instruction: "Refactor this function",
+      temperature: 0,
     });
 
     return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;

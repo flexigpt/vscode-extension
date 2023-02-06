@@ -30,34 +30,14 @@
   ],
   "activationEvents": [
     "onView:flexigpt.chatView",
-    "onCommand:flexigpt.ask",
-    "onCommand:flexigpt.doc",
-    "onCommand:flexigpt.refactor",
-    "onCommand:flexigpt.optimize",
-    "onCommand:flexigpt.problems"
+    "onCommand:flexigpt.ask"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "flexigpt.ask",
-        "title": "FlexiGPT: Ask anything"
-      },
-      {
-        "command": "flexigpt.doc",
-        "title": "FlexiGPT: Generate Documentation"
-      },
-      {
-        "command": "flexigpt.refactor",
-        "title": "FlexiGPT: Refactor selection"
-      },
-      {
-        "command": "flexigpt.findProblems",
-        "title": "FlexiGPT: Find problems"
-      },
-      {
-        "command": "flexigpt.optimize",
-        "title": "FlexiGPT: Optimize selection"
+        "title": "FlexiGPT: Ask"
       }
     ],
     "menus": {
@@ -66,47 +46,11 @@
           "command": "flexigpt.ask",
           "when": "editorTextFocus",
           "group": "flexigpt-menu-group@1"
-        },
-        {
-          "command": "flexigpt.doc",
-          "when": "editorHasSelection",
-          "group": "flexigpt-menu-group@2"
-        },
-        {
-          "command": "flexigpt.refactor",
-          "when": "editorHasSelection",
-          "group": "flexigpt-menu-group@3"
-        },
-        {
-          "command": "flexigpt.findProblems",
-          "when": "editorHasSelection",
-          "group": "flexigpt-menu-group@4"
-        },
-        {
-          "command": "flexigpt.optimize",
-          "when": "editorHasSelection",
-          "group": "flexigpt-menu-group@5"
         }
       ],
       "commandPalette": [
         {
           "command": "flexigpt.ask"
-        },
-        {
-          "command": "flexigpt.doc",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "flexigpt.refactor",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "flexigpt.findProblems",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "flexigpt.optimize",
-          "when": "editorHasSelection"
         }
       ]
     },
@@ -143,35 +87,11 @@
           "description": "Timeout for OpenAI requests",
           "order": 2
         },
-        "flexigpt.promptConfigFiles": {
+        "flexigpt.promptFiles": {
           "type": "string",
           "default": "",
           "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
           "order": 3
-        },
-        "flexigpt.promptPrefix.doc": {
-          "type": "string",
-          "default": "Generate documentation for this code in the languages standard format: ",
-          "description": "Generate documentation for the selected code",
-          "order": 4
-        },
-        "flexigpt.promptPrefix.refactor": {
-          "type": "string",
-          "default": "Refactor this code and explain what's changed: ",
-          "description": "Refactor the selected code",
-          "order": 5
-        },
-        "flexigpt.promptPrefix.findProblems": {
-          "type": "string",
-          "default": "Find problems with the following code, fix them and explain what was wrong (Do not change anything else): ",
-          "description": "Find problems in the selected code",
-          "order": 6
-        },
-        "flexigpt.promptPrefix.optimize": {
-          "type": "string",
-          "default": "Optimize the following code: ",
-          "description": "Optimize the selected code",
-          "order": 7
         }
       }
     }
