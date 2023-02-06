@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import axios from "axios";
 import log from "./logger/log";
 
-import Provider from "./strategy/strategy";
+import Provider, { CompletionRequest, EditRequest } from "./strategy/strategy";
 import OpenAIAPIStrategy from "./strategy/openaiapi";
 
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";

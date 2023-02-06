@@ -1,4 +1,5 @@
 import { getValueWithKey } from "./promptutils";
+import { systemVariableNames } from "../vscodeutils/predefinedvariables";
 
 import {
   FunctionWrapper,
@@ -100,6 +101,17 @@ export class CommandRunnerContext {
 
   getCommands(): Command[] {
     return Object.values(this.commands);
+  }
+
+  prepareAndSetCommand(command: Command): string {
+    const system = this.systemVariableContext.getVariables();
+    const functions = this.functionContext.getFunctions();
+    const user = this.userVariableContext.getVariables(system, functions);
+    const question = command.prepare(system, user);
+    this.setSystemVariable(
+      new Variable(systemVariableNames.question, question)
+    );
+    return question;
   }
 }
 

@@ -1,5 +1,5 @@
 import { Configuration, CreateImageRequest, OpenAIApi } from "openai";
-import { Strategy } from "./strategy";
+import { CompletionRequest, EditRequest, Strategy } from "./strategy";
 import { unescapeChars } from "./regexmatcher";
 
 export default class OpenAIAPIStrategy implements Strategy {
@@ -12,40 +12,63 @@ export default class OpenAIAPIStrategy implements Strategy {
     this.#timeout = timeout;
   }
 
-  async generate(input: string) {
+  async completion(input: CompletionRequest) {
     const { data } = await this.#api.createCompletion({
-      model: "text-davinci-003",
-      prompt: input,
-      temperature: 0,
-      max_tokens: 1024,
-      frequency_penalty: 0.5,
-      presence_penalty: 0.0,
+      model: input.model,
+      prompt: input.prompt,
+      suffix: input.suffix,
+      max_tokens: input.maxTokens,
+      temperature: input.temperature,
+      top_p: input.topP,
+      n: input.n,
       stream: false,
+      logprobs: input.logprobs,
+      echo: input.echo,
+      stop: input.stop,
+      presence_penalty: input.presencePenalty,
+      frequency_penalty: input.frequencyPenalty,
+      best_of: input.bestOf,
+      logit_bias: input.logitBias,
+      user: input.user,
     });
-
-    // const { data } = await this.#api.createEdit({
-    //   model: 'code-davinci-edit-001',
-    //   input: '',
-    //   instruction: input,
-    //   temperature: 0
-    // });
-
     return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
   }
 
-  async refactor(input: string) {
+  async edit(input: EditRequest) {
     const { data } = await this.#api.createEdit({
-      model: "code-davinci-edit-001",
-      input,
-      instruction: "Refactor this function",
-      temperature: 0,
+      model: input.model,
+      input: input.input,
+      instruction: input.instruction,
+      n: input.n,
+      temperature: input.temperature,
+      top_p: input.topP,
     });
 
     return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
   }
+}
 
-  async createImage(params: CreateImageRequest) {
-    const response = await this.#api.createImage(params);
-    return response.data.data[0].url;
-  }
+export function getDefaultCompletionCommand(prompt?: string): CompletionRequest {
+  var crequest = {
+    model: "text-davinci-003",
+    prompt: prompt,
+    temperature: 0,
+    maxTokens: 2048,
+    frequencyPenalty: 0.5,
+    presencePenalty: 0.0,
+    bestOf: 1,
+  };
+
+  return crequest;
+}
+
+export function getDefaultEditCommand(prompt?: string): EditRequest {
+  var erequest = {
+    model: "code-davinci-edit-001",
+    input: prompt,
+    temperature: 0,
+    instruction: "Refactor this function",
+  };
+
+  return erequest;
 }

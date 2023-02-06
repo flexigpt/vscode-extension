@@ -4,6 +4,7 @@ import Provider from "./strategy/strategy";
 import log from "./logger/log";
 
 import { getOpenAIProvider } from "./setup";
+import { getDefaultCompletionCommand } from "./strategy/openaiapi";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -132,7 +133,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
       try {
         // Send the search prompt to the ChatGPTAPI instance and store the response
-        response = (await (await this._apiProvider).generate(searchPrompt)) as
+        var crequest = getDefaultCompletionCommand(searchPrompt);
+        response = (await (await this._apiProvider).completion(crequest)) as
           | string
           | "";
       } catch (e) {

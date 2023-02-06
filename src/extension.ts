@@ -3,7 +3,10 @@ import * as vscode from "vscode";
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
 
-import {DEFAULT_ASK_ANYTHING, Command, CommandRunnerContext } from "./promptimporter/promptcommands";
+import {
+  DEFAULT_ASK_ANYTHING,
+  CommandRunnerContext,
+} from "./promptimporter/promptcommands";
 import { Variable } from "./promptimporter/promptvariables";
 
 import {
@@ -12,29 +15,6 @@ import {
   importAllPrompts,
   setupCommandRunnerContext,
 } from "./setup";
-
-async function runCommand(
-  c: CommandRunnerContext,
-  command: Command,
-  provider: ChatViewProvider
-): Promise<void> {
-  const system = c.systemVariableContext.getVariables();
-  const functions = c.functionContext.getFunctions();
-  const user = c.userVariableContext.getVariables(system, functions);
-  const question = command.prepare(system, user);
-  c.setSystemVariable(new Variable(systemVariableNames.question, question));
-  const answer = provider.search(question);
-  if (!answer) {
-    throw Error("Could not get response from Provider.");
-  }
-  // c.setSystemVariable(
-  //   new Variable(systemVariableNames.answer, answer.fullText)
-  // );
-  // c.setSystemVariable(
-  //   new Variable(systemVariableNames.answerCode, answer.code)
-  // );
-  // c.runHandler(command.handler);
-}
 
 function registerWebView(
   context: vscode.ExtensionContext,
@@ -83,11 +63,20 @@ function registerCommands(
               provider.search(value);
             });
         } else {
-          await runCommand(
-            commandRunnerContext,
-            selectedCommand?.command,
-            provider
+          const question = commandRunnerContext.prepareAndSetCommand(
+            selectedCommand?.command
           );
+          const answer = provider.search(question);
+          if (!answer) {
+            throw Error("Could not get response from Provider.");
+          }
+          // c.setSystemVariable(
+          //   new Variable(systemVariableNames.answer, answer.fullText)
+          // );
+          // c.setSystemVariable(
+          //   new Variable(systemVariableNames.answerCode, answer.code)
+          // );
+          // c.runHandler(command.handler);
         }
       }
     }
