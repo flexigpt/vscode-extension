@@ -5,22 +5,18 @@ import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
 
 import {
-  DEFAULT_ASK_ANYTHING,
   CommandRunnerContext,
 } from "./promptimporter/promptcommands";
 import { Variable } from "./promptimporter/promptvariables";
 
 import {
   getOpenAIProvider,
-  importPrompts,
-  importAllPrompts,
   setupCommandRunnerContext,
 } from "./setup";
 
 function registerWebView(
   context: vscode.ExtensionContext,
   provider: ChatViewProvider,
-  commandRunnerContext: CommandRunnerContext
 ) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
@@ -33,73 +29,46 @@ function registerWebView(
   );
 }
 
-function registerCommands(
+async function setFocus(
   context: vscode.ExtensionContext,
   provider: ChatViewProvider,
-  commandRunnerContext: CommandRunnerContext
 ) {
+  vscode.commands.executeCommand("flexigpt.chatView.focus");
+  provider.sendMessage({ type: "focus", value: "" });
+  provider.importAllFiles();
+  return;
+}
+
+async function registerCommands(
+  context: vscode.ExtensionContext,
+  provider: ChatViewProvider,
+) {
+  // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  // // Sleeps for 2 seconds.
+  // await sleep(2000);
+  ;
+  await setFocus(context, provider);
   const commandAsk = vscode.commands.registerCommand(
     "flexigpt.ask",
     async () => {
-      commandRunnerContext.setSystemVariable(
-        new Variable(systemVariableNames.extensionUri, context.extensionUri)
-      );
-
-      let commandList = commandRunnerContext.getCommands().map((c) => ({
-        label: c.name,
-        description: c.description,
-        command: c,
-      }));
-
-      log.info(`Commands: ${commandList}`);
-
-      let selectedCommand = await vscode.window.showQuickPick(commandList, {
-        title: "Select a FlexiGPT prompt",
-        matchOnDescription: true,
-        matchOnDetail: true,
-      });
-      if (selectedCommand) {
-        if (selectedCommand.label === DEFAULT_ASK_ANYTHING) {
-          vscode.window
-            .showInputBox({ prompt: "What do you want to ask?" })
-            .then((value) => {
-              provider.search(value as string);
-            });
-        } else {
-          const question = commandRunnerContext.prepareAndSetCommand(
-            selectedCommand?.command.name
-          );
-          const answer = provider.search(question);
-          if (!answer) {
-            throw Error("Could not get response from Provider.");
-          }
-          // c.setSystemVariable(
-          //   new Variable(systemVariableNames.answer, answer.fullText)
-          // );
-          // c.setSystemVariable(
-          //   new Variable(systemVariableNames.answerCode, answer.code)
-          // );
-          // c.runHandler(command.handler);
-        }
-      }
+      await setFocus(context, provider);
     }
   );
 
-  const commadFocus = vscode.commands.registerCommand('flexigpt.focus', () => {
-    log.info("reached on focus");
-    if (!provider._view) {
-        vscode.commands.executeCommand("workbench.view.flexigpt.chatView");
-    }
-    provider._view?.webview.postMessage({ command: 'focus' });
-  });
+  // const commadFocus = vscode.commands.registerCommand("flexigpt.focus", () => {
+  //   if (!provider._view) {
+  //     vscode.commands.executeCommand("workbench.view.flexigpt.chatView");
+  //   }
+  //   provider._view?.webview.postMessage({ type: "focus" });
+  // });
 
-  context.subscriptions.push(commandAsk, commadFocus);
+  // context.subscriptions.push(commandAsk, commadFocus);
+  context.subscriptions.push(commandAsk);
 }
 
 function registerEvents(
   context: vscode.ExtensionContext,
   provider: ChatViewProvider,
-  commandRunnerContext: CommandRunnerContext
 ) {
   // Change the extension's openai token when configuration is changed
   vscode.workspace.onDidChangeConfiguration(
@@ -113,25 +82,25 @@ function registerEvents(
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);
       } else if (event.affectsConfiguration("flexigpt.promptFiles")) {
-        const config = vscode.workspace.getConfiguration("flexigpt");
-        const promptFiles = config.get("promptFiles") as string | "";
-        importPrompts(promptFiles, commandRunnerContext);
+        provider.importAllFiles();
       }
     }
   );
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   // Create a new OpenAIAPIStrategyProvider instance and register it with the extension's context
   const apiProvider = getOpenAIProvider();
   const provider = new ChatViewProvider(context.extensionUri, context);
   provider.setAPIProvider(apiProvider);
   let commandRunnerContext = setupCommandRunnerContext(context);
-  importAllPrompts(context, commandRunnerContext);
-
-  registerCommands(context, provider, commandRunnerContext);
-  registerEvents(context, provider, commandRunnerContext);
-  registerWebView(context, provider, commandRunnerContext);
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.extensionUri, context.extensionUri)
+  );
+  provider.setCommandRunnerContext(commandRunnerContext);
+  await registerCommands(context, provider);
+  registerEvents(context, provider);
+  registerWebView(context, provider);
 }
 
 // This method is called when your extension is deactivated

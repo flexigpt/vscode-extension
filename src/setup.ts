@@ -3,7 +3,9 @@ import axios from "axios";
 import log from "./logger/log";
 
 import Provider, { CompletionRequest, EditRequest } from "./strategy/strategy";
-import OpenAIAPIStrategy, {getDefaultCompletionCommand} from "./strategy/openaiapi";
+import OpenAIAPIStrategy, {
+  getDefaultCompletionCommand,
+} from "./strategy/openaiapi";
 
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import {
@@ -69,31 +71,53 @@ export function setupCommandRunnerContext(
   return commandRunnerContext;
 }
 
-export async function importPrompts(
+export function importPrompts(
   promptFiles: string,
   commandRunnerContext: CommandRunnerContext
 ) {
   async function read(fileOrUrl: string) {
+    let dataRead = "";
     if (isHttpAddress(fileOrUrl)) {
-      return await readFromUrl(fileOrUrl);
+      await readFromUrl(fileOrUrl)
+        .then((data) => {
+          dataRead = data;
+        })
+        .then(undefined, (err) => {
+          log.error(`Error in readurl ${err}`);
+        })
+        .catch((error) => {
+          log.error(error);
+        });
     } else {
-      return await readFile(fileOrUrl);
+      await readFile(fileOrUrl)
+        .then((data) => {
+          dataRead = data;
+          // log.info(dataRead);
+        })
+        .then(undefined, (err) => {
+          log.error(`Error in readfile ${err}`);
+        })
+        .catch((error) => {
+          log.error(error);
+        });
     }
+    return dataRead;
   }
-  async function readFromUrl(url: string) {
+
+  async function readFromUrl(url: string): Promise<string> {
     const response = await axios.get(url);
     return response.data;
   }
-  async function readFile(file: string) {
-    const document = await vscode.workspace.openTextDocument(file);
-    let fileContent = document.getText();
-    return fileContent;
+
+  async function readFile(filePath: string) {
+    const buffer = await vscode.workspace.fs.readFile(
+      vscode.Uri.file(filePath)
+    );
+    return buffer.toString();
   }
-  async function importJsPromptFile(promptFile: string) {
-    let js = await read(promptFile);
-    let userDefinitions = eval(js);
-    //TODO: check userDefinitions
-    if (userDefinitions.commands) {
+
+  function processFileContents(userDefinitions: any) {
+    if (userDefinitions?.commands) {
       userDefinitions.commands.forEach(
         (command: { name: any; template: any; handler: any }) => {
           commandRunnerContext.addCommand(
@@ -102,7 +126,7 @@ export async function importPrompts(
         }
       );
     }
-    if (userDefinitions.variables) {
+    if (userDefinitions?.variables) {
       userDefinitions.variables.forEach(
         (variable: { name: any; value: any }) => {
           commandRunnerContext.setUserVariable(
@@ -112,35 +136,41 @@ export async function importPrompts(
       );
     }
 
-    if (userDefinitions.functions) {
+    if (userDefinitions?.functions) {
       userDefinitions.functions.forEach((fn: Function) => {
         commandRunnerContext.setFunction(FunctionWrapper.fromFunction(fn));
       });
     }
   }
-  async function importJsonPromptFile(promptFile: string) {
-    //TODO: !!not complete implemented!!
-    const document = await vscode.workspace.openTextDocument(promptFile);
-    let userDefinitions = JSON.parse(document.getText());
 
-    if (userDefinitions.commands) {
-      userDefinitions.commands.forEach(
-        (command: { name: any; template: any; handler: any }) => {
-          commandRunnerContext.addCommand(
-            new Command(command.name, command.template, command.handler)
-          );
-        }
-      );
-    }
-    if (userDefinitions.variables) {
-      userDefinitions.variables.forEach(
-        (variable: { name: any; value: any }) => {
-          commandRunnerContext.setUserVariable(
-            new Variable(variable.name, variable.value)
-          );
-        }
-      );
-    }
+  function importJsPromptFile(promptFile: string) {
+    read(promptFile)
+      .then((data) => {
+        let userDefinitions = eval(data);
+        processFileContents(userDefinitions);
+        // log.info(data);
+      })
+      .then(undefined, (err) => {
+        log.error(`Error in readfile ${err}`);
+      })
+      .catch((error) => {
+        log.error(error);
+      });
+  }
+
+  function importJsonPromptFile(promptFile: string) {
+    read(promptFile)
+      .then((data) => {
+        let userDefinitions = JSON.parse(data);
+        processFileContents(userDefinitions);
+        // log.info(data);
+      })
+      .then(undefined, (err) => {
+        log.error(`Error in readfile ${err}`);
+      })
+      .catch((error) => {
+        log.error(error);
+      });
   }
 
   function getFileType(promptFile: string): string | undefined {
@@ -150,10 +180,17 @@ export async function importPrompts(
   }
 
   function importFile(filePath: string) {
-    if (!fileExists(filePath)) {
-      log.info(`Couldnt find file "${filePath}". Skipping import`);
-      return;
-    }
+    fileExists(filePath)
+      .then((data) => {
+        if (!data) {
+          log.info(`Couldnt find file "${filePath}". Skipping import`);
+          return;
+        }
+      })
+      .catch((error) => {
+        log.error(error);
+      });
+
     const fileType = getFileType(filePath);
     if (fileType === "js") {
       importJsPromptFile(filePath);
@@ -178,10 +215,6 @@ export async function importPrompts(
   log.info(allPromptFiles);
   allPromptFiles.forEach((sf) => {
     try {
-      if (!fileExists(sf)) {
-        log.info(`Couldnt find file "${sf}". Skipping import`);
-        return;
-      }
       importFile(sf);
     } catch (error) {
       log.error(error);
@@ -191,24 +224,30 @@ export async function importPrompts(
 }
 
 export async function importAllPrompts(
-  context: vscode.ExtensionContext,
+  extensionUri: vscode.Uri,
   commandRunnerContext: CommandRunnerContext
 ) {
   const config = vscode.workspace.getConfiguration("flexigpt");
   const promptFiles = config.get("promptFiles") as string | "";
 
   const basicpromptsURI = vscode.Uri.joinPath(
-    context.extensionUri,
+    extensionUri,
     "media",
     "basicprompts.js"
   );
   if (basicpromptsURI.fsPath) {
-    await importPrompts(basicpromptsURI.fsPath, commandRunnerContext);
+    importPrompts(basicpromptsURI.fsPath, commandRunnerContext);
   }
 
   if (promptFiles) {
-    await importPrompts(promptFiles, commandRunnerContext);
+    importPrompts(promptFiles, commandRunnerContext);
   }
+
+  // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  // // Sleeps for 2 seconds.
+  // await sleep(2000);
+  // let allc = commandRunnerContext.getCommands();
+  // log.info(`Commands: ${allc}`);
 }
 
 export async function getCodeString(
@@ -216,7 +255,7 @@ export async function getCodeString(
   apiProvider: Promise<Provider> | undefined,
   text: string
 ) {
-  if( apiProvider === undefined) {
+  if (apiProvider === undefined) {
     return;
   }
   const question = commandRunnerContext.prepareAndSetCommand(text);

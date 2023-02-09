@@ -106,9 +106,9 @@
   "scripts": {
     "vscode:prepublish": "npm run esbuild-base -- --minify",
     "esbuild-base": "rimraf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
-    "build": "npm run -S esbuild-base -- --sourcemap",
-    "compile": "npm run -S esbuild-base -- --sourcemap",
-    "watch": "npm run -S esbuild-base -- --sourcemap",
+    "build": "npm run -S esbuild-base --no-cache -- --sourcemap",
+    "compile": "npm run -S esbuild-base --no-cache -- --sourcemap",
+    "watch": "npm run -S esbuild-base --no-cache -- --sourcemap",
     "fmt": "prettier --write \"src/**/*.ts\"&& npm run test -- --fix",
     "test": "eslint src --ext ts && tsc --noEmit",
     "compile-tests": "tsc -p . --outDir out",

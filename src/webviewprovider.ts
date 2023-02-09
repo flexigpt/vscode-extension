@@ -3,8 +3,9 @@ import * as vscode from "vscode";
 import Provider from "./strategy/strategy";
 import log from "./logger/log";
 
-import { getOpenAIProvider } from "./setup";
+import { getOpenAIProvider, importAllPrompts } from "./setup";
 import { getDefaultCompletionCommand } from "./strategy/openaiapi";
+import { Command, CommandRunnerContext } from "./promptimporter/promptcommands";
 
 // import { ChatGPTAPI, ChatGPTConversation } from 'chatgpt';
 
@@ -15,6 +16,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
   // This variable holds a reference to the ChatGPTAPI instance
   private _apiProvider?: Promise<Provider>;
+  private _commandList?: Command[];
+  private _commandRunnerContext?: CommandRunnerContext;
 
   private _response?: string;
   private _prompt?: string;
@@ -45,9 +48,35 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     this._apiProvider = provider;
   }
 
+  public setCommandList(commandList: Command[]) {
+    this._commandList = commandList;
+  }
+
+  public setCommandRunnerContext(commandRunnerContext: CommandRunnerContext) {
+    this._commandRunnerContext = commandRunnerContext;
+  }
+
+  public importAllFiles() {
+    if (this._commandRunnerContext) {
+      log.info("Importing files now");
+      importAllPrompts(this._extensionUri, this._commandRunnerContext);
+      this._commandList = this._commandRunnerContext.getCommands();
+    }
+  }
   // This private method initializes a new apiProvider instance
   private _newAPI() {
     this._apiProvider = getOpenAIProvider();
+  }
+
+  private sendCommandListMessage() {
+    let commandList = this._commandList?.map((c) => ({
+      label: c.name,
+      description: c.description,
+    }));
+    this._view?.webview.postMessage({
+      type: "setArray",
+      data: commandList,
+    });
   }
 
   public resolveWebviewView(
@@ -73,13 +102,13 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
-        case 'addFreeTextQuestion':
-					this.search(data.value);
-					break;
-        case "ask": {
+        case "addFreeTextQuestion":
           this.search(data.value);
           break;
-        }
+        // case "ask": {
+        //   this.search(data.value);
+        //   break;
+        // }
         // case 'clearConversation':
         // 	this.prepareConversation(true);
         // 	break;
@@ -91,23 +120,25 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           vscode.commands.executeCommand(
             "workbench.action.focusActiveEditorGroup"
           );
+          this.sendCommandListMessage();
           break;
         default:
           break;
       }
     });
 
-    this._view.onDidChangeVisibility((e) => {
-      if (!this._view!.visible) {
+    this._view?.onDidChangeVisibility((e) => {
+      if (this._view && !this._view!.visible) {
         this._view = undefined;
       }
     });
 
     if (this.leftOverMessage !== null) {
       // If there were any messages that wasn't delivered, render after resolveWebView is called.
-      this.search(this.leftOverMessage);
+      // this.search(this.leftOverMessage);
       this.leftOverMessage = null;
     }
+    this.sendCommandListMessage();
   }
 
   public async viewId(): Promise<string> {
@@ -119,19 +150,17 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
    * @param message Message to be sent to WebView
    * @param ignoreMessageIfNullWebView We will ignore the command if webView is null/not-focused
    */
-  async sendMessage(message: any, ignoreMessageIfNullWebView?: boolean) {
+  public async sendMessage(message: any, ignoreMessageIfNullWebView?: boolean) {
     // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
     if (this._view === null) {
       await vscode.commands.executeCommand("flexigpt.chatView.focus");
+    } else if (!ignoreMessageIfNullWebView) {
+      this.leftOverMessage = message;
     } else {
       this._view?.show?.(true);
     }
 
     await this._view?.webview.postMessage(message);
-
-    // else if (!ignoreMessageIfNullWebView) {
-    // 	this.leftOverMessage = message;
-    // }
   }
 
   public async search(prompt: string) {
@@ -173,11 +202,15 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       this._fullPrompt = searchPrompt;
     }
 
-    log.info(`sending api request. prompt: ${searchPrompt}`);
+    log.info(`sending api request. prompt: ${this._fullPrompt}`);
     if (this._apiProvider) {
       // If successfully signed in
-      log.info(`sent api request. prompt: ${searchPrompt}`);
-      await this.sendMessage({ type: "addQuestion", value: searchPrompt, code });
+      log.info(`sent api request. prompt: ${this._fullPrompt}`);
+      await this.sendMessage({
+        type: "addQuestion",
+        value: searchPrompt,
+        code,
+      });
       // this.sendMessage({ type: "addResponse", value: "asking flexigpt ..." });
       try {
         // Send the search prompt to the ChatGPTAPI instance and store the response
@@ -350,6 +383,13 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
   const vendorHighlightCss = webview.asWebviewUri(
     vscode.Uri.joinPath(extensionUri, "media", "scripts", "highlight.min.css")
   );
+  const vendorAutocompleteCss = webview.asWebviewUri(
+    vscode.Uri.joinPath(extensionUri, "media", "scripts", "autocomplete.css")
+  );
+  // const vendorAutocompleteJs = webview.asWebviewUri(
+  //   vscode.Uri.joinPath(extensionUri, "media", "scripts", "autocomplete.js")
+  // );
+  // <script src="${vendorAutocompleteJs}"></script>
   const vendorHighlightJs = webview.asWebviewUri(
     vscode.Uri.joinPath(extensionUri, "media", "scripts", "highlight.min.js")
   );
@@ -375,6 +415,7 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${stylesMainUri}" rel="stylesheet">
 				<link href="${vendorHighlightCss}" rel="stylesheet">
+        <link href="${vendorAutocompleteCss}" rel="stylesheet">
 				<script src="${vendorHighlightJs}"></script>
 				<script src="${vendorMarkedJs}"></script>
 				<script src="${vendorTailwindJs}"></script>
@@ -390,10 +431,10 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 								</svg>
 								<h2 class="text-lg font-normal">Features</h2>
 								<ul class="flex flex-col gap-3.5">
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Optimized for dialogue</li>
+								  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Become a power user of GPT models</li>	
 									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Improve your code, add tests & find bugs</li>
-                  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Become a pwer user of GPT models</li>
 									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Syntax highlighting with auto language detection</li>
+                  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Optimized for dialogue</li>
 								</ul>
 							</div>
 							<div class="flex flex-col gap-3.5 flex-1">
@@ -438,13 +479,16 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 
 					<div class="p-4 flex items-center pt-2">
 						<div class="flex-1 textarea-wrapper">
-							<textarea
-								type="text"
-								rows="1"
-								id="question-input"
-								placeholder="Ask a question..."
-								onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+						<textarea
+              type="text"
+              rows="1"
+              id="question-input"
+              placeholder="Ask a question..."
+              onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
 						</div>
+            <div class="autocomplete">
+              <div id="commandAutocompleteList" class="autocomplete-items"></div>
+            </div>
 						<button title="Submit prompt" class="right-8 absolute ask-button rounded-lg p-0.5 ml-5" id="ask-button">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
 						</button>

@@ -8,9 +8,8 @@ import {
 } from "./promptfunctions";
 import { Variable, VariableContext } from "./promptvariables";
 
-export const DEFAULT_ASK_ANYTHING: string = "Ask anything";
+export const DEFAULT_ASK_ANYTHING: string = "Ask";
 const DEFAULT_COMMAND_HANDLER: string = "replace";
-let commandRunnerContext: CommandRunnerContext;
 
 export class Command {
   constructor(
@@ -52,7 +51,7 @@ export class CommandRunnerContext {
         DEFAULT_ASK_ANYTHING,
         "Explain",
         "explain",
-        "Ask any thing to FlexiGPT"
+        "any thing to FlexiGPT"
       )
     );
   }
@@ -126,15 +125,16 @@ export class CommandRunnerContext {
       DEFAULT_ASK_ANYTHING,
       "Explain",
       "explain",
-      "Ask any thing to FlexiGPT"
+      "any thing to FlexiGPT"
     );
   }
 }
 
 export function getCommandRunnerContext(): CommandRunnerContext {
-  if (!commandRunnerContext) {
-    commandRunnerContext = initContext();
-  }
+  let commandRunnerContext = initContext();
+  // if (!commandRunnerContext) {
+  //   commandRunnerContext = initContext();
+  // }
   return commandRunnerContext;
 
   function initContext(): CommandRunnerContext {
