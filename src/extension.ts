@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import log from "./logger/log";
 
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
@@ -50,6 +51,8 @@ function registerCommands(
         command: c,
       }));
 
+      log.info(`Commands: ${commandList}`);
+
       let selectedCommand = await vscode.window.showQuickPick(commandList, {
         title: "Select a FlexiGPT prompt",
         matchOnDescription: true,
@@ -60,11 +63,11 @@ function registerCommands(
           vscode.window
             .showInputBox({ prompt: "What do you want to ask?" })
             .then((value) => {
-              provider.search(value);
+              provider.search(value as string);
             });
         } else {
           const question = commandRunnerContext.prepareAndSetCommand(
-            selectedCommand?.command
+            selectedCommand?.command.name
           );
           const answer = provider.search(question);
           if (!answer) {
@@ -82,7 +85,15 @@ function registerCommands(
     }
   );
 
-  context.subscriptions.push(commandAsk);
+  const commadFocus = vscode.commands.registerCommand('flexigpt.focus', () => {
+    log.info("reached on focus");
+    if (!provider._view) {
+        vscode.commands.executeCommand("workbench.view.flexigpt.chatView");
+    }
+    provider._view?.webview.postMessage({ command: 'focus' });
+  });
+
+  context.subscriptions.push(commandAsk, commadFocus);
 }
 
 function registerEvents(
@@ -113,14 +124,14 @@ function registerEvents(
 export function activate(context: vscode.ExtensionContext) {
   // Create a new OpenAIAPIStrategyProvider instance and register it with the extension's context
   const apiProvider = getOpenAIProvider();
-  const provider = new ChatViewProvider(context.extensionUri);
+  const provider = new ChatViewProvider(context.extensionUri, context);
   provider.setAPIProvider(apiProvider);
   let commandRunnerContext = setupCommandRunnerContext(context);
   importAllPrompts(context, commandRunnerContext);
 
-  registerWebView(context, provider, commandRunnerContext);
   registerCommands(context, provider, commandRunnerContext);
   registerEvents(context, provider, commandRunnerContext);
+  registerWebView(context, provider, commandRunnerContext);
 }
 
 // This method is called when your extension is deactivated

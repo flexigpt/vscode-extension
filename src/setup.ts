@@ -3,7 +3,7 @@ import axios from "axios";
 import log from "./logger/log";
 
 import Provider, { CompletionRequest, EditRequest } from "./strategy/strategy";
-import OpenAIAPIStrategy from "./strategy/openaiapi";
+import OpenAIAPIStrategy, {getDefaultCompletionCommand} from "./strategy/openaiapi";
 
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import {
@@ -190,7 +190,7 @@ export async function importPrompts(
   });
 }
 
-export function importAllPrompts(
+export async function importAllPrompts(
   context: vscode.ExtensionContext,
   commandRunnerContext: CommandRunnerContext
 ) {
@@ -203,10 +203,34 @@ export function importAllPrompts(
     "basicprompts.js"
   );
   if (basicpromptsURI.fsPath) {
-    importPrompts(basicpromptsURI.fsPath, commandRunnerContext);
+    await importPrompts(basicpromptsURI.fsPath, commandRunnerContext);
   }
 
   if (promptFiles) {
-    importPrompts(promptFiles, commandRunnerContext);
+    await importPrompts(promptFiles, commandRunnerContext);
   }
+}
+
+export async function getCodeString(
+  commandRunnerContext: CommandRunnerContext,
+  apiProvider: Promise<Provider> | undefined,
+  text: string
+) {
+  if( apiProvider === undefined) {
+    return;
+  }
+  const question = commandRunnerContext.prepareAndSetCommand(text);
+  let response: string;
+  try {
+    // Send the search prompt to the ChatGPTAPI instance and store the response
+    var crequest = getDefaultCompletionCommand(question);
+    response = (await (await apiProvider).completion(crequest)) as string | "";
+  } catch (e) {
+    log.error(e);
+    response = `[ERROR] ${e}`;
+  }
+  if (!response) {
+    throw Error("Could not get response from Provider.");
+  }
+  return `# Generated code for ${text}`;
 }

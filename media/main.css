@@ -11,7 +11,7 @@
  * copies or substantial portions of the Software.
  */
 
- :root {
+:root {
     --container-padding: 0;
     --input-padding-vertical: 6px;
     --input-padding-horizontal: 4px;
@@ -22,7 +22,7 @@
 body {
     padding: 0 var(--container-padding);
     color: var(--vscode-foreground);
-    font-size: var(--vscode-font-size);
+    font-size: var(--vscode-editor-font-size);
     font-weight: var(--vscode-font-weight);
     font-family: var(--vscode-font-family);
     background-color: var(--vscode-editor-background);
@@ -52,8 +52,75 @@ a:active {
     color: var(--vscode-textLink-activeForeground);
 }
 
-pre {
-    margin-top: 1rem !important;
+blockquote,
+dd,
+dl,
+figure,
+h1,
+h3,
+h4,
+h5,
+h6,
+hr,
+p {
+    margin-block-start: 1em !important;
+    margin-block-end: 1em !important;
+    margin-inline-start: 0px !important;
+    margin-inline-end: 0px !important;
+}
+
+h1 {
+    font-size: 1.17em !important;
+    margin-top: 0.67em !important;
+    margin-bottom: 0.67em !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
+}
+
+h2 {
+    font-size: 1em !important;
+    margin-top: 0.83em !important;
+    margin-bottom: 0.83em !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
+}
+
+h3 {
+    font-size: .93em !important;
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
+}
+
+h4 {
+    font-size: .85em !important;
+    margin-top: 1.33em !important;
+    margin-bottom: 1.33em !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
+}
+
+h5 {
+    font-size: .83em !important;
+    margin-top: 1.67em !important;
+    margin-bottom: 1.67em !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
+}
+
+h6 {
+    font-size: .8em !important;
+    margin-top: 2.33em !important;
+    margin-bottom: 2.33em !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
 }
 
 code {
@@ -170,6 +237,7 @@ textarea::placeholder {
 .textarea-wrapper {
     display: grid;
     max-height: 20rem;
+    font-size: var(--vscode-font-size);
 }
 
 .textarea-wrapper::after {
@@ -192,11 +260,53 @@ textarea::placeholder {
     grid-area: 1 / 1 / 2 / 2;
 }
 
-.pre-code-element .code-actions-wrapper {
-    opacity: 0.70;
+.pre-code-element:not(:last-child) {
+    margin-bottom: 2rem;
 }
 
-.pre-code-element:hover .code-actions-wrapper {
+.code-actions-wrapper {
+    opacity: 0.70;
+    font-size: 12px;
+    margin-top: 1rem;
+}
+
+.code-actions-wrapper:hover {
     opacity: 1;
     display: flex;
+}
+
+.typing {
+    font-size: var(--vscode-font-size);
+}
+
+.input-background {
+    background: var(--vscode-input-background);
+}
+
+.send-element-gnc,
+.cancel-element-gnc {
+    font-size: smaller;
+}
+
+@-webkit-keyframes blink {
+    to {
+        visibility: hidden
+    }
+}
+
+@keyframes blink {
+    to {
+        visibility: hidden
+    }
+}
+
+.result-streaming>:not(ol):not(ul):not(pre):last-child:after,
+.result-streaming>ol:last-child li:last-child:after,
+.result-streaming>pre:last-child code:after,
+.result-streaming>ul:last-child li:last-child:after {
+    -webkit-animation: blink 1s steps(5, start) infinite;
+    animation: blink 1s steps(5, start) infinite;
+    content: "▋";
+    margin-left: 0.25rem;
+    vertical-align: baseline;
 }

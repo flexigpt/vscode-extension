@@ -103,7 +103,8 @@ export class CommandRunnerContext {
     return Object.values(this.commands);
   }
 
-  prepareAndSetCommand(command: Command): string {
+  prepareAndSetCommand(text: string): string {
+    let command = this.findCommand(text);
     const system = this.systemVariableContext.getVariables();
     const functions = this.functionContext.getFunctions();
     const user = this.userVariableContext.getVariables(system, functions);
@@ -112,6 +113,21 @@ export class CommandRunnerContext {
       new Variable(systemVariableNames.question, question)
     );
     return question;
+  }
+
+  findCommand(text: string): Command {
+    let commands = this.getCommands();
+    for (let item of commands) {
+      if (item.name === text) {
+        return item;
+      }
+    }
+    return new Command(
+      DEFAULT_ASK_ANYTHING,
+      "Explain",
+      "explain",
+      "Ask any thing to FlexiGPT"
+    );
   }
 }
 

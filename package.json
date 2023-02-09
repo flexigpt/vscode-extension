@@ -30,7 +30,7 @@
   ],
   "activationEvents": [
     "onView:flexigpt.chatView",
-    "onCommand:flexigpt.ask"
+    "onCommand:fexigpt.ask"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -68,10 +68,17 @@
         {
           "type": "webview",
           "id": "flexigpt.chatView",
-          "name": "FlexiGPT"
+          "name": "Ask me"
         }
       ]
     },
+    "keybindings": [
+      {
+        "key": "ctrl+alt+g",
+        "command": "flexigpt.ask",
+        "when": "editorTextFocus"
+      }
+    ],
     "configuration": {
       "title": "flexiGPT",
       "type": "object",
@@ -97,15 +104,18 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "rimraf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "build": "npm run -S esbuild-base -- --sourcemap",
+    "compile": "npm run -S esbuild-base -- --sourcemap",
+    "watch": "npm run -S esbuild-base -- --sourcemap",
+    "fmt": "prettier --write \"src/**/*.ts\"&& npm run test -- --fix",
+    "test": "eslint src --ext ts && tsc --noEmit",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "debug": "node --inspect-brk $(which vscode-inspect-brk) . --extensionDevelopmentPath=/Users/pankajpipada/github/vscode-flexigpt"
   },
   "devDependencies": {
     "@types/glob": "^8.0.0",
@@ -115,13 +125,16 @@
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "@vscode/test-electron": "^2.2.0",
+    "esbuild": "^0.17.5",
     "eslint": "^8.28.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
     "openai": "^3.1.0",
+    "rimraf": "^4.1.2",
     "ts-loader": "^9.4.2",
-    "typescript": "^4.9.3",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "chatgpt": "^4.2.0"
   }
 }
