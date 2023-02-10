@@ -3,11 +3,11 @@ import * as vscode from "vscode";
 import Provider from "./strategy/strategy";
 import log from "./logger/log";
 
-import { getOpenAIProvider, importAllPrompts } from "./setup";
+import { importAllPrompts } from "./setupprompts";
+import { getOpenAIProvider } from "./setupstrategy";
 import { getDefaultCompletionCommand } from "./strategy/openaiapi";
-import { Command, CommandRunnerContext } from "./promptimporter/promptcommands";
+import { CommandRunnerContext } from "./promptimporter/promptcommands";
 
-// import { ChatGPTAPI, ChatGPTConversation } from 'chatgpt';
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -15,8 +15,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public _view?: vscode.WebviewView | undefined;
 
   // This variable holds a reference to the ChatGPTAPI instance
-  private _apiProvider?: Promise<Provider>;
-  private _commandList?: Command[];
+  private _apiProvider?: Provider;
   private _commandRunnerContext?: CommandRunnerContext;
 
   private _response?: string;
@@ -44,12 +43,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   ) {}
 
   // Set the api key and create a new API instance based on this
-  public setAPIProvider(provider?: Promise<Provider>) {
+  public setAPIProvider(provider: Provider) {
     this._apiProvider = provider;
-  }
-
-  public setCommandList(commandList: Command[]) {
-    this._commandList = commandList;
   }
 
   public setCommandRunnerContext(commandRunnerContext: CommandRunnerContext) {
@@ -60,7 +55,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     if (this._commandRunnerContext) {
       log.info("Importing files now");
       importAllPrompts(this._extensionUri, this._commandRunnerContext);
-      this._commandList = this._commandRunnerContext.getCommands();
+      this.sendCommandListMessage();
     }
   }
   // This private method initializes a new apiProvider instance
@@ -69,7 +64,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   private sendCommandListMessage() {
-    let commandList = this._commandList?.map((c) => ({
+    let commandList = this._commandRunnerContext?.getCommands()?.map((c) => ({
       label: c.name,
       description: c.description,
     }));
@@ -78,7 +73,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       data: commandList,
     });
   }
-
+  
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -116,6 +111,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           this.search(data.value);
           break;
         }
+        case "getCommandListForWebView":
+          this.sendCommandListMessage();
+          break;
         case "focus":
           vscode.commands.executeCommand(
             "workbench.action.focusActiveEditorGroup"
@@ -145,6 +143,12 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     return ChatViewProvider.viewType;
   }
 
+  public async setFocus() {
+    await vscode.commands.executeCommand("flexigpt.chatView.focus");
+    await this.sendMessage({ type: "focus", value: "" });
+    return;
+  }
+
   /**
    * Message sender, stores if a message cannot be delivered
    * @param message Message to be sent to WebView
@@ -163,6 +167,29 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     await this._view?.webview.postMessage(message);
   }
 
+  async sendAPIRequest(inPrompt: string, suffix?: string): Promise<string> {
+    let response: string;
+    try {
+      const question = this._commandRunnerContext?.prepareAndSetCommand(
+        inPrompt,
+        suffix
+      );
+      // Send the search prompt to the ChatGPTAPI instance and store the response
+      // If successfully signed in
+      log.info(`send api request. prompt: ${question}`);
+      this._fullPrompt = question;
+      var crequest = getDefaultCompletionCommand(question);
+      response = (await this._apiProvider?.completion(crequest)) as string | "";
+    } catch (e) {
+      log.error(e);
+      response = `[ERROR] ${e}`;
+    }
+    if (!response) {
+      throw Error("Could not get response from Provider.");
+    }
+    return response;
+  }
+
   public async search(prompt: string) {
     // await this.prepareConversation();
 
@@ -179,49 +206,12 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
 
     let response = "";
-    // Get the selected text of the active editor
-    const selection = vscode.window.activeTextEditor?.selection;
-    const selectedText =
-      vscode.window.activeTextEditor?.document.getText(selection);
-    let searchPrompt = prompt;
-    let code = "";
-    if (selection && selectedText) {
-      // If there is a selection, add the prompt and the selected text to the search prompt
-      if (this.selectedInsideCodeblock) {
-        // searchPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
-        this._fullPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
-        searchPrompt = prompt;
-        code = `${selectedText}`;
-      } else {
-        searchPrompt = `${prompt}\n${selectedText}\n`;
-        this._fullPrompt = searchPrompt;
-      }
-    } else {
-      // Otherwise, just use the prompt if user typed it
-      searchPrompt = prompt;
-      this._fullPrompt = searchPrompt;
-    }
-
-    log.info(`sending api request. prompt: ${this._fullPrompt}`);
     if (this._apiProvider) {
-      // If successfully signed in
-      log.info(`sent api request. prompt: ${this._fullPrompt}`);
       await this.sendMessage({
         type: "addQuestion",
-        value: searchPrompt,
-        code,
+        value: prompt,
       });
-      // this.sendMessage({ type: "addResponse", value: "asking flexigpt ..." });
-      try {
-        // Send the search prompt to the ChatGPTAPI instance and store the response
-        var crequest = getDefaultCompletionCommand(this._fullPrompt);
-        response = (await (await this._apiProvider).completion(crequest)) as
-          | string
-          | "";
-      } catch (e) {
-        log.error(e);
-        response = `[ERROR] ${e}`;
-      }
+      response = await this.sendAPIRequest(prompt);
     } else {
       response = "[ERROR] Please enter an API key in the extension settings";
     }
@@ -448,6 +438,7 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 								<ul class="flex flex-col gap-3.5">
 									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">May occasionally take long time to respond/fail</li>
 									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">May throw HTTP 429, if you make too many requests</li>
+                  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">May give a partial response if number of tokens exceed max_tokens</li>
 								</ul>
 							</div>
 						</div>

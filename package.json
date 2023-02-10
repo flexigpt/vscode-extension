@@ -29,7 +29,8 @@
     "scripts"
   ],
   "activationEvents": [
-    "onView:flexigpt.chatView",
+    "onStartup",
+    "onView:fexigpt.chatView",
     "onCommand:fexigpt.ask"
   ],
   "main": "./out/extension.js",

@@ -102,12 +102,16 @@ export class CommandRunnerContext {
     return Object.values(this.commands);
   }
 
-  prepareAndSetCommand(text: string): string {
+  prepareAndSetCommand(text: string, suffix?: string): string {
     let command = this.findCommand(text);
     const system = this.systemVariableContext.getVariables();
     const functions = this.functionContext.getFunctions();
     const user = this.userVariableContext.getVariables(system, functions);
-    const question = command.prepare(system, user);
+    let question = command.prepare(system, user);
+    if (suffix) {
+      question += suffix;
+    }
+
     this.setSystemVariable(
       new Variable(systemVariableNames.question, question)
     );

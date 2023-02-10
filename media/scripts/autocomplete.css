@@ -23,6 +23,7 @@
   cursor: pointer;
   border-bottom: 1px solid #545353;
   font-family: var(--vscode-font-family);
+  font-size: 0.75em;
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);

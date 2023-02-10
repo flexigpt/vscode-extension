@@ -51,6 +51,8 @@
   let queuedQuestions = 0;
 
   let preDefinedQuestions = ["Ask anything"];
+  let questionInput = document.getElementById("question-input");
+  let autoCompleteList = document.getElementById("commandAutocompleteList");
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
@@ -79,9 +81,13 @@
           inline: "nearest",
         });
 
-        queuedQuestions++;
+        queuedQuestions += 1;
         break;
       case "addResponse":
+        queuedQuestions -= 1;
+        if (queuedQuestions === 0) {
+          document.getElementById("in-progress")?.classList?.add("hidden");
+        }
         let existingMessage = message.id && document.getElementById(message.id);
         const updatedValue =
           message.value.split("```").length % 2 === 1
@@ -193,10 +199,6 @@
             block: "end",
             inline: "nearest",
           });
-
-          if (--queuedQuestions === 0) {
-            document.getElementById("in-progress")?.classList?.add("hidden");
-          }
         }
         break;
       case "addError":
@@ -239,9 +241,8 @@
         break;
       case "setArray":
         preDefinedQuestions = message.data.map(function (item) {
-          return item.label + " (" + item.description + ")";
+          return item.label;
         });
-        // console.log(preDefinedQuestions);
         break;
       default:
         break;
@@ -250,6 +251,13 @@
 
   const focus = () => {
     window.focus();
+  };
+
+  const addCommandList = () => {
+    vscode.postMessage({
+      type: "getCommandListForWebView",
+      value: "",
+    });
   };
 
   const addFreeTextQuestion = () => {
@@ -294,6 +302,27 @@
         addFreeTextQuestion();
       }
     });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      // Clear the list
+      while (autoCompleteList.firstChild) {
+        autoCompleteList.removeChild(autoCompleteList.firstChild);
+      }
+    }
+  });
+
+  document.addEventListener("mousedown", (event) => {
+    if (
+      !questionInput.contains(event.target) &&
+      !autocompleteList.contains(event.target)
+    ) {
+      // Clear the list
+      while (autoCompleteList.firstChild) {
+        autoCompleteList.removeChild(autoCompleteList.firstChild);
+      }
+    }
+  });
 
   document.addEventListener("click", (e) => {
     const targetButton = e.target.closest("button");
@@ -428,9 +457,6 @@
       return;
     }
   });
-  let questionInput = document.getElementById("question-input");
-
-  let autoCompleteList = document.getElementById("commandAutocompleteList");
 
   // Listen for input changes
   questionInput.addEventListener("input", function () {
@@ -464,6 +490,7 @@
     }
     // Get the input value
     let inputValue = questionInput.value;
+    addCommandList();
     // Filter the list based on the input value
     let filteredList = preDefinedQuestions.filter(function (string) {
       return (

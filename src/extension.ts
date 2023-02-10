@@ -4,19 +4,13 @@ import log from "./logger/log";
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
 
-import {
-  CommandRunnerContext,
-} from "./promptimporter/promptcommands";
 import { Variable } from "./promptimporter/promptvariables";
-
-import {
-  getOpenAIProvider,
-  setupCommandRunnerContext,
-} from "./setup";
+import { getOpenAIProvider } from "./setupstrategy";
+import { setupCommandRunnerContext } from "./setupcommandrunner";
 
 function registerWebView(
   context: vscode.ExtensionContext,
-  provider: ChatViewProvider,
+  provider: ChatViewProvider
 ) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
@@ -29,46 +23,32 @@ function registerWebView(
   );
 }
 
-async function setFocus(
+function registerCommands(
   context: vscode.ExtensionContext,
-  provider: ChatViewProvider,
+  provider: ChatViewProvider
 ) {
-  vscode.commands.executeCommand("flexigpt.chatView.focus");
-  provider.sendMessage({ type: "focus", value: "" });
-  provider.importAllFiles();
-  return;
-}
-
-async function registerCommands(
-  context: vscode.ExtensionContext,
-  provider: ChatViewProvider,
-) {
-  // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  // // Sleeps for 2 seconds.
-  // await sleep(2000);
-  ;
-  await setFocus(context, provider);
   const commandAsk = vscode.commands.registerCommand(
     "flexigpt.ask",
     async () => {
-      await setFocus(context, provider);
+      provider.importAllFiles();
+      provider.setFocus();
     }
   );
 
-  // const commadFocus = vscode.commands.registerCommand("flexigpt.focus", () => {
-  //   if (!provider._view) {
-  //     vscode.commands.executeCommand("workbench.view.flexigpt.chatView");
-  //   }
-  //   provider._view?.webview.postMessage({ type: "focus" });
-  // });
+  const commadFocus = vscode.commands.registerCommand("flexigpt.focus", () => {
+    if (!provider._view) {
+      vscode.commands.executeCommand("workbench.view.flexigpt.chatView");
+    }
+    provider._view?.webview.postMessage({ type: "focus" });
+  });
 
-  // context.subscriptions.push(commandAsk, commadFocus);
-  context.subscriptions.push(commandAsk);
+  context.subscriptions.push(commandAsk, commadFocus);
+  // context.subscriptions.push(commandAsk);
 }
 
 function registerEvents(
   context: vscode.ExtensionContext,
-  provider: ChatViewProvider,
+  provider: ChatViewProvider
 ) {
   // Change the extension's openai token when configuration is changed
   vscode.workspace.onDidChangeConfiguration(
@@ -88,7 +68,7 @@ function registerEvents(
   );
 }
 
-export async function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
   // Create a new OpenAIAPIStrategyProvider instance and register it with the extension's context
   const apiProvider = getOpenAIProvider();
   const provider = new ChatViewProvider(context.extensionUri, context);
@@ -98,9 +78,11 @@ export async function activate(context: vscode.ExtensionContext) {
     new Variable(systemVariableNames.extensionUri, context.extensionUri)
   );
   provider.setCommandRunnerContext(commandRunnerContext);
-  await registerCommands(context, provider);
+  registerCommands(context, provider);
   registerEvents(context, provider);
   registerWebView(context, provider);
+  provider.importAllFiles();
+  log.info("FlexiGPT is now active!");
 }
 
 // This method is called when your extension is deactivated
