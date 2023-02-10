@@ -4,10 +4,11 @@
   "description": "Interact with GPT AI models (GPT3, ChatGPT, etc) as a power user",
   "version": "0.1.0",
   "publisher": "ppipada",
+  "pricing": "Free",
   "icon": "resources/extensionIcon.png",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/ppiapda/vscode-flexigpt"
+    "url": "https://github.com/ppipada/vscode-flexigpt"
   },
   "engines": {
     "vscode": "^1.74.0",
