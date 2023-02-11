@@ -120,17 +120,19 @@ export class CommandRunnerContext {
 
   findCommand(text: string): Command {
     let commands = this.getCommands();
-    for (let item of commands) {
-      if (item.name === text) {
-        return item;
-      }
-    }
-    return new Command(
+    let returnitem = new Command(
       DEFAULT_ASK_ANYTHING,
-      "Explain",
+      "Explain" + " : " + text,
       "explain",
       "any thing to FlexiGPT"
     );
+    for (let item of commands) {
+      if (item.name === text) {
+        returnitem = item;
+        break;
+      }
+    }
+    return returnitem;
   }
 }
 

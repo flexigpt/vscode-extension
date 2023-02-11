@@ -105,6 +105,10 @@ export function importPrompts(
   }
 
   function importFile(filePath: string) {
+    if (filePath === "") {
+      log.info("Empty file prompt. skipping.");
+      return;
+    }
     fileExists(filePath)
       .then((data) => {
         if (!data) {
@@ -156,13 +160,20 @@ export function importAllPrompts(
     "basicprompts.js"
   );
   if (basicpromptsURI.fsPath) {
-    promptFiles = basicpromptsURI.fsPath + ";" + promptFiles;
+    if (promptFiles === "") {
+      promptFiles = basicpromptsURI.fsPath;
+    } else {
+      promptFiles = basicpromptsURI.fsPath + ";" + promptFiles;
+    }
   }
 
   if (promptFiles) {
     importPrompts(promptFiles, commandRunnerContext);
   }
 
-  let allc = commandRunnerContext.getCommands().map(item => item.name).join(", ");
+  let allc = commandRunnerContext
+    .getCommands()
+    .map((item) => item.name)
+    .join(", ");
   log.info(`Commands: ${allc}`);
 }
