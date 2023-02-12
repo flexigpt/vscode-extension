@@ -2,7 +2,7 @@
   "name": "flexigpt",
   "displayName": "FlexiGPT",
   "description": "Interact with GPT AI models (GPT3, ChatGPT, etc) as a power user",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "publisher": "ppipada",
   "pricing": "Free",
   "icon": "resources/extensionIcon.png",
