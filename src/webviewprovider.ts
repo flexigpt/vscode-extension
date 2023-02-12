@@ -201,20 +201,23 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       // Send the search prompt to the ChatGPTAPI instance and store the response
       // If successfully signed in
       this._fullPrompt = question;
-      await this.sendMessage({
-        type: "addQuestion",
-        value: inPrompt,
-      });
+
       var crequest = this._apiProvider?.checkAndPopulateCompletionParams(
         question,
         command.requestparams
       );
       if (crequest) {
-        log.info(
-          `sending api request. Full request: ${JSON.stringify(crequest, null, 2)}`
-        );
-  
-        response = (await this._apiProvider?.completion(crequest)) as string | "";  
+        let crequestStr = JSON.stringify(crequest, null, 2);
+        log.info(`sending api request. Full request: ${crequestStr}`);
+        await this.sendMessage({
+          type: "addQuestion",
+          value: inPrompt,
+          fullapi: crequestStr,
+        });
+
+        response = (await this._apiProvider?.completion(crequest)) as
+          | string
+          | "";
       } else {
         throw Error("Could not get Completion request");
       }
