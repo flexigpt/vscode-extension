@@ -5,8 +5,8 @@ import log from "./logger/log";
 
 import { importAllPrompts } from "./setupprompts";
 import { getOpenAIProvider } from "./setupstrategy";
-import { checkAndPopulateCompletionParams } from "./strategy/openaiapi";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
+import { CompletionRequest } from "openai";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -205,15 +205,19 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         type: "addQuestion",
         value: inPrompt,
       });
-      var crequest = checkAndPopulateCompletionParams(
+      var crequest = this._apiProvider?.checkAndPopulateCompletionParams(
         question,
         command.requestparams
       );
-      log.info(
-        `sending api request. Full request: ${JSON.stringify(crequest, null, 2)}`
-      );
-
-      response = (await this._apiProvider?.completion(crequest)) as string | "";
+      if (crequest) {
+        log.info(
+          `sending api request. Full request: ${JSON.stringify(crequest, null, 2)}`
+        );
+  
+        response = (await this._apiProvider?.completion(crequest)) as string | "";  
+      } else {
+        throw Error("Could not get Completion request");
+      }
     } catch (e) {
       log.error(e);
       response = `[ERROR] ${e}`;

@@ -8,11 +8,33 @@ export default class Provider {
   edit(input: EditRequest) {
     return this.strategy.edit(input);
   }
+
+  checkAndPopulateCompletionParams(
+    prompt: string,
+    inputParams?: { [key: string]: any }
+  ): CompletionRequest {
+    return this.strategy.checkAndPopulateCompletionParams(prompt, inputParams);
+  }
+
+  checkAndPopulateEditParams(
+    prompt: string,
+    inputParams?: { [key: string]: any }
+  ): EditRequest {
+    return this.strategy.checkAndPopulateEditParams(prompt, inputParams);
+  }
 }
 
 export interface Strategy {
   completion(input: CompletionRequest): Promise<string | null>;
   edit(input: EditRequest): Promise<string | null>;
+  checkAndPopulateCompletionParams(
+    prompt: string,
+    inputParams?: { [key: string]: any }
+  ): CompletionRequest;
+  checkAndPopulateEditParams(
+    prompt: string,
+    inputParams?: { [key: string]: any }
+  ): EditRequest;
 }
 
 /**

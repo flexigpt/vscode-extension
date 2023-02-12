@@ -96,11 +96,23 @@
           "description": "Timeout for OpenAI requests",
           "order": 2
         },
+        "flexigpt.openai.defaultCompletionModel": {
+          "type": "string",
+          "default": "text-davinci-003",
+          "description": "Default model to use for completion requests",
+          "order": 3
+        },
+        "flexigpt.openai.defaultEditModel": {
+          "type": "string",
+          "default": "code-davinci-edit-001",
+          "description": "Default model to use for completion requests",
+          "order": 4
+        },
         "flexigpt.promptFiles": {
           "type": "string",
           "default": "",
           "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
-          "order": 3
+          "order": 5
         }
       }
     }

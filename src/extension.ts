@@ -53,17 +53,25 @@ function registerEvents(
   // Change the extension's openai token when configuration is changed
   vscode.workspace.onDidChangeConfiguration(
     (event: vscode.ConfigurationChangeEvent) => {
-      if (event.affectsConfiguration("flexigpt.openai.apiKey")) {
-        // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
+      if (event.affectsConfiguration("flexigpt.promptFiles")) {
+        provider.importAllFiles();
       } else if (event.affectsConfiguration("flexigpt.openai.timeout")) {
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);
-      } else if (event.affectsConfiguration("flexigpt.promptFiles")) {
-        provider.importAllFiles();
-      }
+      } else if (event.affectsConfiguration("flexigpt.openai.apiKey")) {
+        // add the new token to the provider
+        const apiProvider = getOpenAIProvider();
+        provider.setAPIProvider(apiProvider);
+      } else if (event.affectsConfiguration("flexigpt.openai.defaultCompletionModel")) {
+        // add the new token to the provider
+        const apiProvider = getOpenAIProvider();
+        provider.setAPIProvider(apiProvider);
+      } else if (event.affectsConfiguration("flexigpt.openai.defaultEditModel")) {
+        // add the new token to the provider
+        const apiProvider = getOpenAIProvider();
+        provider.setAPIProvider(apiProvider);
+      }    
     }
   );
 }

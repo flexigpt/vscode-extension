@@ -33,7 +33,15 @@ To configure FlexiGPT, open Visual Studio Code's settings (File > Preferences > 
 Options:
 
 - flexigpt.openai.apiKey: Your OpenAI API key, which can be obtained from the OpenAI website.
-- flexigpt.openai.timeout: The timeout for OpenAI requests, in seconds.
+- flexigpt.openai.timeout: The timeout for OpenAI requests, in seconds. Default: 60.
+- flexigpt.openai.defaultCompletionModel: Default model to use for completion requests.
+  - You can always override the default model per prompt via the prompt file command declaration.
+  - FlexiGPT basic prompts will use the default models set.
+  - Default: text-davinci-003. Note that text-davinci-003 usage is accounted in OpenAIs billing. Only free model that is in beta as of Feb 2023 is codex (code-davinci-002).
+- flexigpt.openai.defaultEditModel: Default model to use for edit requests. (currently unsupported)
+  - You can always override the default model per prompt via the prompt file command declaration.
+  - FlexiGPT basic prompts will use the default models set.
+  - Default: code-davinci-edit-001.
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
 
 ## Usage
@@ -46,6 +54,11 @@ Options:
 - To view your prompt history, open the FlexiGPT activity bar.
 
 ## Prompt file format
+
+### Samples
+
+- [FlexiGPT Basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/basicprompts.js)
+- [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/tree/main/sample_prompt_files)
 
 ### Here is a sample javascript (.js) prompt file
 
@@ -78,6 +91,10 @@ module.exports = {
           filePath: "user.testFileName",
         },
       },
+      requestparams: {
+        model: "code-davinci-002",
+        stop: ["##", "func Test", "package main", "func main"],
+      },
     },
     {
       name: "Write godoc",
@@ -90,6 +107,11 @@ module.exports = {
           position: "start",
         },
       },
+      requestparams: {
+        model: "code-davinci-002",
+        stop: ["##", "func Test", "package main", "func main"],
+      },
+
     },
   ],
   functions: [
@@ -113,10 +135,6 @@ module.exports = {
 };
 ```
 
-### More Samples
-
-https://github.com/ppipada/vscode-flexigpt/tree/main/sample_prompt_files
-
 ### Creating Command
 
 Name
@@ -131,6 +149,11 @@ Name
   - To use system variable add `{system.*variableName*}`, variableName can be one of [Predefined System Variables](#predefined-system-variables)
   - To use user variable add `{user.*variableName*}`, variableName must be in variables field in prompt file.
 
+- requestparams: optional
+  - This is an object of type `{ [key: string]: any }`.
+  - Any params relevant to the GPT provider API can be overridden.
+  - Valid params for OpenAI completion request can be found in this [API reference](https://platform.openai.com/docs/api-reference/completions).
+  
 - handler: Optional
 
   - handler is used to handle a response. By default, replace function is used. Handle function can be one of [Predefined System Function](#predefined-system-function) or a User defined function.

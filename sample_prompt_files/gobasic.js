@@ -34,7 +34,7 @@ module.exports = {
             },
             description: "Generate unit tests for the selected code",
             requestparams: {
-                model: "code-davinci-002",
+                model: "text-davinci-003",
                 stop: ["##", "func Test", "package main", "func main"],
             },
         },
