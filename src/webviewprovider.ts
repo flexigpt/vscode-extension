@@ -8,7 +8,6 @@ import { getOpenAIProvider } from "./setupstrategy";
 import { getDefaultCompletionCommand } from "./strategy/openaiapi";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
 
-
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
 
@@ -73,7 +72,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       data: commandList,
     });
   }
-  
+
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -165,6 +164,26 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
 
     await this._view?.webview.postMessage(message);
+  }
+
+  private getSelectedText(prompt: string): string {
+    // Get the selected text of the active editor
+    const selection = vscode.window.activeTextEditor?.selection;
+    const selectedText =
+      vscode.window.activeTextEditor?.document.getText(selection);
+    let searchPrompt = prompt;
+    if (selection && selectedText) {
+      // If there is a selection, add the prompt and the selected text to the search prompt
+      if (this.selectedInsideCodeblock) {
+        searchPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
+      } else {
+        searchPrompt = `${prompt}\n${selectedText}\n`;
+      }
+    } else {
+      // Otherwise, just use the prompt if user typed it
+      searchPrompt = prompt;
+    }
+    return searchPrompt;
   }
 
   async sendAPIRequest(inPrompt: string, suffix?: string): Promise<string> {

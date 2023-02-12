@@ -29,6 +29,9 @@ function initDocumentContext(commandRunnerContext: CommandRunnerContext) {
   commandRunnerContext.setSystemVariable(
     new Variable(systemVariableNames.baseFolder, getBaseFolder())
   );
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.selection, getSelectedText())
+  );
   const document = getActiveDocument();
   if (document) {
     commandRunnerContext.setSystemVariable(

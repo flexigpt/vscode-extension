@@ -24,11 +24,6 @@ FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT 
 4. Choose the extension `FlexiGPT` by `ppipada`.
 5. Restart Visual Studio Code after the installation
 
-## Usage
-
-- To ask GPT AI models (GPT3, ChatGPT, etc) anything you want, use the `FlexiGPT: Ask` command from the Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`) or by using the `Ctrl` + `Alt` + `G` keyboard shortcut.
-- To view your prompt history, open the FlexiGPT activity bar.
-
 ## Configuration
 
 FlexiGPT requires an OpenAI API key to function. You can obtain one from https://beta.openai.com/account/api-keys
@@ -40,6 +35,15 @@ Options:
 - flexigpt.openai.apiKey: Your OpenAI API key, which can be obtained from the OpenAI website.
 - flexigpt.openai.timeout: The timeout for OpenAI requests, in seconds.
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
+
+## Usage
+
+- To ask GPT AI models (GPT3, ChatGPT, etc) anything you want, use the `FlexiGPT: Ask` command from the Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`) or by using the `Ctrl` + `Alt` + `G` keyboard shortcut.
+- This should open the FlexiGPT activity bar with an input text box.
+- On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/basicprompts.js) provided by FlexiGPT itself and any prompts defined in `flexigpt.promptFiles` as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode takes some time to load a dynamic list from file.)
+- If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
+- If you type a free floating question in the text box, the text itself will be used as prompt directly. Here too, you can use the predefined system variables to enhance your question. E.g: you can use `{system.selection}` to pass on the selected text in the editor (code or otherwise).
+- To view your prompt history, open the FlexiGPT activity bar.
 
 ## Prompt file format
 

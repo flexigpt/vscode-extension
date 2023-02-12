@@ -1,5 +1,6 @@
 import { getValueWithKey } from "./promptutils";
 import { systemVariableNames } from "../vscodeutils/predefinedvariables";
+import log from "../logger/log";
 
 import {
   FunctionWrapper,
@@ -24,6 +25,9 @@ export class Command {
       system: systemVariables,
       user: userVariables,
     };
+    // log.info(`question template input: ${this.questionTemplate}`);
+    // let matches = this.questionTemplate.match(/\{([^}]+)\}/g);
+    // log.info(`question template input: ${this.questionTemplate}. Matches: ${matches}`);
     const question = this.questionTemplate.replace(
       /\{([^}]+)\}/g,
       (match, key) => {
@@ -102,6 +106,23 @@ export class CommandRunnerContext {
     return Object.values(this.commands);
   }
 
+  findCommand(text: string): Command {
+    let commands = this.getCommands();
+    let returnitem = new Command(
+      DEFAULT_ASK_ANYTHING,
+      text,
+      "explain",
+      "any thing to FlexiGPT"
+    );
+    for (let item of commands) {
+      if (item.name === text) {
+        returnitem = item;
+        break;
+      }
+    }
+    return returnitem;
+  }
+
   prepareAndSetCommand(text: string, suffix?: string): string {
     let command = this.findCommand(text);
     const system = this.systemVariableContext.getVariables();
@@ -118,22 +139,6 @@ export class CommandRunnerContext {
     return question;
   }
 
-  findCommand(text: string): Command {
-    let commands = this.getCommands();
-    let returnitem = new Command(
-      DEFAULT_ASK_ANYTHING,
-      "Explain" + " : " + text,
-      "explain",
-      "any thing to FlexiGPT"
-    );
-    for (let item of commands) {
-      if (item.name === text) {
-        returnitem = item;
-        break;
-      }
-    }
-    return returnitem;
-  }
 }
 
 export function getCommandRunnerContext(): CommandRunnerContext {
