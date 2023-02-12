@@ -15,13 +15,22 @@
 
 (function () {
   const vscode = acquireVsCodeApi();
-
+  // var renderer = new marked.Renderer();
+  // renderer.code = function (code, language) {
+  //   return (
+  //     '<pre><code class="hljs ' +
+  //     language +
+  //     '">' +
+  //     hljs.highlight(language, code).value +
+  //     "</code></pre>"
+  //   );
+  // };
   marked.setOptions({
     renderer: new marked.Renderer(),
     highlight: function (code, _lang) {
       return hljs.highlightAuto(code).value;
     },
-    langPrefix: "hljs language-",
+    langPrefix: "hljs language",
     pedantic: false,
     gfm: true,
     breaks: true,
@@ -61,13 +70,13 @@
 
     switch (message.type) {
       case "addQuestion":
-        list.innerHTML += `<div class="p-4 self-end mt-4 question-element-gnc relative input-background">
-                        <h2 class="mb-5 flex">${userSvg}You</h2>
-                        <no-export class="mb-2 flex items-center">
-                            <button title="Edit and resend this prompt" class="resend-element-gnc p-1.5 flex items-center rounded-lg absolute right-6 top-6">${pencilSvg}</button>
+        list.innerHTML += `<div class="p-2 self-end mt-1 question-element-gnc relative input-background">
+                        <h7 class="mb-1 flex">${userSvg}You</h7>
+                        <no-export class="mb-1 flex items-center">
+                            <button title="Edit and resend this prompt" class="resend-element-gnc p-2 flex items-center rounded-lg absolute right-6 top-6">${pencilSvg}</button>
                             <div class="hidden send-cancel-elements-gnc flex gap-2">
-                                <button title="Send this prompt" class="send-element-gnc p-1 pr-2 flex items-center">${sendSvg}Send</button>
-                                <button title="Cancel" class="cancel-element-gnc p-1 pr-2 flex items-center">${cancelSvg}Cancel</button>
+                                <button title="Send this prompt" class="send-element-gnc p-2 pr-2 flex items-center">${sendSvg}Send</button>
+                                <button title="Cancel" class="cancel-element-gnc p-2 pr-2 flex items-center">${cancelSvg}Cancel</button>
                             </div>
                         </no-export>
                         <div class="overflow-y-auto">${message.value}</div>
@@ -98,8 +107,8 @@
         if (existingMessage) {
           existingMessage.innerHTML = markedResponse;
         } else {
-          list.innerHTML += `<div class="p-4 self-end mt-4 pb-8 answer-element-gnc">
-                        <h2 class="mb-5 flex">${aiSvg}FlexiGPT</h2>
+          list.innerHTML += `<div class="p-2 self-end mt-1 pb-4 answer-element-gnc">
+                        <h7 class="mb-1 flex">${aiSvg}FlexiGPT</h7>
                         <div class="result-streaming" id="${message.id}">${markedResponse}</div>
                     </div>`;
 
@@ -116,7 +125,7 @@
           preCodeList.forEach((preCode) => {
             preCode.classList.add(
               "input-background",
-              "p-4",
+              "p-2",
               "pb-2",
               "block",
               "whitespace-pre",
@@ -130,8 +139,8 @@
               "flex",
               "gap-3",
               "pr-2",
-              "pt-1",
-              "pb-1",
+              "pt-2",
+              "pb-2",
               "flex-wrap",
               "items-center",
               "justify-end",
@@ -146,7 +155,7 @@
 
             copyButton.classList.add(
               "code-element-gnc",
-              "p-1",
+              "p-2",
               "pr-2",
               "flex",
               "items-center",
@@ -159,7 +168,7 @@
 
             insert.classList.add(
               "edit-element-gnc",
-              "p-1",
+              "p-2",
               "pr-2",
               "flex",
               "items-center",
@@ -172,7 +181,7 @@
 
             newTab.classList.add(
               "new-code-element-gnc",
-              "p-1",
+              "p-2",
               "pr-2",
               "flex",
               "items-center",
@@ -210,8 +219,8 @@
           message.value ||
           "An error occurred. If this issue persists, restart your Visual Studio Code. If you still experience issues, it may be due to outage on https://openai.com services.";
 
-        list.innerHTML += `<div class="p-4 self-end mt-4 pb-8 error-element-gnc">
-                        <h2 class="mb-5 flex">${aiSvg}FlexiGPT</h2>
+        list.innerHTML += `<div class="p-2 self-end mt-1 pb-4 error-element-gnc">
+                        <h7 class="mb-1 flex">${aiSvg}FlexiGPT</h7>
                         <div class="text-red-400">${marked.parse(
                           messageValue
                         )}</div>

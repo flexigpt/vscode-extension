@@ -37,15 +37,9 @@ module.exports = {
         },
         {
             name: "FlexiGPT: Explain code",
-            template: `Explain following code. And show me what can be improved.
+            template: `Explain following code.
             code:
             {system.selection}`,
-            handler: {
-                func: 'append',
-                args: {
-                    position: 'user.start'
-                }
-            },
             description: "Explain the code",
         },
         {
@@ -66,12 +60,6 @@ module.exports = {
             template: `Find problems with the following code, fix them and explain what was wrong (Do not change anything else).
             code:
             {system.selection}`,
-            handler: {
-                func: 'append',
-                args: {
-                    position: 'user.start'
-                }
-            },
             description: "Find problems in the selected code",
         },
         {
@@ -79,12 +67,6 @@ module.exports = {
             template: `Optimize the following code.
             code:
             {system.selection}`,
-            handler: {
-                func: 'append',
-                args: {
-                    position: 'user.start'
-                }
-            },
             description: "Optimize the selected code",
         },
     ],

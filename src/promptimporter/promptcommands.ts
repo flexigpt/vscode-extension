@@ -1,23 +1,23 @@
 import { getValueWithKey } from "./promptutils";
 import { systemVariableNames } from "../vscodeutils/predefinedvariables";
-import log from "../logger/log";
+// import log from "../logger/log";
 
 import {
   FunctionWrapper,
   FunctionContext,
-  preDefinedFunctions,
 } from "./promptfunctions";
 import { Variable, VariableContext } from "./promptvariables";
 
 export const DEFAULT_ASK_ANYTHING: string = "Ask";
-const DEFAULT_COMMAND_HANDLER: string = "replace";
+export const DEFAULT_COMMAND_HANDLER: string = "replace";
 
 export class Command {
   constructor(
     public name: string,
     public questionTemplate: string,
     public handler: any,
-    public description: string = name
+    public description: string,
+    public requestparams?: { [key: string]: any; },
   ) {}
 
   prepare(systemVariables: any, userVariables: any) {
@@ -123,7 +123,7 @@ export class CommandRunnerContext {
     return returnitem;
   }
 
-  prepareAndSetCommand(text: string, suffix?: string): string {
+  prepareAndSetCommand(text: string, suffix?: string): {question: string, command: Command} {
     let command = this.findCommand(text);
     const system = this.systemVariableContext.getVariables();
     const functions = this.functionContext.getFunctions();
@@ -136,25 +136,6 @@ export class CommandRunnerContext {
     this.setSystemVariable(
       new Variable(systemVariableNames.question, question)
     );
-    return question;
-  }
-
-}
-
-export function getCommandRunnerContext(): CommandRunnerContext {
-  let commandRunnerContext = initContext();
-  // if (!commandRunnerContext) {
-  //   commandRunnerContext = initContext();
-  // }
-  return commandRunnerContext;
-
-  function initContext(): CommandRunnerContext {
-    const commandRunnerContext = new CommandRunnerContext();
-    if (preDefinedFunctions) {
-      for (const fn of preDefinedFunctions) {
-        commandRunnerContext.setFunction(fn);
-      }
-    }
-    return commandRunnerContext;
+    return {question, command};
   }
 }

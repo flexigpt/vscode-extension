@@ -5,7 +5,7 @@ import log from "./logger/log";
 
 import { importAllPrompts } from "./setupprompts";
 import { getOpenAIProvider } from "./setupstrategy";
-import { getDefaultCompletionCommand } from "./strategy/openaiapi";
+import { checkAndPopulateCompletionParams } from "./strategy/openaiapi";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
@@ -189,15 +189,30 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   async sendAPIRequest(inPrompt: string, suffix?: string): Promise<string> {
     let response: string;
     try {
-      const question = this._commandRunnerContext?.prepareAndSetCommand(
+      let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
         inPrompt,
         suffix
       );
+      let question = (preparedIn?.question as string) || "";
+      let command = preparedIn?.command;
+      if (!command) {
+        throw Error("Could not get prepared command");
+      }
       // Send the search prompt to the ChatGPTAPI instance and store the response
       // If successfully signed in
-      log.info(`send api request. prompt: ${question}`);
       this._fullPrompt = question;
-      var crequest = getDefaultCompletionCommand(question);
+      await this.sendMessage({
+        type: "addQuestion",
+        value: inPrompt,
+      });
+      var crequest = checkAndPopulateCompletionParams(
+        question,
+        command.requestparams
+      );
+      log.info(
+        `sending api request. Full request: ${JSON.stringify(crequest, null, 2)}`
+      );
+
       response = (await this._apiProvider?.completion(crequest)) as string | "";
     } catch (e) {
       log.error(e);
@@ -226,10 +241,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
     let response = "";
     if (this._apiProvider) {
-      await this.sendMessage({
-        type: "addQuestion",
-        value: prompt,
-      });
       response = await this.sendAPIRequest(prompt);
     } else {
       response = "[ERROR] Please enter an API key in the extension settings";
@@ -241,145 +252,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     await this.sendMessage({ type: "addResponse", value: response });
   }
 }
-
-function getHtmlForWebviewv1(
-  webview: vscode.Webview,
-  extensionUri: vscode.Uri
-) {
-  // return provideTextDocumentContent(this._extensionUri);
-  const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "main.js")
-  );
-  const microlightUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "microlight.min.js")
-  );
-  const tailwindUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "showdown.min.js")
-  );
-  const showdownUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "tailwind.min.js")
-  );
-
-  return `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <script src="${tailwindUri}"></script>
-                <script src="${showdownUri}"></script>
-                <script src="${microlightUri}"></script>
-                <style>
-                .code {
-                    white-space : pre;
-                </style>
-            </head>
-            <body>
-                <input class="h-10 w-full text-white bg-stone-700 p-4 text-sm" type="text" id="prompt-input" />
-
-                <div id="response" class="pt-6 text-sm">
-                </div>
-
-                <script src="${scriptUri}"></script>
-            </body>
-            </html>`;
-}
-
-function provideTextDocumentContent(uri: vscode.Uri): string {
-  return `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Autocomplete Webview</title>
-          <style>
-              .code-block {
-                  background-color: #f2f2f2;
-                  border-radius: 5px;
-                  padding: 10px;
-                  margin-top: 10px;
-              }
-              .copy-button {
-                  position: absolute;
-                  top: 10px;
-                  right: 10px;
-                  background-color: lightblue;
-                  color: white;
-                  padding: 5px 10px;
-                  border-radius: 5px;
-                  cursor: pointer;
-              }
-          </style>
-      </head>
-      <body>
-          <h1>Autocomplete Input</h1>
-          <input id="input" type="text" placeholder="Enter text...">
-          <div class="code-block">
-              <button class="copy-button">Copy</button>
-              <pre id="output"></pre>
-          </div>
-          <script>
-              const input = document.querySelector('#input');
-              const output = document.querySelector('#output');
-              const copyButton = document.querySelector('.copy-button');
-              const dynamicText = [
-                  "Option 1",
-                  "Option 2",
-                  "Option 3",
-                  "Option 4",
-                  "Option 5",
-              ];
-              input.addEventListener('input', (event) => {
-                  const value = event.target.value;
-                  const filteredOptions = dynamicText.filter((text) => text.includes(value));
-                  let text;
-                  if (filteredOptions.length > 0) {
-                      text = filteredOptions[0];
-                  } else {
-                      text = dynamicText[Math.floor(Math.random() * dynamicText.length)];
-                  }
-                  output.innerHTML = text;
-              });
-              copyButton.addEventListener('click', () => {
-                  navigator.clipboard.writeText(output.innerHTML);
-              });
-          </script>
-      </body>
-      </html>
-  `;
-}
-
-// private async prepareConversation(reset?: boolean): Promise<boolean> {
-// 	this.sessionToken = await this.context.globalState.get("chatgpt-session-token") as string;
-
-// 	if (this.sessionToken == null) {
-// 		await vscode.window
-// 			.showInputBox({
-// 				title: "OpenAPI ChatpGPT session token",
-// 				prompt: "Please enter your OpenAPI session token (__Secure-next-auth.session-token). See Readme for more details on how to get the session token",
-// 				ignoreFocusOut: true,
-// 				placeHolder: "Enter the JWT Token starting with ey***"
-// 			})
-// 			.then((value) => {
-// 				reset = true;
-// 				this.sessionToken = value!;
-// 				this.context.globalState.update("chatgpt-session-token", this.sessionToken);
-// 			});
-// 	}
-
-// 	if (reset || this.chatGptApi == null || this.chatGptConversation == null) {
-// 		try {
-// 			this.chatGptApi = new ChatGPTAPI({ sessionToken: this.sessionToken });
-// 			this.chatGptConversation = this.chatGptApi.getConversation();
-// 		} catch (error: any) {
-// 			vscode.window.showErrorMessage("Failed to instantiate the ChatGPT API. Try ChatGPT: Clear session", error?.message);
-// 			this.sendMessage({ type: 'addError' });
-// 			return false;
-// 		}
-// 	}
-
-// 	return true;
-// }
 
 function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
   const scriptUri = webview.asWebviewUri(
@@ -440,10 +312,10 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 								</svg>
 								<h2 class="text-lg font-normal">Features</h2>
 								<ul class="flex flex-col gap-3.5">
-								  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Become a power user of GPT models</li>	
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Improve your code, add tests & find bugs</li>
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Syntax highlighting with auto language detection</li>
-                  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Optimized for dialogue</li>
+								  <li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Become a power user of GPT models</li>	
+									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Improve your code, add tests & find bugs</li>
+									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Syntax highlighting with auto language detection</li>
+                  <li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Optimized for dialogue</li>
 								</ul>
 							</div>
 							<div class="flex flex-col gap-3.5 flex-1">
@@ -455,9 +327,8 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 								</svg>
 								<h2 class="text-lg font-normal">Limitations</h2>
 								<ul class="flex flex-col gap-3.5">
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">May occasionally take long time to respond/fail</li>
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">May throw HTTP 429, if you make too many requests</li>
-                  <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">May give a partial response if number of tokens exceed max_tokens</li>
+									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">May occasionally take long time to respond/fail</li>
+									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">May throw HTTP 429, if you make too many requests; or a partial response if you exceed max_tokens</li>
 								</ul>
 							</div>
 						</div>
@@ -487,7 +358,7 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 						</button>
 					</div>
 
-					<div class="p-4 flex items-center pt-2">
+					<div class="p-2 flex items-center pt-2">
 						<div class="flex-1 textarea-wrapper">
 						<textarea
               type="text"
@@ -504,8 +375,10 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 						</button>
 					</div>
 				</div>
-
 				<script src="${scriptUri}"></script>
+        <script>
+          hljs.initHighlightingOnLoad();
+        </script>
 			</body>
 			</html>`;
 }

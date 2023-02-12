@@ -5,7 +5,11 @@ import log from "./logger/log";
 import { fileExists, isHttpAddress } from "./promptimporter/promptutils";
 import { FunctionWrapper } from "./promptimporter/promptfunctions";
 import { Variable } from "./promptimporter/promptvariables";
-import { Command, CommandRunnerContext } from "./promptimporter/promptcommands";
+import {
+  Command,
+  CommandRunnerContext,
+  DEFAULT_COMMAND_HANDLER,
+} from "./promptimporter/promptcommands";
 
 export function importPrompts(
   promptFiles: string,
@@ -43,10 +47,33 @@ export function importPrompts(
   function processFileContents(userDefinitions: any) {
     if (userDefinitions?.commands) {
       userDefinitions.commands.forEach(
-        (command: { name: any; template: any; handler: any }) => {
-          commandRunnerContext.addCommand(
-            new Command(command.name, command.template, command.handler)
+        (command: {
+          name: any;
+          template: any;
+          handler: any;
+          description: any;
+          requestparams: any;
+        }) => {
+          let addc = new Command(
+            command.name,
+            command.template,
+            command.handler,
+            command.description,
           );
+          if (command.description as string) {
+            addc.description = command.description;
+          } else {
+            addc.description = command.name;
+          }
+          if (command.handler) {
+            addc.handler = command.handler;
+          } else {
+            addc.handler = DEFAULT_COMMAND_HANDLER;
+          }
+          if (command.requestparams as { [key: string]: any; }) {
+            addc.requestparams = command.requestparams;
+          } 
+          commandRunnerContext.addCommand(addc);
         }
       );
     }

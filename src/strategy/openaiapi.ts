@@ -63,6 +63,30 @@ export function getDefaultCompletionCommand(prompt?: string): CompletionRequest 
   return crequest;
 }
 
+export function checkAndPopulateCompletionParams(prompt: string, inputParams?: { [key: string]: any }): CompletionRequest {
+  let completionRequest: CompletionRequest = {
+    model: inputParams?.model as string || "text-davinci-003",
+    prompt: prompt,
+    suffix: inputParams?.suffix || undefined,
+    maxTokens: inputParams?.maxTokens as number || 1024,
+    temperature: inputParams?.temperature as number || 0,
+    topP: inputParams?.topP as number || undefined,
+    n: inputParams?.n as number || undefined,
+    stream: false,
+    logprobs: inputParams?.logprobs as number || undefined,
+    echo: inputParams?.echo as boolean || undefined,
+    stop: inputParams?.stop || undefined,
+    presencePenalty: inputParams?.presencePenalty as number || 0.0,
+    frequencyPenalty: inputParams?.frequencyPenalty as number || 0.5,
+    bestOf: inputParams?.bestOf as number || 1,
+    logitBias: inputParams?.logitBias || undefined,
+    user: inputParams?.user as string || undefined,
+  };
+
+  return completionRequest;
+}
+
+
 export function getDefaultEditCommand(prompt?: string): EditRequest {
   var erequest = {
     model: "code-davinci-edit-001",
@@ -72,4 +96,17 @@ export function getDefaultEditCommand(prompt?: string): EditRequest {
   };
 
   return erequest;
+}
+
+export function checkAndPopulateEditParams(prompt: string, inputParams?: { [key: string]: any }): EditRequest {
+  let editRequest: EditRequest = {
+    model: inputParams?.model as string || "code-davinci-edit-001",
+    input: prompt,
+    instruction: inputParams?.instruction as string || "Refactor this function",
+    n: inputParams?.n as number || undefined,
+    temperature: inputParams?.temperature as number || 0,
+    topP: inputParams?.topP as number || undefined,
+  };
+
+  return editRequest;
 }

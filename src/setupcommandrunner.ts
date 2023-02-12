@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
+import { preDefinedFunctions } from "./promptimporter/promptfunctions";
+
 import {
   getActiveDocument,
   getBaseFolder,
@@ -10,19 +12,24 @@ import {
 import { getFileNameAndExtension } from "./promptimporter/promptutils";
 
 import { Variable } from "./promptimporter/promptvariables";
-import {
-  getCommandRunnerContext,
-  Command,
-  CommandRunnerContext,
-} from "./promptimporter/promptcommands";
+import { CommandRunnerContext } from "./promptimporter/promptcommands";
 
 export function setupCommandRunnerContext(
   context: vscode.ExtensionContext
 ): CommandRunnerContext {
-  let commandRunnerContext = getCommandRunnerContext();
+  let commandRunnerContext = new CommandRunnerContext();
+  initPreDefinedFunctions(commandRunnerContext);
   initDocumentContext(commandRunnerContext);
   initEvents(commandRunnerContext);
   return commandRunnerContext;
+}
+
+function initPreDefinedFunctions(commandRunnerContext: CommandRunnerContext) {
+  if (preDefinedFunctions) {
+    for (const fn of preDefinedFunctions) {
+      commandRunnerContext.setFunction(fn);
+    }
+  }
 }
 
 function initDocumentContext(commandRunnerContext: CommandRunnerContext) {

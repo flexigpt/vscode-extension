@@ -14,10 +14,18 @@ module.exports = {
         },
         {
             name: "Go: Generate unit test",
-            template: `Create unit test in {user.unitTestFramework} framework for following function. 
-            Cover a empty values case, a max values case, a min values case.
-            code:
-            {system.selection}`,
+            template: `
+            Go language\n
+            Generate one data point covering zero value and error expectation,
+            one data point covering MAX value,
+            one data point covering MIN value,
+            one data point covering non-zero value, string max 32 bytes, for calling a function.\n
+            Use the generated data to write table driven tests using {user.unitTestFramework} go framework,
+            that have all return values present in expected results. \n
+            code:\n
+            {system.selection}\n
+            func Test`,
+
             handler: {
                 func: 'writeFile',
                 args: {
@@ -25,6 +33,10 @@ module.exports = {
                 }
             },
             description: "Generate unit tests for the selected code",
+            requestparams: {
+                model: "code-davinci-002",
+                stop: ["##", "func Test", "package main", "func main"],
+            },
         },
     ],
     functions: [

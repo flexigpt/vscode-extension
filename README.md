@@ -133,7 +133,7 @@ Name
 
 - handler: Optional
 
-  - handler is use to handle a response. By default replace function is used. handle function can be one of [Predefined System Function](#predefined-system-function) or an a User defined function.
+  - handler is used to handle a response. By default, replace function is used. Handle function can be one of [Predefined System Function](#predefined-system-function) or a User defined function.
   - You can set handler in following ways:
 
     - Just function name. function run with default values
