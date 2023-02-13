@@ -7,22 +7,42 @@ FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT 
 ## Features
 
 - Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
-- Customize the timeout for OpenAI requests
-- User-defined prompt configuration files
-- Keyboard shortcuts for quick access
+  - Currently supported: OpenAI completion APIs, with GPT2/3 models
+  - Keyboard shortcuts for quick access
+  - Chat activity bar for request/response interaction
+- Use pre-defined prompts in configuration files
+  - Supports request parameter modifications for GPT APIs
+  - Prompts can be enriched using predefined functions or custom functions
+  - In built generic prompts and predefined functions for ease of use
 
-## Requirements
-
-- Visual Studio Code v1.74.0 or later
-- Node.js v19.0.0 or later
+- Detailed TODO:
+  - Prompt files:
+    - Enable support for post-processing response via handlers in prompts.
+    - Add support for Pre processing the prompt before sending the API.
+  - UI:
+    - Response box needs to handle multiple code languages better.
+    - Add box for inspecting full request/response easily.
+  - Configuration:
+    - Support adding more/large number of prompts in the extension itself and enabling/disabling them for usage via configuration.
+  - Provide enriched data handling functions. E.g:
+    - Collect definitions, strip them and pass on, etc.
+    - Diff collection from a git branch for review
+  - Additional features:
+    - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
+    - Support ChatGPT as a backend with conversations API.
+    - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/), 
 
 ## Installation
 
-1. Install Visual Studio Code 1.74.0 or later
-2. Launch Visual Studio Code
-3. From the command palette `Ctrl`-`Shift`-`P` (Windows, Linux) or `Cmd`-`Shift`-`P` (macOS), run `> Extensions: Install Extension`.
-4. Choose the extension `FlexiGPT` by `ppipada`.
-5. Restart Visual Studio Code after the installation
+- Requirements
+  - Visual Studio Code v1.74.0 or later
+  - Node.js v19.0.0 or later
+- Steps:
+  1. Install Visual Studio Code 1.74.0 or later
+  2. Launch Visual Studio Code
+  3. From the command palette `Ctrl`-`Shift`-`P` (Windows, Linux) or `Cmd`-`Shift`-`P` (macOS), run `> Extensions: Install Extension`.
+  4. Choose the extension `FlexiGPT` by `ppipada`.
+  5. Restart Visual Studio Code after the installation
 
 ## Configuration
 
