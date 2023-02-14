@@ -14,23 +14,27 @@ FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT 
   - Supports request parameter modifications for GPT APIs
   - Prompts can be enriched using predefined functions or custom functions
   - In built generic prompts and predefined functions for ease of use
+  - Supports post-processing response via handlers in prompts.
 
 - Detailed TODO:
-  - Prompt files:
-    - Enable support for post-processing response via handlers in prompts.
-    - Add support for Pre processing the prompt before sending the API.
-  - UI:
-    - Response box needs to handle multiple code languages better.
-    - Add box for inspecting full request/response easily.
   - Configuration:
     - Support adding more/large number of prompts in the extension itself and enabling/disabling them for usage via configuration.
+    - remove node engine requirement
+    - add vscode insider option
+  - Prompt files:
+    - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
     - Collect definitions, strip them and pass on, etc.
     - Diff collection from a git branch for review
+  - UI:
+    - Response box needs to handle multiple code languages better.
+    - Add box for inspecting full request/response easily.
+    - Remove the blinking cursor after response is recieved
+    - See if prompts can be loaded dynamically in vscode rightclick options
   - Additional features:
     - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
     - Support ChatGPT as a backend with conversations API.
-    - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/), 
+    - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/)
 
 ## Installation
 

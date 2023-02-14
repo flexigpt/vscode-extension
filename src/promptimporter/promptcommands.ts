@@ -1,11 +1,8 @@
 import { getValueWithKey } from "./promptutils";
 import { systemVariableNames } from "../vscodeutils/predefinedvariables";
-// import log from "../logger/log";
+import log from "../logger/log";
 
-import {
-  FunctionWrapper,
-  FunctionContext,
-} from "./promptfunctions";
+import { FunctionWrapper, FunctionContext } from "./promptfunctions";
 import { Variable, VariableContext } from "./promptvariables";
 
 export const DEFAULT_ASK_ANYTHING: string = "Ask";
@@ -17,7 +14,7 @@ export class Command {
     public questionTemplate: string,
     public handler: any,
     public description: string,
-    public requestparams?: { [key: string]: any; },
+    public requestparams?: { [key: string]: any }
   ) {}
 
   prepare(systemVariables: any, userVariables: any) {
@@ -60,11 +57,11 @@ export class CommandRunnerContext {
     );
   }
 
-  runHandler(handler: string | { func: string; args: any } | undefined): void {
-    const system = this.systemVariableContext.getVariables();
-    const functions = this.functionContext.getFunctions();
-    const user = this.userVariableContext.getVariables(system, functions);
-    const variables = { system, user };
+  runHandler(handler: string | { func: string; args: any } | undefined): any {
+    let system = this.systemVariableContext.getVariables();
+    let functions = this.functionContext.getFunctions();
+    let user = this.userVariableContext.getVariables(system, functions);
+    let variables = { system, user };
 
     let functionName: string;
     let args: { [key: string]: any } = {};
@@ -80,7 +77,7 @@ export class CommandRunnerContext {
       }
     }
     const fn = this.functionContext.get(functionName) as FunctionWrapper;
-    fn.run({
+    return fn.run({
       ...args,
       ...variables,
     });
@@ -123,7 +120,15 @@ export class CommandRunnerContext {
     return returnitem;
   }
 
-  prepareAndSetCommand(text: string, suffix?: string): {question: string, command: Command} {
+  processAnswer(command: Command, answer: string): any {
+    this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
+    return this.runHandler(command.handler);
+  }
+
+  prepareAndSetCommand(
+    text: string,
+    suffix?: string
+  ): { question: string; command: Command } {
     let command = this.findCommand(text);
     const system = this.systemVariableContext.getVariables();
     const functions = this.functionContext.getFunctions();
@@ -136,6 +141,6 @@ export class CommandRunnerContext {
     this.setSystemVariable(
       new Variable(systemVariableNames.question, question)
     );
-    return {question, command};
+    return { question, command };
   }
 }

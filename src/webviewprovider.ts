@@ -218,8 +218,11 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         response = (await this._apiProvider?.completion(crequest)) as
           | string
           | "";
+        // response = "This is a unittest";
+        log.info(`Got response: ${response}`);
+        this._commandRunnerContext?.processAnswer(command, response);
       } else {
-        throw Error("Could not get Completion request");
+        throw Error("Could not process request");
       }
     } catch (e) {
       log.error(e);
@@ -254,8 +257,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
     // Saves the response
     this._response = response;
-    log.info(`Got response: ${response}`);
-
     await this.sendMessage({ type: "addResponse", value: response });
   }
 }

@@ -4,20 +4,13 @@ import { writeFile as vsCodeWriteFile } from "./vscodefunctions";
 import { replace as vsCodeReplace } from "./vscodefunctions";
 import { append as vsCodeAppend } from "./vscodefunctions";
 
-export function writeFile(
-  filePath: string,
-  content: string,
-  system: { answer: string }
-): void {
-  content = content || system.answer;
+export function writeFile({ filePath, content, system: { answer } }: { filePath: string, content: string, system: { answer: string } }): void {
+  content = content || answer + "\n";
   vsCodeWriteFile(filePath, content);
 }
 
-export function replace(
-  textToReplace: string,
-  system: { answer: string }
-): void {
-  textToReplace = textToReplace || system.answer;
+export function replace({ textToReplace, system: { answer } }: { textToReplace: string, system: { answer: string } }): void {
+ textToReplace = textToReplace || answer + "\n";
   try {
     vsCodeReplace(textToReplace);
   } catch (error) {
@@ -25,12 +18,8 @@ export function replace(
   }
 }
 
-export function append(
-  textToAppend: string,
-  position = "end",
-  system: { answer: string }
-): void {
-  textToAppend = textToAppend || system.answer;
+export function append({ textToAppend, position = "end", system: { answer } }: { textToAppend: string, position: string, system: { answer: string } }): void {
+  textToAppend = textToAppend || answer + "\n";
   try {
     vsCodeAppend(textToAppend, position);
   } catch (error) {

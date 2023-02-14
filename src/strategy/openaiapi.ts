@@ -90,7 +90,7 @@ export default class OpenAIAPIStrategy implements Strategy {
       model: (inputParams?.model as string) || this.defaultCompletionModel,
       prompt: prompt,
       suffix: inputParams?.suffix || undefined,
-      maxTokens: (inputParams?.maxTokens as number) || 1024,
+      maxTokens: (inputParams?.maxTokens as number) || 2048,
       temperature: (inputParams?.temperature as number) || 0,
       topP: (inputParams?.topP as number) || undefined,
       n: (inputParams?.n as number) || undefined,

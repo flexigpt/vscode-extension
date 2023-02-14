@@ -17,7 +17,7 @@ module.exports = {
             handler: {
                 func: 'writeFile',
                 args: {
-                    filePath: 'user.testFileName'
+                    filePath: 'user.testFileName',
                 }
             },
             description: "Generate unit tests for the selected code",
