@@ -113,6 +113,12 @@
           "default": "",
           "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
           "order": 5
+        },
+        "flexigpt.inBuiltPrompts": {
+          "type": "string",
+          "default": "",
+          "description": "prompt file names of inbuilt prompts to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled.",
+          "order": 6
         }
       }
     }

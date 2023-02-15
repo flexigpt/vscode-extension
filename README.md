@@ -4,21 +4,24 @@ Interact with GPT AI models (GPT3, ChatGPT, etc) as a power user.
 
 FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT AI models (GPT3, ChatGPT, etc) as a power user. It provides an easy-to-use interface for generating and using prompts with these models, as well as customizing the configuration to your needs.
 
+Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ppipada.flexigpt)
+
 ## Features
 
 - Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
+
   - Currently supported: OpenAI completion APIs, with GPT2/3 models
   - Keyboard shortcuts for quick access
   - Chat activity bar for request/response interaction
+
 - Use pre-defined prompts in configuration files
+
   - Supports request parameter modifications for GPT APIs
   - Prompts can be enriched using predefined functions or custom functions
   - In built generic prompts and predefined functions for ease of use
   - Supports post-processing response via responseHandlers in prompts.
 
 - Detailed TODO:
-  - Configuration:
-    - Support adding more/large number of prompts in the extension itself and enabling/disabling them for usage via configuration.
   - Prompt files:
     - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
@@ -48,7 +51,7 @@ FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT 
 
 ## Configuration
 
-FlexiGPT requires an OpenAI API key to function. You can obtain one from https://beta.openai.com/account/api-keys
+FlexiGPT requires an OpenAI API key to function. You can obtain one from your openAI account settings [here](https://beta.openai.com/account/api-keys).
 
 To configure FlexiGPT, open Visual Studio Code's settings (File > Preferences > Settings or by using the `Ctrl`/`Cmd` + `,` keyboard shortcut) and search for `flexigpt`.
 
@@ -65,12 +68,23 @@ Options:
   - FlexiGPT basic prompts will use the default models set.
   - Default: code-davinci-edit-001.
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
+- flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js" and "gobasic.js".
+- Sample Full configuration
+
+  ```text
+  "flexigpt.openai.apiKey": "sk-mkey",
+  "flexigpt.openai.timeout": "120",
+  "flexigpt.openai.defaultCompletionModel": "text-davinci-003",
+  "flexigpt.openai.defaultEditModel": "code-davinci-edit-001",
+  "flexigpt.promptFiles": "/home/me/my_prompt_files/myprompts.js",
+  "flexigpt.inBuiltPrompts": "gobasic.js"
+  ```
 
 ## Usage
 
 - To ask GPT AI models (GPT3, ChatGPT, etc) anything you want, use the `FlexiGPT: Ask` command from the Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`) or by using the `Ctrl` + `Alt` + `G` keyboard shortcut.
 - This should open the FlexiGPT activity bar with an input text box.
-- On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/basicprompts.js) provided by FlexiGPT itself and any prompts defined in `flexigpt.promptFiles` as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode takes some time to load a dynamic list from file.)
+- On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode takes some time to load a dynamic list from file.)
 - If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
 - If you type a free floating question in the text box, the text itself will be used as prompt directly. Here too, you can use the predefined system variables to enhance your question. E.g: you can use `{system.selection}` to pass on the selected text in the editor (code or otherwise).
 - To view your prompt history, open the FlexiGPT activity bar.
@@ -79,8 +93,8 @@ Options:
 
 ### Samples
 
-- [FlexiGPT Basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/basicprompts.js)
-- [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/tree/main/sample_prompt_files)
+- [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
+- [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
 
 ### Here is a sample javascript (.js) prompt file
 
@@ -133,7 +147,6 @@ module.exports = {
         model: "code-davinci-002",
         stop: ["##", "func Test", "package main", "func main"],
       },
-
     },
   ],
   functions: [
@@ -159,11 +172,9 @@ module.exports = {
 
 ### Creating Command
 
-Name
-
 - name: Required
 
-  - Name of command can be whatever you want
+  - Name of command, can be whatever you want
 
 - template: Required
 
@@ -175,7 +186,6 @@ Name
   - This is an object of type `{ [key: string]: any }`.
   - Any params relevant to the GPT provider API can be overridden.
   - Valid params for OpenAI completion request can be found in this [API reference](https://platform.openai.com/docs/api-reference/completions).
-  
 - responseHandler: Optional
 
   - responseHandler is used to handle a response. By default, replace function is used. Handle function can be one of [Predefined System Function](#predefined-system-function) or a User defined function.
@@ -341,4 +351,4 @@ Contributions are welcome! Feel free to submit a pull request on GitHub.
 
 ## Support
 
-If you have any questions or problems, please open an issue on GitHub at https://github.com/ppiapda/vscode-flexigpt/issues.
+If you have any questions or problems, please open an issue on GitHub at the [issues](https://github.com/ppiapda/vscode-flexigpt/issues) page.

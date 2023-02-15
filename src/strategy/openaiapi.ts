@@ -1,4 +1,4 @@
-import { Configuration, CreateImageRequest, OpenAIApi } from "openai";
+import { Configuration, OpenAIApi } from "openai";
 import { CompletionRequest, EditRequest, Strategy } from "./strategy";
 import { unescapeChars } from "./regexmatcher";
 

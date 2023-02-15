@@ -263,10 +263,10 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
 function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
   const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "main.js")
+    vscode.Uri.joinPath(extensionUri, "media", "scripts", "main.js")
   );
   const stylesMainUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "main.css")
+    vscode.Uri.joinPath(extensionUri, "media", "scripts", "main.css")
   );
 
   const vendorHighlightCss = webview.asWebviewUri(

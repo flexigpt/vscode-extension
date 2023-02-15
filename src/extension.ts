@@ -55,6 +55,8 @@ function registerEvents(
     (event: vscode.ConfigurationChangeEvent) => {
       if (event.affectsConfiguration("flexigpt.promptFiles")) {
         provider.importAllFiles();
+      } else if (event.affectsConfiguration("flexigpt.inBuiltPrompts")) {
+        provider.importAllFiles();
       } else if (event.affectsConfiguration("flexigpt.openai.timeout")) {
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
