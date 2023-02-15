@@ -5,7 +5,7 @@ module.exports = {
             template: `Write godoc for following code.
             code:
             {system.selection}`,
-            handler: {
+            responseHandler: {
                 func: 'append',
                 args: {
                     position: 'user.start'
@@ -26,7 +26,7 @@ module.exports = {
             {system.selection}\n
             func Test`,
 
-            handler: {
+            responseHandler: {
                 func: 'writeFile',
                 args: {
                     filePath: 'user.testFileName'

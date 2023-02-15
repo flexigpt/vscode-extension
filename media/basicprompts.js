@@ -6,7 +6,6 @@ module.exports = {
             template: `Rectify and refactor given {system.language} code.
             code:
             {system.selection}`,
-            handler: 'replace',
             description: "Refactor the selected code",
         },
         {
@@ -14,12 +13,6 @@ module.exports = {
             template: `Create unit test for following function. 
             code:
             {system.selection}`,
-            handler: {
-                func: 'writeFile',
-                args: {
-                    filePath: 'user.testFileName',
-                }
-            },
             description: "Generate unit tests for the selected code",
         },
         {
@@ -27,12 +20,6 @@ module.exports = {
             template: `Complete following {system.language} function. Just give code
             code:
             {system.selection}`,
-            handler:{
-                func: 'append',
-                args: {
-                    position: 'end'
-                }
-            },
             description: "Complete the function",
         },
         {
@@ -43,17 +30,17 @@ module.exports = {
             description: "Explain the code",
         },
         {
-            name: "FlexiGPT: Generate Documentation",
+            name: "FlexiGPT: Add Documentation",
             template: `Write docstring for the following code.
             code:
             {system.selection}`,
-            handler: {
+            responseHandler: {
                 func: 'append',
                 args: {
                     position: 'user.start'
                 }
             },
-            description: "Generate documentation for the selected code",
+            description: "Generate documentation for the selected code and append",
         },
         {
             name: "FlexiGPT: Find problems",

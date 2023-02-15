@@ -8,7 +8,7 @@ import { Variable } from "./promptimporter/promptvariables";
 import {
   Command,
   CommandRunnerContext,
-  DEFAULT_COMMAND_HANDLER,
+  DEFAULT_RESPONSE_HANDLER,
 } from "./promptimporter/promptcommands";
 
 export function importPrompts(
@@ -50,14 +50,14 @@ export function importPrompts(
         (command: {
           name: any;
           template: any;
-          handler: any;
+          responseHandler: any;
           description: any;
           requestparams: any;
         }) => {
           let addc = new Command(
             command.name,
             command.template,
-            command.handler,
+            command.responseHandler,
             command.description,
           );
           if (command.description as string) {
@@ -65,10 +65,10 @@ export function importPrompts(
           } else {
             addc.description = command.name;
           }
-          if (command.handler) {
-            addc.handler = command.handler;
+          if (command.responseHandler) {
+            addc.responseHandler = command.responseHandler;
           } else {
-            addc.handler = DEFAULT_COMMAND_HANDLER;
+            addc.responseHandler = DEFAULT_RESPONSE_HANDLER;
           }
           if (command.requestparams as { [key: string]: any; }) {
             addc.requestparams = command.requestparams;

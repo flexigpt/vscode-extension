@@ -14,13 +14,11 @@ FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT 
   - Supports request parameter modifications for GPT APIs
   - Prompts can be enriched using predefined functions or custom functions
   - In built generic prompts and predefined functions for ease of use
-  - Supports post-processing response via handlers in prompts.
+  - Supports post-processing response via responseHandlers in prompts.
 
 - Detailed TODO:
   - Configuration:
     - Support adding more/large number of prompts in the extension itself and enabling/disabling them for usage via configuration.
-    - remove node engine requirement
-    - add vscode insider option
   - Prompt files:
     - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
@@ -109,7 +107,7 @@ module.exports = {
       template: `Create unit test in {user.unitTestFramework} framework for following function.
             code:
             {system.selection}`,
-      handler: {
+      responseHandler: {
         func: "writeFile",
         args: {
           filePath: "user.testFileName",
@@ -125,7 +123,7 @@ module.exports = {
       template: `Write godoc for following functions.
             code:
             {system.selection}`,
-      handler: {
+      responseHandler: {
         func: "append",
         args: {
           position: "start",
@@ -139,7 +137,7 @@ module.exports = {
     },
   ],
   functions: [
-    // you could also write your own handler
+    // you could also write your own responseHandler
     function myHandler({ system, user }) {
       console.table({ system });
       console.table({ user });
@@ -178,21 +176,21 @@ Name
   - Any params relevant to the GPT provider API can be overridden.
   - Valid params for OpenAI completion request can be found in this [API reference](https://platform.openai.com/docs/api-reference/completions).
   
-- handler: Optional
+- responseHandler: Optional
 
-  - handler is used to handle a response. By default, replace function is used. Handle function can be one of [Predefined System Function](#predefined-system-function) or a User defined function.
-  - You can set handler in following ways:
+  - responseHandler is used to handle a response. By default, replace function is used. Handle function can be one of [Predefined System Function](#predefined-system-function) or a User defined function.
+  - You can set responseHandler in following ways:
 
     - Just function name. function run with default values
 
     ```js
-    handler: "replace";
+    responseHandler: "replace";
     ```
 
     - With args function name to set function args
 
     ```js
-    handler: {
+    responseHandler: {
         func: 'replace',
         args: {
         textToReplace: 'user.answerModified'
@@ -236,7 +234,7 @@ Name
                 template: `Refactor following function.
                 function:
                 {system.selection}`
-                handler:'replace'
+                responseHandler:'replace'
             },
         ],
     ```
@@ -251,7 +249,7 @@ Name
                 template: `Refactor following function.
                 function:
                 {system.selection}`
-                handler:{
+                responseHandler:{
                     func: 'replace',
                     args: {
                         textToReplace: 'user.answerModified'
@@ -281,7 +279,7 @@ Name
                 template: `Write jsdoc for following function.
                 function:
                 {system.selection}`
-                handler:{
+                responseHandler:{
                     func: 'append',
                     args: {
                         position: 'start'
@@ -318,7 +316,7 @@ commands: [
         template: `Create unit test with {user.testingFramework} for following class.
         class:
         {system.selection}`,
-        handler: {
+        responseHandler: {
             func: 'writeFile',
             args: {
                 filePath: 'user.typeNameInResponse'/*usage for function arg*/

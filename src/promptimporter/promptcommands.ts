@@ -5,14 +5,14 @@ import log from "../logger/log";
 import { FunctionWrapper, FunctionContext } from "./promptfunctions";
 import { Variable, VariableContext } from "./promptvariables";
 
-export const DEFAULT_ASK_ANYTHING: string = "Ask";
-export const DEFAULT_COMMAND_HANDLER: string = "replace";
+export const DEFAULT_COMMAND: string = "Ask";
+export const DEFAULT_RESPONSE_HANDLER: string = "noop";
 
 export class Command {
   constructor(
     public name: string,
     public questionTemplate: string,
-    public handler: any,
+    public responseHandler: any,
     public description: string,
     public requestparams?: { [key: string]: any }
   ) {}
@@ -49,7 +49,7 @@ export class CommandRunnerContext {
     this.commands = {};
     this.addCommand(
       new Command(
-        DEFAULT_ASK_ANYTHING,
+        DEFAULT_COMMAND,
         "Explain",
         "explain",
         "any thing to FlexiGPT"
@@ -57,7 +57,7 @@ export class CommandRunnerContext {
     );
   }
 
-  runHandler(handler: string | { func: string; args: any } | undefined): any {
+  runResponseHandler(responseHandler: string | { func: string; args: any } | undefined): any {
     let system = this.systemVariableContext.getVariables();
     let functions = this.functionContext.getFunctions();
     let user = this.userVariableContext.getVariables(system, functions);
@@ -65,13 +65,13 @@ export class CommandRunnerContext {
 
     let functionName: string;
     let args: { [key: string]: any } = {};
-    handler = handler ?? DEFAULT_COMMAND_HANDLER;
-    if (typeof handler === "string") {
-      functionName = handler;
+    responseHandler = responseHandler ?? DEFAULT_RESPONSE_HANDLER;
+    if (typeof responseHandler === "string") {
+      functionName = responseHandler;
     } else {
-      functionName = handler.func;
-      if (handler.args) {
-        for (const [key, value] of Object.entries(handler.args)) {
+      functionName = responseHandler.func;
+      if (responseHandler.args) {
+        for (const [key, value] of Object.entries(responseHandler.args)) {
           args[key] = getValueWithKey(value as string, variables);
         }
       }
@@ -106,10 +106,10 @@ export class CommandRunnerContext {
   findCommand(text: string): Command {
     let commands = this.getCommands();
     let returnitem = new Command(
-      DEFAULT_ASK_ANYTHING,
+      DEFAULT_COMMAND,
       text,
       "explain",
-      "any thing to FlexiGPT"
+      "Get any explanation from FlexiGPT"
     );
     for (let item of commands) {
       if (item.name === text) {
@@ -122,7 +122,7 @@ export class CommandRunnerContext {
 
   processAnswer(command: Command, answer: string): any {
     this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
-    return this.runHandler(command.handler);
+    return this.runResponseHandler(command.responseHandler);
   }
 
   prepareAndSetCommand(
