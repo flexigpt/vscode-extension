@@ -77,7 +77,7 @@ export class CommandRunnerContext {
       }
     }
     const fn = this.functionContext.get(functionName) as FunctionWrapper;
-    return fn.run({
+    return fn?.run({
       ...args,
       ...variables,
     });
