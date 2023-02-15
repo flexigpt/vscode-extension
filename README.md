@@ -31,7 +31,6 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
     - Response box needs to handle multiple code languages better.
     - Add box for inspecting full request/response easily.
     - Remove the blinking cursor after response is recieved
-    - See if prompts can be loaded dynamically in vscode rightclick options
   - Additional features:
     - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
     - Support ChatGPT as a backend with conversations API.
@@ -41,7 +40,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 - Requirements
   - Visual Studio Code v1.74.0 or later
-  - Node.js v19.0.0 or later
+  
 - Steps:
   1. Install Visual Studio Code 1.74.0 or later
   2. Launch Visual Studio Code

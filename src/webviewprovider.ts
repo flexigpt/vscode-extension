@@ -144,6 +144,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
   public async setFocus() {
     await vscode.commands.executeCommand("flexigpt.chatView.focus");
+    // log.info("in set focus");
     await this.sendMessage({ type: "focus", value: "" });
     return;
   }
@@ -156,13 +157,15 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public async sendMessage(message: any, ignoreMessageIfNullWebView?: boolean) {
     // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
     if (this._view === null) {
+      // log.info(" in chatview focus");
       await vscode.commands.executeCommand("flexigpt.chatView.focus");
     } else if (!ignoreMessageIfNullWebView) {
       this.leftOverMessage = message;
     } else {
+      // log.info(" in show view");
       this._view?.show?.(true);
     }
-
+    // log.info(" posting message focus");
     await this._view?.webview.postMessage(message);
   }
 
