@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
 
+import { v4 as uuidv4 } from 'uuid';
+
 import Provider from "./strategy/strategy";
 import log from "./logger/log";
 
@@ -110,6 +112,16 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           this.search(data.value);
           break;
         }
+        case 'editCode':
+					vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(data.value));
+					break;
+				case 'openNew':
+					const document = await vscode.workspace.openTextDocument({
+						content: data.value,
+						language: data.language
+					});
+					vscode.window.showTextDocument(document);
+					break;
         case "getCommandListForWebView":
           this.sendCommandListMessage();
           break;
@@ -189,7 +201,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     return searchPrompt;
   }
 
-  async sendAPIRequest(inPrompt: string, suffix?: string): Promise<string> {
+ 
+  async sendAPIRequest(inPrompt: string, uuid:string, suffix?: string): Promise<string> {
     let response: string;
     try {
       let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
@@ -215,14 +228,16 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         await this.sendMessage({
           type: "addQuestion",
           value: inPrompt,
+          id: uuid,
           fullapi: crequestStr,
         });
 
         response = (await this._apiProvider?.completion(crequest)) as
           | string
           | "";
-        // response = "This is a unittest";
+        // response = "This is a unittest \n ```def myfunc(): print('hello there')```";
         log.info(`Got response: ${response}`);
+
         this._commandRunnerContext?.processAnswer(command, response);
       } else {
         throw Error("Could not process request");
@@ -252,15 +267,16 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       this._view?.show?.(true);
     }
 
+    const uuid = uuidv4();
     let response = "";
     if (this._apiProvider) {
-      response = await this.sendAPIRequest(prompt);
+      response = await this.sendAPIRequest(prompt, uuid);
     } else {
       response = "[ERROR] Please enter an API key in the extension settings";
     }
     // Saves the response
     this._response = response;
-    await this.sendMessage({ type: "addResponse", value: response });
+    await this.sendMessage({ type: "addResponse", value: response, id: uuid, done: true });
   }
 }
 
@@ -388,7 +404,7 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 				</div>
 				<script src="${scriptUri}"></script>
         <script>
-          hljs.initHighlightingOnLoad();
+          hljs.highlightAll();
         </script>
 			</body>
 			</html>`;

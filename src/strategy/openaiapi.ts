@@ -40,8 +40,8 @@ export default class OpenAIAPIStrategy implements Strategy {
       logit_bias: input.logitBias,
       user: input.user,
     });
-    // return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
-    return data.choices[0].text ? data.choices[0].text : null;
+    return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
+    // return data.choices[0].text ? data.choices[0].text : null;
   }
 
   async edit(input: EditRequest) {

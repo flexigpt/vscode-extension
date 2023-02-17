@@ -70,6 +70,10 @@
 
     switch (message.type) {
       case "addQuestion":
+        let messageQuestion = message.value;
+        if (message.code && typeof message.value === "string") {
+          messageQuestion = marked.parse(message.value + "\r\n\n\n```\n" + message.code + "\n```");
+        }
         list.innerHTML += `<div class="p-2 self-end mt-1 question-element-gnc relative input-background">
                         <h7 class="mb-1 flex">${userSvg}You</h7>
                         <no-export class="mb-1 flex items-center">
@@ -79,10 +83,11 @@
                                 <button title="Cancel" class="cancel-element-gnc p-2 pr-2 flex items-center">${cancelSvg}Cancel</button>
                             </div>
                         </no-export>
-                        <div class="overflow-y-auto">${message.value}</div>
+                        <div class="overflow-y-auto">${messageQuestion}</div>
                     </div>`;
 
         document.getElementById("in-progress")?.classList?.remove("hidden");
+        document.getElementById("chat-button-wrapper")?.classList?.add("hidden");
         document.getElementById("introduction")?.classList?.add("hidden");
         list.lastChild?.scrollIntoView({
           behavior: "smooth",
@@ -97,12 +102,14 @@
         if (queuedQuestions === 0) {
           document.getElementById("in-progress")?.classList?.add("hidden");
         }
+        document.getElementById("chat-button-wrapper")?.classList?.remove("hidden");
         let existingMessage = message.id && document.getElementById(message.id);
         const updatedValue =
           message.value.split("```").length % 2 === 1
             ? message.value
             : message.value + "\n\n```\n\n";
-        const markedResponse = marked.parse(updatedValue); //new DOMParser().parseFromString(marked.parse(updatedValue), "text/html");
+        const markedResponse = marked.parse(updatedValue);
+        // const markedResponse = new DOMParser().parseFromString(marked.parse(updatedValue), "text/html");
 
         if (existingMessage) {
           existingMessage.innerHTML = markedResponse;
@@ -110,7 +117,7 @@
           list.innerHTML += `<div class="p-2 self-end mt-1 pb-4 answer-element-gnc">
                         <h7 class="mb-1 flex">${aiSvg}FlexiGPT</h7>
                         <div class="result-streaming" id="${message.id}">${markedResponse}</div>
-                    </div>`;
+                        </div>`;
 
           list.lastChild?.scrollIntoView({
             behavior: "smooth",

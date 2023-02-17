@@ -9,10 +9,12 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 ## Features
 
 - Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
-
   - Currently supported: OpenAI completion APIs, with GPT2/3 models
-  - Keyboard shortcuts for quick access
-  - Chat activity bar for request/response interaction
+
+- UI and access
+  - Keyboard shortcuts, editor/command context (right click in editor), command palette controls for quick access
+  - Chat activity bar interface for request/response interaction
+  - Export conversations to a file
 
 - Use pre-defined prompts in configuration files
 
@@ -30,7 +32,6 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
   - UI:
     - Response box needs to handle multiple code languages better.
     - Add box for inspecting full request/response easily.
-    - Remove the blinking cursor after response is recieved
   - Additional features:
     - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
     - Support ChatGPT as a backend with conversations API.

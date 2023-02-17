@@ -141,6 +141,7 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
+    "@types/uuid": "^9.0.0",
     "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
@@ -154,5 +155,8 @@
     "rimraf": "^4.1.2",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
   }
 }
