@@ -2,6 +2,17 @@ import { Configuration, OpenAIApi } from "openai";
 import { CompletionRequest, EditRequest, Strategy } from "./strategy";
 import { unescapeChars } from "./regexmatcher";
 
+let tempCodeString = `def get_openapi_completion_for_integration_sequence_test(intxt, value_type):
+response = openai.Completion.create(
+    model="text-davinci-003",
+    prompt=prompts.generate_prompt_integration_sequence_test(intxt, value_type),
+    temperature=0,
+    max_tokens=2560,
+    best_of=1,
+    stop=["##", "}}}}}}", "Generate workflow", "func Test"])
+
+return response`;
+
 export default class OpenAIAPIStrategy implements Strategy {
   #api: OpenAIApi;
   #timeout: BigInt;
@@ -42,6 +53,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     });
     return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
     // return data.choices[0].text ? data.choices[0].text : null;
+    // return tempCodeString;
   }
 
   async edit(input: EditRequest) {
