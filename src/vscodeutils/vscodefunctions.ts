@@ -35,6 +35,26 @@ export function getActiveDocument(): vscode.TextDocument | undefined {
   return vscode.window.activeTextEditor?.document;
 }
 
+export function getActiveDocumentLanguageID(): string {
+  return getActiveDocument()?.languageId as string;
+}
+
+export function getActiveDocumentFilePath(): string {
+  return getActiveDocument()?.fileName as string;
+}
+
+export function getActiveDocumentExtension(): string {
+  let fname = getActiveDocument()?.fileName as string;
+  const pathInfo = path.parse(fname);
+  return pathInfo.ext;
+}
+
+export function getActiveDocumentFileFolder(): string {
+  let fname = getActiveDocument()?.fileName as string;
+  const pathInfo = path.parse(fname);
+  return pathInfo.dir;
+}
+
 export function getActiveFileName(): string | undefined {
   const currentlyOpenTabfilePath: string = getActiveDocument()
     ?.fileName as string;

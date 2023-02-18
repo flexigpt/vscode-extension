@@ -42,4 +42,12 @@ export class VariableContext {
     });
     return result;
   }
+
+  getVariable(key: string, params?: any, functions?: any): any {
+    let ret = this.variables[key];
+    if (ret) {
+      return ret.get(params, functions);
+    }
+    return undefined;
+  }
 }

@@ -57,7 +57,9 @@ export class CommandRunnerContext {
     );
   }
 
-  runResponseHandler(responseHandler: string | { func: string; args: any } | undefined): any {
+  runResponseHandler(
+    responseHandler: string | { func: string; args: any } | undefined
+  ): any {
     let system = this.systemVariableContext.getVariables();
     let functions = this.functionContext.getFunctions();
     let user = this.userVariableContext.getVariables(system, functions);
@@ -120,8 +122,23 @@ export class CommandRunnerContext {
     return returnitem;
   }
 
-  processAnswer(command: Command, answer: string): any {
-    this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
+  fixhangingString(inStr: string, seperator: string): string {
+    let updatedValue = inStr;
+    if (inStr.includes(seperator)) {
+      updatedValue = inStr.split(seperator).length % 2 === 1 ? inStr : inStr + `\n${seperator}\n`;
+    }
+    return updatedValue;
+  }
+
+  processAnswer(command: Command, answer: string, docLanguage: string): any {
+    let updatedValue = this.fixhangingString(answer, '"""');
+    updatedValue = this.fixhangingString(updatedValue, '```');
+    if (!updatedValue.includes('```')) {
+      updatedValue = "\n```" + docLanguage + "\n" + updatedValue + "\n```\n";
+    }
+    this.setSystemVariable(
+      new Variable(systemVariableNames.answer, updatedValue)
+    );
     return this.runResponseHandler(command.responseHandler);
   }
 

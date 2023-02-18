@@ -30,17 +30,11 @@ module.exports = {
             description: "Explain the code",
         },
         {
-            name: "FlexiGPT: Add Documentation",
+            name: "FlexiGPT: Generate Documentation",
             template: `Write docstring for the following code.
             code:
             {system.selection}`,
-            responseHandler: {
-                func: 'append',
-                args: {
-                    position: 'user.start'
-                }
-            },
-            description: "Generate documentation for the selected code and append",
+            description: "Generate documentation for the selected code",
         },
         {
             name: "FlexiGPT: Find problems",

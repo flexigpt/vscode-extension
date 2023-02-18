@@ -4,12 +4,14 @@ import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import { preDefinedFunctions } from "./promptimporter/promptfunctions";
 
 import {
-  getActiveDocument,
   getBaseFolder,
   getSelectedText,
+  getActiveDocumentExtension,
+  getActiveDocumentFileFolder,
+  getActiveDocumentFilePath,
+  getActiveDocumentLanguageID,
+  getActiveFileName,
 } from "./vscodeutils/vscodefunctions";
-
-import { getFileNameAndExtension } from "./promptimporter/promptutils";
 
 import { Variable } from "./promptimporter/promptvariables";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
@@ -34,32 +36,29 @@ function initPreDefinedFunctions(commandRunnerContext: CommandRunnerContext) {
 
 function initDocumentContext(commandRunnerContext: CommandRunnerContext) {
   commandRunnerContext.setSystemVariable(
-    new Variable(systemVariableNames.baseFolder, getBaseFolder())
+    new Variable(systemVariableNames.baseFolder, getBaseFolder)
   );
   commandRunnerContext.setSystemVariable(
-    new Variable(systemVariableNames.selection, getSelectedText())
+    new Variable(systemVariableNames.selection, getSelectedText)
   );
-  const document = getActiveDocument();
-  if (document) {
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.language, document.languageId)
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.filePath, document.fileName)
-    );
-    const { extension, fileName, fileFolder } = getFileNameAndExtension(
-      document.fileName
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.fileName, fileName)
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.fileExtension, extension)
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.fileFolder, fileFolder)
-    );
-  }
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.language, getActiveDocumentLanguageID)
+  );
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.filePath, getActiveDocumentFilePath)
+  );
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.fileName, getActiveFileName)
+  );
+  commandRunnerContext.setSystemVariable(
+    new Variable(
+      systemVariableNames.fileExtension,
+      getActiveDocumentExtension
+    )
+  );
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.fileFolder, getActiveDocumentFileFolder)
+  );
 }
 
 function initEvents(commandRunnerContext: CommandRunnerContext) {
@@ -67,24 +66,24 @@ function initEvents(commandRunnerContext: CommandRunnerContext) {
     if (!e) {
       return;
     }
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.language, e.document.languageId)
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.filePath, e.document.fileName)
-    );
-    const { extension, fileName, fileFolder } = getFileNameAndExtension(
-      e.document.fileName
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.fileName, fileName)
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.fileExtension, extension)
-    );
-    commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.fileFolder, fileFolder)
-    );
+    // commandRunnerContext.setSystemVariable(
+    //   new Variable(systemVariableNames.language, e.document.languageId)
+    // );
+    // commandRunnerContext.setSystemVariable(
+    //   new Variable(systemVariableNames.filePath, e.document.fileName)
+    // );
+    // const { extension, fileName, fileFolder } = getFileNameAndExtension(
+    //   e.document.fileName
+    // );
+    // commandRunnerContext.setSystemVariable(
+    //   new Variable(systemVariableNames.fileName, fileName)
+    // );
+    // commandRunnerContext.setSystemVariable(
+    //   new Variable(systemVariableNames.fileExtension, extension)
+    // );
+    // commandRunnerContext.setSystemVariable(
+    //   new Variable(systemVariableNames.fileFolder, fileFolder)
+    // );
   });
 
   vscode.window.onDidChangeTextEditorSelection(async (e) => {

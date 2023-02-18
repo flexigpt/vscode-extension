@@ -26,16 +26,18 @@
   //   );
   // };
   marked.setOptions({
-    // renderer: new marked.Renderer(),
-    renderer: renderer,
+    renderer: new marked.Renderer(),
+    // renderer: renderer,
     highlight: function (code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        return hljs.highlight(lang, code).value;
-      } else {
-        return hljs.highlightAuto(code).value;
-      }
+      return hljs.highlightAuto(code).value;
+      // return `<pre><code class="hljs hljs-wrap language-${language}">${highlighted}</code></pre>`;
+      // if (lang && hljs.getLanguage(lang)) {
+      //   return hljs.highlight(lang, code).value;
+      // } else {
+      //   return hljs.highlightAuto(code).value;
+      // }
     },
-    langPrefix: "hljs language",
+    // langPrefix: "hljs language-",
     pedantic: false,
     gfm: true,
     breaks: true,
@@ -105,17 +107,11 @@
         break;
       case "addResponse":
         queuedQuestions -= 1;
-        if (queuedQuestions === 0) {
-          document.getElementById("in-progress")?.classList?.add("hidden");
-        }
+        document.getElementById("in-progress")?.classList?.add("hidden");
         document.getElementById("chat-button-wrapper")?.classList?.remove("hidden");
         let existingMessage = message.id && document.getElementById(message.id);
-        const updatedValue =
-          message.value.split("```").length % 2 === 1
-            ? message.value
-            : message.value + "\n\n```\n\n";
-        const markedResponse = marked.parse(updatedValue);
-        // const markedResponse = new DOMParser().parseFromString(marked.parse(updatedValue), "text/html");
+        let markedResponse = marked.parse(message.value);
+        // markedResponse = new DOMParser().parseFromString(markedResponse, "text/html");
         // console.log(markedResponse);
         if (existingMessage) {
           existingMessage.innerHTML = markedResponse;
@@ -136,13 +132,24 @@
           const preCodeList = list.lastChild.querySelectorAll("pre>code");
 
           preCodeList.forEach((preCode) => {
+            // preCode.classList.add(
+            //   "input-background",
+            //   "p-2",
+            //   "pb-2",
+            //   "block",
+            //   "whitespace-pre",
+            //   "overflow-x-scroll",
+            // );
             preCode.classList.add(
               "input-background",
               "p-2",
               "pb-2",
               "block",
               "whitespace-pre",
-              "overflow-x-scroll"
+              "overflow-x-scroll",
+              "pre-wrap",
+              "break-word",
+              "max-w-[80ch]"
             );
             preCode.parentElement.classList.add("pre-code-element", "relative");
 

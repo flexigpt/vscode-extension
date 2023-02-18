@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 import Provider from "./strategy/strategy";
 import log from "./logger/log";
@@ -8,7 +8,9 @@ import log from "./logger/log";
 import { importAllPrompts } from "./setupprompts";
 import { getOpenAIProvider } from "./setupstrategy";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
+import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import { CompletionRequest } from "openai";
+import { getActiveDocumentLanguageID } from "./vscodeutils/vscodefunctions";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -112,16 +114,18 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           this.search(data.value);
           break;
         }
-        case 'editCode':
-					vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(data.value));
-					break;
-				case 'openNew':
-					const document = await vscode.workspace.openTextDocument({
-						content: data.value,
-						language: data.language
-					});
-					vscode.window.showTextDocument(document);
-					break;
+        case "editCode":
+          vscode.window.activeTextEditor?.insertSnippet(
+            new vscode.SnippetString(data.value)
+          );
+          break;
+        case "openNew":
+          const document = await vscode.workspace.openTextDocument({
+            content: data.value,
+            language: data.language,
+          });
+          vscode.window.showTextDocument(document);
+          break;
         case "getCommandListForWebView":
           this.sendCommandListMessage();
           break;
@@ -201,8 +205,11 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     return searchPrompt;
   }
 
- 
-  async sendAPIRequest(inPrompt: string, uuid:string, suffix?: string): Promise<string> {
+  async sendAPIRequest(
+    inPrompt: string,
+    uuid: string,
+    suffix?: string
+  ): Promise<string> {
     let response: string;
     try {
       let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
@@ -235,10 +242,14 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         response = (await this._apiProvider?.completion(crequest)) as
           | string
           | "";
+        this._commandRunnerContext?.processAnswer(command, response, getActiveDocumentLanguageID());
+        let processedResponse = this._commandRunnerContext?.systemVariableContext.getVariable(systemVariableNames.answer);
+        if (processedResponse) {
+          response = processedResponse;
+        }
         // response = "This is a unittest \n ```def myfunc(): print('hello there')```";
         log.info(`Got response: ${response}`);
 
-        this._commandRunnerContext?.processAnswer(command, response);
       } else {
         throw Error("Could not process request");
       }
@@ -276,7 +287,13 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
     // Saves the response
     this._response = response;
-    await this.sendMessage({ type: "addResponse", value: response, id: uuid, done: true });
+    await this.sendMessage({
+      type: "addResponse",
+      value: response,
+      id: uuid,
+      done: true,
+      docLanguage: getActiveDocumentLanguageID(),
+    });
   }
 }
 

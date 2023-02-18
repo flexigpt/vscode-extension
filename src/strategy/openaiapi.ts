@@ -1,3 +1,4 @@
+import log from "../logger/log";
 import { Configuration, OpenAIApi } from "openai";
 import { CompletionRequest, EditRequest, Strategy } from "./strategy";
 import { unescapeChars } from "./regexmatcher";
@@ -12,6 +13,8 @@ response = openai.Completion.create(
     stop=["##", "}}}}}}", "Generate workflow", "func Test"])
 
 return response`;
+
+let promptProcessorString = "convert the response after processing previous prompt to a html code that highlights code elements using highlight.js"
 
 export default class OpenAIAPIStrategy implements Strategy {
   #api: OpenAIApi;
