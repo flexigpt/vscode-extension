@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-
+import * as prettier from 'prettier';
 import { v4 as uuidv4 } from "uuid";
 
 import Provider from "./strategy/strategy";
@@ -9,7 +9,6 @@ import { importAllPrompts } from "./setupprompts";
 import { getOpenAIProvider } from "./setupstrategy";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
-import { CompletionRequest } from "openai";
 import { getActiveDocumentLanguageID } from "./vscodeutils/vscodefunctions";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
@@ -211,6 +210,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     suffix?: string
   ): Promise<string> {
     let response: string;
+    let fullResponse = "";
     try {
       let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
         inPrompt,
@@ -230,8 +230,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         command.requestparams
       );
       if (crequest) {
-        let crequestStr = JSON.stringify(crequest, null, 2);
-        log.info(`sending api request. Full request: ${crequestStr}`);
+        const crequestJsonStr = JSON.stringify(crequest, null, 2);
+        const crequestStr = prettier.format(crequestJsonStr, { parser: 'json' });
+        // log.info(`sending api request. Full request: ${crequestStr}`);
         await this.sendMessage({
           type: "addQuestion",
           value: inPrompt,
@@ -239,16 +240,19 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           fullapi: crequestStr,
         });
 
-        response = (await this._apiProvider?.completion(crequest)) as
-          | string
-          | "";
+        let completionResponse = (await this._apiProvider?.completion(crequest));
+        response = completionResponse?.data as string | "";
+        if (!response){
+          response = "Got empty response";
+        }
+        fullResponse = completionResponse?.fullResponse;  
         this._commandRunnerContext?.processAnswer(command, response, getActiveDocumentLanguageID());
         let processedResponse = this._commandRunnerContext?.systemVariableContext.getVariable(systemVariableNames.answer);
         if (processedResponse) {
           response = processedResponse;
         }
         // response = "This is a unittest \n ```def myfunc(): print('hello there')```";
-        log.info(`Got response: ${response}`);
+        // log.info(`Got response: ${response}`);
 
       } else {
         throw Error("Could not process request");
@@ -257,6 +261,16 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       log.error(e);
       response = `[ERROR] ${e}`;
     }
+    const cresponseJsonStr = JSON.stringify(fullResponse, null, 2);
+    const cresponseStr = prettier.format(cresponseJsonStr, { parser: 'json' });
+    await this.sendMessage({
+      type: "addResponse",
+      value: response,
+      id: uuid,
+      done: true,
+      fullResponse: cresponseStr,
+      docLanguage: getActiveDocumentLanguageID(),
+    });
     if (!response) {
       throw Error("Could not get response from Provider.");
     }
@@ -287,13 +301,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
     // Saves the response
     this._response = response;
-    await this.sendMessage({
-      type: "addResponse",
-      value: response,
-      id: uuid,
-      done: true,
-      docLanguage: getActiveDocumentLanguageID(),
-    });
   }
 }
 

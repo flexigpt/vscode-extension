@@ -124,18 +124,28 @@ export class CommandRunnerContext {
 
   fixhangingString(inStr: string, seperator: string): string {
     let updatedValue = inStr;
-    if (inStr.includes(seperator)) {
-      updatedValue = inStr.split(seperator).length % 2 === 1 ? inStr : inStr + `\n${seperator}\n`;
+    if (inStr?.includes(seperator)) {
+      updatedValue =
+        inStr.split(seperator).length % 2 === 1
+          ? inStr
+          : inStr + `\n${seperator}\n`;
     }
     return updatedValue;
   }
 
   processAnswer(command: Command, answer: string, docLanguage: string): any {
+    if (!answer) {
+      answer = "";
+      this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
+      return answer;
+    }
+
     let updatedValue = this.fixhangingString(answer, '"""');
-    updatedValue = this.fixhangingString(updatedValue, '```');
-    if (!updatedValue.includes('```')) {
+    updatedValue = this.fixhangingString(updatedValue, "```");
+    if (!updatedValue.includes("```")) {
       updatedValue = "\n```" + docLanguage + "\n" + updatedValue + "\n```\n";
     }
+
     this.setSystemVariable(
       new Variable(systemVariableNames.answer, updatedValue)
     );

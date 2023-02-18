@@ -25,7 +25,7 @@ export default class Provider {
 }
 
 export interface Strategy {
-  completion(input: CompletionRequest): Promise<string | null>;
+  completion(input: CompletionRequest): Promise<{fullResponse: any, data: string | null}>;
   edit(input: EditRequest): Promise<string | null>;
   checkAndPopulateCompletionParams(
     prompt: string,

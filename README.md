@@ -9,28 +9,43 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 ## Features
 
 - Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
+
   - Currently supported: OpenAI completion APIs, with GPT2/3 models
 
 - Use pre-defined prompts in configuration files
+
+  - Engineer and fine tune prompts, save them and use them directly within VSCode.
+  - Prompts can be enriched using predefined functions or custom functions. Multiple inbuilt [predefined functions](#predefined-system-function) available.
   - Supports request parameter modifications for GPT APIs
-  - Prompts can be enriched using predefined functions or custom functions
-  - In built generic prompts and predefined functions for ease of use
   - Supports post-processing response via responseHandlers in prompts.
+  - Available inbuilt prompts:
+
+    - [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
+
+      - Refactor selection
+      - Generate unit test
+      - Complete
+      - Explain code
+      - Generate Documentation
+      - Find problems
+      - Optimize selection
+
+    - [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+      - Write godoc string
+      - Generate unit test
 
 - UI and access
   - Keyboard shortcuts, editor/command context (right click in editor), command palette controls for quick access
   - Chat activity bar interface for request/response interaction
   - Export conversations to a file
   - Copy, Insert, Create new file out of GPT response.
-  
+  - Detailed request and response to/from to GPT APIs available in activity bar itself for better prompt engineering and debugging
 - Detailed TODO:
   - Prompt files:
     - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
     - Collect definitions, strip them and pass on, etc.
     - Diff collection from a git branch for review
-  - UI:
-    - Add box for inspecting full request/response easily.
   - Additional features:
     - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
     - Support ChatGPT as a backend with conversations API.

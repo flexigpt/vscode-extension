@@ -36,6 +36,7 @@ export default class OpenAIAPIStrategy implements Strategy {
   }
 
   async completion(input: CompletionRequest) {
+    // return tempCodeString;
     const { data } = await this.#api.createCompletion({
       model: input.model,
       prompt: input.prompt,
@@ -54,9 +55,8 @@ export default class OpenAIAPIStrategy implements Strategy {
       logit_bias: input.logitBias,
       user: input.user,
     });
-    return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
+    return {fullResponse: data, data: data.choices[0].text ? unescapeChars(data.choices[0].text) : ""};
     // return data.choices[0].text ? data.choices[0].text : null;
-    // return tempCodeString;
   }
 
   async edit(input: EditRequest) {

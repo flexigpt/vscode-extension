@@ -309,6 +309,32 @@ textarea::placeholder {
   }
 }
 
+.accordion {
+  border: 0.2px solid #ccc;
+  padding: 1px;
+}
+
+.accordion-item:not(:last-child) {
+  border-bottom: 0.1px solid #ccc;
+}
+
+.accordion-title {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  height: 2rem;
+}
+
+.accordion-content {
+  display: none;
+  padding: 0rem;
+}
+
+.accordion-item.active .accordion-content {
+  display: block;
+}
+
 .result-streaming > :not(ol):not(ul):not(pre):last-child:after,
 .result-streaming > ol:last-child li:last-child:after,
 .result-streaming > pre:last-child code:after,
