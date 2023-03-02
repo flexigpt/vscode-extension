@@ -25,7 +25,9 @@ export default class Provider {
 }
 
 export interface Strategy {
-  completion(input: CompletionRequest): Promise<{fullResponse: any, data: string | null}>;
+  completion(
+    input: CompletionRequest
+  ): Promise<{ fullResponse: any; data: string | null }>;
   edit(input: EditRequest): Promise<string | null>;
   checkAndPopulateCompletionParams(
     prompt: string,
@@ -36,6 +38,66 @@ export interface Strategy {
     inputParams?: { [key: string]: any }
   ): EditRequest;
 }
+
+/**
+ *
+ * @export
+ * @interface ChatCompletionRequestMessage
+ */
+export interface ChatCompletionRequestMessage {
+  /**
+   * The role of the author of this message.
+   * @type {string}
+   * @memberof ChatCompletionRequestMessage
+   */
+  role: ChatCompletionRequestMessageRoleEnum;
+  /**
+   * The contents of the message
+   * @type {string}
+   * @memberof ChatCompletionRequestMessage
+   */
+  content: string;
+  /**
+   * The name of the user in a multi-user chat
+   * @type {string}
+   * @memberof ChatCompletionRequestMessage
+   */
+  name?: string;
+}
+
+export declare const ChatCompletionRequestMessageRoleEnum: {
+  readonly System: "system";
+  readonly User: "user";
+  readonly Assistant: "assistant";
+};
+export declare type ChatCompletionRequestMessageRoleEnum =
+  (typeof ChatCompletionRequestMessageRoleEnum)[keyof typeof ChatCompletionRequestMessageRoleEnum];
+/**
+ *
+ * @export
+ * @interface ChatCompletionResponseMessage
+ */
+export interface ChatCompletionResponseMessage {
+  /**
+   * The role of the author of this message.
+   * @type {string}
+   * @memberof ChatCompletionResponseMessage
+   */
+  role: ChatCompletionResponseMessageRoleEnum;
+  /**
+   * The contents of the message
+   * @type {string}
+   * @memberof ChatCompletionResponseMessage
+   */
+  content: string;
+}
+export declare const ChatCompletionResponseMessageRoleEnum: {
+  readonly System: "system";
+  readonly User: "user";
+  readonly Assistant: "assistant";
+};
+export declare type ChatCompletionResponseMessageRoleEnum =
+  (typeof ChatCompletionResponseMessageRoleEnum)[keyof typeof ChatCompletionResponseMessageRoleEnum];
 
 /**
  *
@@ -55,6 +117,12 @@ export interface CompletionRequest {
    * @memberof CompletionRequest
    */
   prompt?: string | null;
+  /**
+   * The messages to generate chat completions for, in the [chat format](/docs/guides/chat/introduction).
+   * @type {Array<ChatCompletionRequestMessage>}
+   * @memberof CreateChatCompletionRequest
+   */
+  messages: Array<ChatCompletionRequestMessage> | null;
   /**
    * The suffix that comes after a completion of inserted text.
    * @type {string}

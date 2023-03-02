@@ -1,6 +1,6 @@
 import log from "../logger/log";
-import { Configuration, OpenAIApi } from "openai";
-import { CompletionRequest, EditRequest, Strategy } from "./strategy";
+import { Configuration, OpenAIApi , CreateChatCompletionRequestStop} from "openai";
+import { ChatCompletionRequestMessage, CompletionRequest, EditRequest, Strategy } from "./strategy";
 import { unescapeChars } from "./regexmatcher";
 
 let tempCodeString = `def get_openapi_completion_for_integration_sequence_test(intxt, value_type):
@@ -26,6 +26,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     apiKey: string,
     timeout: BigInt,
     defaultCompletionModel: string = "text-davinci-003",
+    defaultChatCompletionModel: string = "gpt-3.5-turbo",
     defaultEditModel: string = "code-davinci-edit-001"
   ) {
     const configuration = new Configuration({ apiKey: apiKey });
@@ -56,6 +57,39 @@ export default class OpenAIAPIStrategy implements Strategy {
       user: input.user,
     });
     return {fullResponse: data, data: data.choices[0].text ? unescapeChars(data.choices[0].text) : ""};
+    // return data.choices[0].text ? data.choices[0].text : null;
+  }
+
+  async chatCompletion(input: CompletionRequest) {
+    // return tempCodeString;
+    // let messages: ChatCompletionRequestMessage[] = [{"role": "user", "content": "Hello!"}];
+    if (!input.messages) {
+      throw Error("No input messages found"); 
+    }
+    let stoparg: string | string[] = "";
+    if (input.stop) {
+      stoparg = input.stop;
+    }
+    const { data } = await this.#api.createChatCompletion({
+      model: input.model,
+      messages: input.messages,
+      max_tokens: input.maxTokens ? input.maxTokens : 2048,
+      temperature: input.temperature,
+      top_p: input.topP,
+      n: input.n,
+      stream: false,
+      stop: stoparg,
+      presence_penalty: input.presencePenalty,
+      frequency_penalty: input.frequencyPenalty,
+      logit_bias: input.logitBias,
+      user: input.user,
+    });
+    let fullResponse = data;
+    let respText: string = data.choices[0].message?.content as string;
+    if (respText) {
+      respText = unescapeChars(respText);
+    }
+    return {fullResponse: fullResponse, data: respText};
     // return data.choices[0].text ? data.choices[0].text : null;
   }
 
@@ -104,6 +138,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     let completionRequest: CompletionRequest = {
       model: (inputParams?.model as string) || this.defaultCompletionModel,
       prompt: prompt,
+      messages: inputParams.message;
       suffix: inputParams?.suffix || undefined,
       maxTokens: (inputParams?.maxTokens as number) || 2048,
       temperature: (inputParams?.temperature as number) || 0,
