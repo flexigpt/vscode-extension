@@ -5,15 +5,20 @@ export default class Provider {
     return this.strategy.completion(input);
   }
 
+  chatCompletion(input: CompletionRequest) {
+    return this.strategy.chatCompletion(input);
+  }
+
   edit(input: EditRequest) {
     return this.strategy.edit(input);
   }
 
   checkAndPopulateCompletionParams(
     prompt: string,
+    messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    return this.strategy.checkAndPopulateCompletionParams(prompt, inputParams);
+    return this.strategy.checkAndPopulateCompletionParams(prompt, messages, inputParams);
   }
 
   checkAndPopulateEditParams(
@@ -28,9 +33,13 @@ export interface Strategy {
   completion(
     input: CompletionRequest
   ): Promise<{ fullResponse: any; data: string | null }>;
+  chatCompletion(
+    input: CompletionRequest
+  ): Promise<{ fullResponse: any; data: string | null }>;
   edit(input: EditRequest): Promise<string | null>;
   checkAndPopulateCompletionParams(
     prompt: string,
+    messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest;
   checkAndPopulateEditParams(
@@ -91,11 +100,13 @@ export interface ChatCompletionResponseMessage {
    */
   content: string;
 }
+
 export declare const ChatCompletionResponseMessageRoleEnum: {
   readonly System: "system";
   readonly User: "user";
   readonly Assistant: "assistant";
 };
+
 export declare type ChatCompletionResponseMessageRoleEnum =
   (typeof ChatCompletionResponseMessageRoleEnum)[keyof typeof ChatCompletionResponseMessageRoleEnum];
 
@@ -122,7 +133,7 @@ export interface CompletionRequest {
    * @type {Array<ChatCompletionRequestMessage>}
    * @memberof CreateChatCompletionRequest
    */
-  messages: Array<ChatCompletionRequestMessage> | null;
+  messages?: Array<ChatCompletionRequestMessage> | null;
   /**
    * The suffix that comes after a completion of inserted text.
    * @type {string}

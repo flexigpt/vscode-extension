@@ -69,7 +69,12 @@ function registerEvents(
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);
-      } else if (event.affectsConfiguration("flexigpt.openai.defaultEditModel")) {
+      } else if (event.affectsConfiguration("flexigpt.openai.defaultChatCompletionModel")) {
+        // add the new token to the provider
+        const apiProvider = getOpenAIProvider();
+        provider.setAPIProvider(apiProvider);
+      }
+      else if (event.affectsConfiguration("flexigpt.openai.defaultEditModel")) {
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);

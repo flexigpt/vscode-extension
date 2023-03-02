@@ -1,6 +1,7 @@
 import { getValueWithKey } from "./promptutils";
 import { systemVariableNames } from "../vscodeutils/predefinedvariables";
 import log from "../logger/log";
+import * as prettier from 'prettier';
 
 import { FunctionWrapper, FunctionContext } from "./promptfunctions";
 import { Variable, VariableContext } from "./promptvariables";
@@ -143,8 +144,17 @@ export class CommandRunnerContext {
     let updatedValue = this.fixhangingString(answer, '"""');
     updatedValue = this.fixhangingString(updatedValue, "```");
     if (!updatedValue.includes("```")) {
-      updatedValue = "\n```" + docLanguage + "\n" + updatedValue + "\n```\n";
+      // log.info(`Got value ${JSON.stringify(updatedValue)}`);
+      // There is no code block marked in the answer as of now. Check if we need to mark it.
+      const codePattern = /\b(function|def|func|public\ static|FUNCTION|const|var|\{[^}]*\})\b/gi;
+      const containsCode = codePattern.test(updatedValue);
+      if (containsCode) {
+        // log.info(`Got contains code`);
+        // Just put a blanket language marker
+        updatedValue = "\n```" + docLanguage + "\n" + updatedValue + "\n```\n";
+      }
     }
+    // const updatedValueStr = prettier.format(updatedValue, { parser: 'json' });
 
     this.setSystemVariable(
       new Variable(systemVariableNames.answer, updatedValue)

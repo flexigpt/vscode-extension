@@ -3,6 +3,11 @@ import { Configuration, OpenAIApi , CreateChatCompletionRequestStop} from "opena
 import { ChatCompletionRequestMessage, CompletionRequest, EditRequest, Strategy } from "./strategy";
 import { unescapeChars } from "./regexmatcher";
 
+export const chatCompletionModelsEnum = {
+  gptTurbo: "gpt-3.5-turbo",
+  gptTurbo301: "gpt-3.5-turbo-0301",
+};
+
 let tempCodeString = `def get_openapi_completion_for_integration_sequence_test(intxt, value_type):
 response = openai.Completion.create(
     model="text-davinci-003",
@@ -14,12 +19,13 @@ response = openai.Completion.create(
 
 return response`;
 
-let promptProcessorString = "convert the response after processing previous prompt to a html code that highlights code elements using highlight.js"
+let promptProcessorString = "convert the response after processing previous prompt to a html code that highlights code elements using highlight.js";
 
 export default class OpenAIAPIStrategy implements Strategy {
   #api: OpenAIApi;
   #timeout: BigInt;
   defaultCompletionModel: string;
+  defaultChatCompletionModel: string;
   defaultEditModel: string;
 
   constructor(
@@ -33,11 +39,26 @@ export default class OpenAIAPIStrategy implements Strategy {
     this.#api = new OpenAIApi(configuration);
     this.#timeout = timeout;
     this.defaultCompletionModel = defaultCompletionModel;
+    this.defaultChatCompletionModel = defaultChatCompletionModel;
     this.defaultEditModel = defaultEditModel;
+  }
+
+  checkEnumValue(value: string | null): keyof typeof chatCompletionModelsEnum | null {
+    if (value === null) {
+      return null;
+    }
+  
+    const keys = Object.keys(chatCompletionModelsEnum) as (keyof typeof chatCompletionModelsEnum)[];
+    const enumValue = keys.find(key => chatCompletionModelsEnum[key] === value);
+    return enumValue || null;
   }
 
   async completion(input: CompletionRequest) {
     // return tempCodeString;
+    let chatModel = this.checkEnumValue(input.model);
+    if (chatModel) {
+        return this.chatCompletion(input);
+    }
     const { data } = await this.#api.createCompletion({
       model: input.model,
       prompt: input.prompt,
@@ -108,7 +129,7 @@ export default class OpenAIAPIStrategy implements Strategy {
 
   public getDefaultCompletionCommand(prompt?: string): CompletionRequest {
     var crequest = {
-      model: this.defaultCompletionModel,
+      model: this.defaultChatCompletionModel,
       prompt: prompt,
       temperature: 0,
       maxTokens: 2048,
@@ -132,13 +153,14 @@ export default class OpenAIAPIStrategy implements Strategy {
   }
 
   public checkAndPopulateCompletionParams(
-    prompt: string,
+    prompt: string | null,
+    messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
     let completionRequest: CompletionRequest = {
-      model: (inputParams?.model as string) || this.defaultCompletionModel,
+      model: (inputParams?.model as string) || this.defaultChatCompletionModel,
       prompt: prompt,
-      messages: inputParams.message;
+      messages: messages,
       suffix: inputParams?.suffix || undefined,
       maxTokens: (inputParams?.maxTokens as number) || 2048,
       temperature: (inputParams?.temperature as number) || 0,
@@ -155,6 +177,19 @@ export default class OpenAIAPIStrategy implements Strategy {
       user: (inputParams?.user as string) || undefined,
     };
 
+    let chatModel = this.checkEnumValue(completionRequest.model);
+    if (chatModel) {
+      if (completionRequest.prompt) {
+        let message: ChatCompletionRequestMessage = {"role": "user", "content": completionRequest.prompt};
+        if (!completionRequest.messages) {
+          completionRequest.messages = [message];
+        } else {
+          completionRequest.messages.push(message);
+        }
+        completionRequest.prompt = null;
+        // log.info(`Using chatmodel with messages: ${completionRequest.messages}`);
+      }
+    }
     return completionRequest;
   }
 

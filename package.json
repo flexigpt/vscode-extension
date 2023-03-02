@@ -99,27 +99,33 @@
         },
         "flexigpt.openai.defaultCompletionModel": {
           "type": "string",
-          "default": "text-davinci-003",
+          "default": "gpt-3.5-turbo",
           "description": "Default model to use for completion requests",
           "order": 3
+        },
+        "flexigpt.openai.defaultChatCompletionModel": {
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "description": "Default model to use for chat completion requests",
+          "order": 4
         },
         "flexigpt.openai.defaultEditModel": {
           "type": "string",
           "default": "code-davinci-edit-001",
           "description": "Default model to use for completion requests",
-          "order": 4
+          "order": 5
         },
         "flexigpt.promptFiles": {
           "type": "string",
           "default": "",
           "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
-          "order": 5
+          "order": 6
         },
         "flexigpt.inBuiltPrompts": {
           "type": "string",
           "default": "",
           "description": "prompt file names of inbuilt prompts to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled.",
-          "order": 6
+          "order": 7
         }
       }
     }

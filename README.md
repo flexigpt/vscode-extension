@@ -10,7 +10,9 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 - Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
 
-  - Currently supported: OpenAI completion APIs, with GPT2/3 models
+  - Currently supported:
+    - OpenAI chat completion APIs, with GPT3.5 models
+    - OpenAI completion APIs, with GPT2/3 models
 
 - Use pre-defined prompts in configuration files
 
@@ -35,12 +37,15 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
       - Generate unit test
 
 - UI and access
+
   - Keyboard shortcuts, editor/command context (right click in editor), command palette controls for quick access
   - Chat activity bar interface for request/response interaction
   - Export conversations to a file
   - Copy, Insert, Create new file out of GPT response.
   - Detailed request and response to/from to GPT APIs available in activity bar itself for better prompt engineering and debugging
+
 - Detailed TODO:
+
   - Prompt files:
     - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
@@ -48,14 +53,12 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
     - Diff collection from a git branch for review
   - Additional features:
     - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
-    - Support ChatGPT as a backend with conversations API.
     - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/)
 
 ## Installation
 
 - Requirements
   - Visual Studio Code v1.74.0 or later
-  
 - Steps:
   1. Install Visual Studio Code 1.74.0 or later
   2. Launch Visual Studio Code
@@ -69,18 +72,21 @@ FlexiGPT requires an OpenAI API key to function. You can obtain one from your op
 
 To configure FlexiGPT, open Visual Studio Code's settings (File > Preferences > Settings or by using the `Ctrl`/`Cmd` + `,` keyboard shortcut) and search for `flexigpt`.
 
+FlexiGPT uses defaultChatCompletionModel: `gpt-3.5-turbo`, unless the prompt overrides it.
+
 Options:
 
 - flexigpt.openai.apiKey: Your OpenAI API key, which can be obtained from the OpenAI website.
 - flexigpt.openai.timeout: The timeout for OpenAI requests, in seconds. Default: 60.
-- flexigpt.openai.defaultCompletionModel: Default model to use for completion requests.
+- flexigpt.openai.defaultChatCompletionModel: Default model to use for chat completion requests.
   - You can always override the default model per prompt via the prompt file command declaration.
   - FlexiGPT basic prompts will use the default models set.
-  - Default: text-davinci-003. Note that text-davinci-003 usage is accounted in OpenAIs billing. Only free model that is in beta as of Feb 2023 is codex (code-davinci-002).
+  - Default: `gpt-3.5-turbo`. Note that `gpt-3.5-turbo` usage is accounted in OpenAIs billing. Only free model that is in beta as of Feb 2023 is codex (`code-davinci-002`).
+- flexigpt.openai.defaultCompletionModel: Default model to use for completion requests.
 - flexigpt.openai.defaultEditModel: Default model to use for edit requests. (currently unsupported)
   - You can always override the default model per prompt via the prompt file command declaration.
   - FlexiGPT basic prompts will use the default models set.
-  - Default: code-davinci-edit-001.
+  - Default: `code-davinci-edit-001`.
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
 - flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js" and "gobasic.js".
 - Sample Full configuration
@@ -88,7 +94,8 @@ Options:
   ```text
   "flexigpt.openai.apiKey": "sk-mkey",
   "flexigpt.openai.timeout": "120",
-  "flexigpt.openai.defaultCompletionModel": "text-davinci-003",
+  "flexigpt.openai.defaultCompletionModel": "gpt-3.5-turbo",
+  "flexigpt.openai.defaultChatCompletionModel": "gpt-3.5-turbo",
   "flexigpt.openai.defaultEditModel": "code-davinci-edit-001",
   "flexigpt.promptFiles": "/home/me/my_prompt_files/myprompts.js",
   "flexigpt.inBuiltPrompts": "gobasic.js"
@@ -142,7 +149,7 @@ module.exports = {
         },
       },
       requestparams: {
-        model: "code-davinci-002",
+        model: "gpt-3.5-turbo",
         stop: ["##", "func Test", "package main", "func main"],
       },
     },

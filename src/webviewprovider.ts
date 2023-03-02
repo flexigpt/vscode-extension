@@ -227,7 +227,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
       var crequest = this._apiProvider?.checkAndPopulateCompletionParams(
         question,
-        command.requestparams
+        null,
+        command.requestparams,
       );
       if (crequest) {
         const crequestJsonStr = JSON.stringify(crequest, null, 2);
