@@ -29,7 +29,12 @@ export class Command {
     const question = this.questionTemplate.replace(
       /\{([^}]+)\}/g,
       (match, key) => {
-        return getValueWithKey(key, variables);
+        let v = getValueWithKey(key, variables);
+        if (v === key) {
+          // We got the key again. try it in system vars
+          v = getValueWithKey(`system.${v}`, variables);  
+        }
+        return v;
       }
     );
 

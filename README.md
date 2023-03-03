@@ -6,6 +6,25 @@ FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT 
 
 Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ppipada.flexigpt)
 
+## Table of contents <!-- omit from toc -->
+
+- [Features](#features)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Prompt file format](#prompt-file-format)
+  - [Samples](#samples)
+  - [Here is a sample javascript (.js) prompt file](#here-is-a-sample-javascript-js-prompt-file)
+  - [Here is a more complex javascript (.js) prompt file](#here-is-a-more-complex-javascript-js-prompt-file)
+  - [Creating Command](#creating-command)
+    - [Predefined System Variables](#predefined-system-variables)
+    - [Predefined System Function](#predefined-system-function)
+  - [Creating Variables](#creating-variables)
+  - [Creating Functions](#creating-functions)
+- [License](#license)
+- [Contributions](#contributions)
+- [Support](#support)
+
 ## Features
 
 - Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
@@ -103,11 +122,20 @@ Options:
 
 ## Usage
 
-- To ask GPT AI models (GPT3, ChatGPT, etc) anything you want, use the `FlexiGPT: Ask` command from the Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`) or by using the `Ctrl` + `Alt` + `G` keyboard shortcut.
-- This should open the FlexiGPT activity bar with an input text box.
-- On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode takes some time to load a dynamic list from file.)
-- If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
-- If you type a free floating question in the text box, the text itself will be used as prompt directly. Here too, you can use the predefined system variables to enhance your question. E.g: you can use `{system.selection}` to pass on the selected text in the editor (code or otherwise).
+- Activation/Invocation of FlexiGPT:
+
+  - To ask GPT AI models (GPT3, ChatGPT, etc) anything you want, use the `FlexiGPT: Ask` command from the Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`) or by using the `Ctrl` + `Alt` + `G` keyboard shortcut.
+  - This should open the FlexiGPT activity bar with an input text box.
+  - On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode takes some time to load a dynamic list from file.)
+
+- Ask something
+
+  - If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
+  - If you type a free floating question in the text box, the text itself will be used as prompt directly.
+  - [Predefined system variables](#predefined-system-variables) can be used to enhance your question.
+    - E.g: you can use `{system.selection}` to pass on the selected text in the editor (code or otherwise).
+    - Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
+
 - To view your prompt history, open the FlexiGPT activity bar.
 
 ## Prompt file format
@@ -241,6 +269,8 @@ module.exports = {
 | system.fileName      | Name of active file                 |
 | system.filePath      | Full path of active file            |
 | system.fileExtension | Extension of active file            |
+
+Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
 
 #### Predefined System Function
 

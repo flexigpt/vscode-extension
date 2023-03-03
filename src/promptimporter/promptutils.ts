@@ -30,18 +30,31 @@ export function getFileNameAndExtension(filePath: string) {
   };
 }
 
-export function getValueWithKey(key: string, variables: any) {
-  try {
-    const keys = key.split(".");
-    let value = variables;
-    for (const k of keys) {
-      value = value[k];
+
+export function getValueWithKey(key: string, variables: Record<string, any>): any {
+  const keys = key.split(".");
+  let value = variables;
+  for (const k of keys) {
+    if (typeof value !== "object" || value === null) {
+      return key;
     }
-    return value ?? key;
-  } catch {
-    return key;
+    value = value[k];
   }
+  return value ?? key;
 }
+
+// export function getValueWithKey(key: string, variables: any) {
+//   try {
+//     const keys = key.split(".");
+//     let value = variables;
+//     for (const k of keys) {
+//       value = value[k];
+//     }
+//     return value ?? key;
+//   } catch {
+//     return key;
+//   }
+// }
 
 export function createFunctionFromString(fnString: string): {
   name: string;
