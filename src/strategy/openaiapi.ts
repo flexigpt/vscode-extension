@@ -1,6 +1,15 @@
 import log from "../logger/log";
-import { Configuration, OpenAIApi , CreateChatCompletionRequestStop} from "openai";
-import { ChatCompletionRequestMessage, CompletionRequest, EditRequest, Strategy } from "./strategy";
+import {
+  Configuration,
+  OpenAIApi,
+  CreateChatCompletionRequestStop,
+} from "openai";
+import {
+  ChatCompletionRequestMessage,
+  CompletionRequest,
+  EditRequest,
+  Strategy,
+} from "./strategy";
 import { unescapeChars } from "./regexmatcher";
 
 export const chatCompletionModelsEnum = {
@@ -19,7 +28,8 @@ response = openai.Completion.create(
 
 return response`;
 
-let promptProcessorString = "convert the response after processing previous prompt to a html code that highlights code elements using highlight.js";
+let promptProcessorString =
+  "convert the response after processing previous prompt to a html code that highlights code elements using highlight.js";
 
 export default class OpenAIAPIStrategy implements Strategy {
   #api: OpenAIApi;
@@ -43,13 +53,19 @@ export default class OpenAIAPIStrategy implements Strategy {
     this.defaultEditModel = defaultEditModel;
   }
 
-  checkEnumValue(value: string | null): keyof typeof chatCompletionModelsEnum | null {
+  checkEnumValue(
+    value: string | null
+  ): keyof typeof chatCompletionModelsEnum | null {
     if (value === null) {
       return null;
     }
-  
-    const keys = Object.keys(chatCompletionModelsEnum) as (keyof typeof chatCompletionModelsEnum)[];
-    const enumValue = keys.find(key => chatCompletionModelsEnum[key] === value);
+
+    const keys = Object.keys(
+      chatCompletionModelsEnum
+    ) as (keyof typeof chatCompletionModelsEnum)[];
+    const enumValue = keys.find(
+      (key) => chatCompletionModelsEnum[key] === value
+    );
     return enumValue || null;
   }
 
@@ -57,7 +73,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     // return tempCodeString;
     let chatModel = this.checkEnumValue(input.model);
     if (chatModel) {
-        return this.chatCompletion(input);
+      return this.chatCompletion(input);
     }
     const { data } = await this.#api.createCompletion({
       model: input.model,
@@ -77,7 +93,10 @@ export default class OpenAIAPIStrategy implements Strategy {
       logit_bias: input.logitBias,
       user: input.user,
     });
-    return {fullResponse: data, data: data.choices[0].text ? unescapeChars(data.choices[0].text) : ""};
+    return {
+      fullResponse: data,
+      data: data.choices[0].text ? unescapeChars(data.choices[0].text) : "",
+    };
     // return data.choices[0].text ? data.choices[0].text : null;
   }
 
@@ -85,7 +104,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     // return tempCodeString;
     // let messages: ChatCompletionRequestMessage[] = [{"role": "user", "content": "Hello!"}];
     if (!input.messages) {
-      throw Error("No input messages found"); 
+      throw Error("No input messages found");
     }
     let stoparg: string | string[] = "";
     if (input.stop) {
@@ -110,7 +129,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     if (respText) {
       respText = unescapeChars(respText);
     }
-    return {fullResponse: fullResponse, data: respText};
+    return { fullResponse: fullResponse, data: respText };
     // return data.choices[0].text ? data.choices[0].text : null;
   }
 
@@ -157,22 +176,33 @@ export default class OpenAIAPIStrategy implements Strategy {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
+    // log.info(`Input params read: ${JSON.stringify(inputParams, null, 2)}`);
+
     let completionRequest: CompletionRequest = {
       model: (inputParams?.model as string) || this.defaultChatCompletionModel,
       prompt: prompt,
       messages: messages,
       suffix: inputParams?.suffix || undefined,
-      maxTokens: (inputParams?.maxTokens as number) || 2048,
-      temperature: (inputParams?.temperature as number) || 0,
-      topP: (inputParams?.topP as number) || undefined,
-      n: (inputParams?.n as number) || undefined,
+      maxTokens:
+        inputParams?.maxTokens === 0 ? 0 : inputParams?.maxTokens || 2048,
+      temperature:
+        inputParams?.temperature === 0 ? 0 : inputParams?.temperature || 0.1,
+      topP: inputParams?.topP === 0 ? 0 : inputParams?.topP || undefined,
+      n: inputParams?.n === 0 ? 0 : inputParams?.n || undefined,
       stream: false,
-      logprobs: (inputParams?.logprobs as number) || undefined,
+      logprobs:
+        inputParams?.logprobs === 0 ? 0 : inputParams?.logprobs || undefined,
       echo: (inputParams?.echo as boolean) || undefined,
       stop: inputParams?.stop || undefined,
-      presencePenalty: (inputParams?.presencePenalty as number) || 0.0,
-      frequencyPenalty: (inputParams?.frequencyPenalty as number) || 0.5,
-      bestOf: (inputParams?.bestOf as number) || 1,
+      presencePenalty:
+        inputParams?.presencePenalty === 0
+          ? 0
+          : inputParams?.presencePenalty || 0.0,
+      frequencyPenalty:
+        inputParams?.frequencyPenalty === 0
+          ? 0
+          : inputParams?.frequencyPenalty || 0.5,
+      bestOf: inputParams?.bestOf === 0 ? 0 : inputParams?.bestOf || 1,
       logitBias: inputParams?.logitBias || undefined,
       user: (inputParams?.user as string) || undefined,
     };
@@ -180,7 +210,10 @@ export default class OpenAIAPIStrategy implements Strategy {
     let chatModel = this.checkEnumValue(completionRequest.model);
     if (chatModel) {
       if (completionRequest.prompt) {
-        let message: ChatCompletionRequestMessage = {"role": "user", "content": completionRequest.prompt};
+        let message: ChatCompletionRequestMessage = {
+          role: "user",
+          content: completionRequest.prompt,
+        };
         if (!completionRequest.messages) {
           completionRequest.messages = [message];
         } else {
@@ -194,7 +227,7 @@ export default class OpenAIAPIStrategy implements Strategy {
   }
 
   public checkAndPopulateEditParams(
-    prompt: string,
+    prompt: string | null,
     inputParams?: { [key: string]: any }
   ): EditRequest {
     let editRequest: EditRequest = {
@@ -202,9 +235,10 @@ export default class OpenAIAPIStrategy implements Strategy {
       input: prompt,
       instruction:
         (inputParams?.instruction as string) || "Refactor this function",
-      n: (inputParams?.n as number) || undefined,
-      temperature: (inputParams?.temperature as number) || 0,
-      topP: (inputParams?.topP as number) || undefined,
+      temperature:
+        inputParams?.temperature === 0 ? 0 : inputParams?.temperature || 0.1,
+      topP: inputParams?.topP === 0 ? 0 : inputParams?.topP || undefined,
+      n: inputParams?.n === 0 ? 0 : inputParams?.n || undefined,
     };
 
     return editRequest;

@@ -14,7 +14,7 @@ export default class Provider {
   }
 
   checkAndPopulateCompletionParams(
-    prompt: string,
+    prompt: string | null,
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
@@ -22,7 +22,7 @@ export default class Provider {
   }
 
   checkAndPopulateEditParams(
-    prompt: string,
+    prompt: string | null,
     inputParams?: { [key: string]: any }
   ): EditRequest {
     return this.strategy.checkAndPopulateEditParams(prompt, inputParams);
@@ -38,12 +38,12 @@ export interface Strategy {
   ): Promise<{ fullResponse: any; data: string | null }>;
   edit(input: EditRequest): Promise<string | null>;
   checkAndPopulateCompletionParams(
-    prompt: string,
+    prompt: string | null,
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest;
   checkAndPopulateEditParams(
-    prompt: string,
+    prompt: string | null,
     inputParams?: { [key: string]: any }
   ): EditRequest;
 }

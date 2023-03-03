@@ -34,6 +34,8 @@ module.exports = {
             },
             description: "Generate unit tests for the selected code",
             requestparams: {
+                frequencyPenalty: 0.0,
+                presencePenalty: 0.1,
                 stop: ["##", "func Test", "package main", "func main"],
             },
         },

@@ -224,7 +224,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       // Send the search prompt to the ChatGPTAPI instance and store the response
       // If successfully signed in
       this._fullPrompt = question;
-
+      // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
       var crequest = this._apiProvider?.checkAndPopulateCompletionParams(
         question,
         null,
@@ -242,7 +242,11 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         });
 
         let completionResponse = (await this._apiProvider?.completion(crequest));
+        // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
+        
         response = completionResponse?.data as string | "";
+        // log.info(`Got response: ${response}`);
+
         if (!response){
           response = "Got empty response";
         }
@@ -252,8 +256,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         if (processedResponse) {
           response = processedResponse;
         }
-        // response = "This is a unittest \n ```def myfunc(): print('hello there')```";
-        // log.info(`Got response: ${response}`);
 
       } else {
         throw Error("Could not process request");
