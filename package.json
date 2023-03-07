@@ -135,7 +135,7 @@
   ],
   "scripts": {
     "prepublish": "npm run truncate-yaml",
-    "vscode:prepublish": "prepublish && npm run esbuild-base -- --minify",
+    "vscode:prepublish": "npm run truncate-yaml && npm run esbuild-base -- --minify",
     "truncate-yaml": "echo '' > ./conversations.yml",
     "esbuild-base": "rimraf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "build": "npm run -S esbuild-base --no-cache -- --sourcemap",
