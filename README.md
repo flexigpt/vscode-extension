@@ -59,6 +59,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
   - Keyboard shortcuts, editor/command context (right click in editor), command palette controls for quick access
   - Chat activity bar interface for request/response interaction
+  - Load/Save conversations from history
   - Export conversations to a file
   - Copy, Insert, Create new file out of GPT response.
   - Detailed request and response to/from to GPT APIs available in activity bar itself for better prompt engineering and debugging
@@ -71,7 +72,6 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
     - Collect definitions, strip them and pass on, etc.
     - Diff collection from a git branch for review
   - Additional features:
-    - Support GPT Edit API. Add configuration and VSCode shortcuts support for it.
     - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/)
 
 ## Installation

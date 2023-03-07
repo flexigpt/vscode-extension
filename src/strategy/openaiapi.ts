@@ -4,12 +4,13 @@ import {
   OpenAIApi,
   CreateChatCompletionRequestStop,
 } from "openai";
+import { CompletionRequest, EditRequest, Strategy } from "./strategy";
+
 import {
   ChatCompletionRequestMessage,
-  CompletionRequest,
-  EditRequest,
-  Strategy,
-} from "./strategy";
+  ChatCompletionRoleEnum,
+} from "./conversationspec";
+
 import { unescapeChars } from "./regexmatcher";
 
 export const chatCompletionModelsEnum = {
@@ -177,7 +178,6 @@ export default class OpenAIAPIStrategy implements Strategy {
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
     // log.info(`Input params read: ${JSON.stringify(inputParams, null, 2)}`);
-
     let completionRequest: CompletionRequest = {
       model: (inputParams?.model as string) || this.defaultChatCompletionModel,
       prompt: prompt,
@@ -207,21 +207,21 @@ export default class OpenAIAPIStrategy implements Strategy {
       user: (inputParams?.user as string) || undefined,
     };
 
+    if (completionRequest.prompt) {
+      let message: ChatCompletionRequestMessage = {
+        role: ChatCompletionRoleEnum.user,
+        content: completionRequest.prompt,
+      };
+      if (!completionRequest.messages) {
+        completionRequest.messages = [message];
+      } else {
+        completionRequest.messages.push(message);
+      }
+    }
+
     let chatModel = this.checkEnumValue(completionRequest.model);
     if (chatModel) {
-      if (completionRequest.prompt) {
-        let message: ChatCompletionRequestMessage = {
-          role: "user",
-          content: completionRequest.prompt,
-        };
-        if (!completionRequest.messages) {
-          completionRequest.messages = [message];
-        } else {
-          completionRequest.messages.push(message);
-        }
-        completionRequest.prompt = null;
-        // log.info(`Using chatmodel with messages: ${completionRequest.messages}`);
-      }
+      completionRequest.prompt = null;
     }
     return completionRequest;
   }

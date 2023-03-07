@@ -6,10 +6,8 @@ import { describe, it } from "mocha";
 // as well as import your extension to test it
 import * as vscode from "vscode";
 import OpenAIAPIStrategy from "../../strategy/openaiapi";
-import Provider, {
-  CompletionRequest,
-  ChatCompletionRequestMessage,
-} from "../../strategy/strategy";
+import Provider from "../../strategy/strategy";
+import {ChatCompletionRequestMessage, ChatCompletionRoleEnum} from "../../strategy/conversationspec";
 
 suite("CheckParams Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests for checkparams.");
@@ -29,7 +27,7 @@ suite("CheckParams Test Suite", () => {
   );
   const prompt = "Hello, how can I assist you?";
   const messages: ChatCompletionRequestMessage[] = [
-    { role: "user", content: "I need help with my account" },
+    { role: ChatCompletionRoleEnum.user, content: "I need help with my account" },
   ];
 
   test("should handle null prompt and null messages", () => {
@@ -61,12 +59,12 @@ suite("CheckParams Test Suite", () => {
   test("should handle undefined inputParams", () => {
     const completionParams = chatCompletion.checkAndPopulateCompletionParams(
       "Hello once",
-      [{ role: "user", content: "Hello twice" }]
+      [{ role: ChatCompletionRoleEnum.user, content: "Hello twice" }]
     );
     expect(completionParams).to.deep.equal({
       model: "gpt-3.5-turbo",
       prompt: null,
-      messages: [{ role: "user", content: "Hello twice" }, { role: "user", content: "Hello once" }],
+      messages: [{ role: ChatCompletionRoleEnum.user, content: "Hello twice" }, { role: ChatCompletionRoleEnum.user, content: "Hello once" }],
       suffix: undefined,
       maxTokens: 2048,
       temperature: 0.1,
@@ -121,7 +119,7 @@ suite("CheckParams Test Suite", () => {
   test("should handle happy path values in chat model", () => {
     const completionParams = chatCompletion.checkAndPopulateCompletionParams(
       "Hello2",
-      [{ role: "user", content: "Hello1" }],
+      [{ role: ChatCompletionRoleEnum.user, content: "Hello1" }],
       {
         model: "gpt-3.5-turbo",
         maxTokens: 1024,
@@ -156,7 +154,7 @@ suite("CheckParams Test Suite", () => {
   test("should handle happy path values in non chat model", () => {
     const completionParams = chatCompletion.checkAndPopulateCompletionParams(
       "Hello2",
-      [{ role: "user", content: "Hello1" }],
+      [{ role: ChatCompletionRoleEnum.user, content: "Hello1" }],
       {
         model: "curie",
         maxTokens: 1024,
@@ -171,7 +169,7 @@ suite("CheckParams Test Suite", () => {
     expect(completionParams).to.deep.equal({
       model: "curie",
       prompt: "Hello2",
-      messages: [{ role: "user", content: "Hello1" }],
+      messages: [{ role: "user", content: "Hello1" }, { role: "user", content: "Hello2" }],
       suffix: undefined,
       maxTokens: 1024,
       temperature: 0.5,

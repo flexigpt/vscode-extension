@@ -67,8 +67,14 @@
   let queuedQuestions = 0;
 
   let preDefinedQuestions = ["Ask anything"];
+  let preDefinedConversations = [
+    { label: -1, description: "Load conversation..." },
+  ];
   let questionInput = document.getElementById("question-input");
   let autoCompleteList = document.getElementById("commandAutocompleteList");
+  let conversationSelectElement = document.getElementById(
+    "conversation-select"
+  );
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
@@ -184,9 +190,9 @@
         });
 
         document.getElementById("in-progress")?.classList?.remove("hidden");
-        document
-          .getElementById("chat-button-wrapper")
-          ?.classList?.add("hidden");
+        // document
+        //   .getElementById("chat-button-wrapper")
+        //   ?.classList?.add("hidden");
         document.getElementById("introduction")?.classList?.add("hidden");
         list.lastChild?.scrollIntoView({
           behavior: "smooth",
@@ -361,6 +367,9 @@
           inline: "nearest",
         });
         break;
+      case "saveConversation":
+        saveConversation();
+        break;
       case "clearConversation":
         clearConversation();
         break;
@@ -373,10 +382,18 @@
       case "focus":
         focus();
         break;
-      case "setArray":
+      case "setCommandList":
         preDefinedQuestions = message.data.map(function (item) {
           return item.label;
         });
+        break;
+      case "setConversationList":
+        // console.log(`${JSON.stringify(message.data)}`);
+        preDefinedConversations = message.data.map(function (item) {
+          return { label: item.label, description: item.description };
+        });
+        populatePredefinedConversations();
+        // console.log(`predefinedConversations: ${JSON.stringify(preDefinedConversations)}`);
         break;
       default:
         break;
@@ -385,6 +402,13 @@
 
   const focus = () => {
     window.focus();
+  };
+
+  const addConversationList = () => {
+    vscode.postMessage({
+      type: "getConversationListForWebView",
+      value: "",
+    });
   };
 
   const addCommandList = () => {
@@ -406,6 +430,12 @@
     }
   };
 
+  const saveConversation = () => {
+    vscode.postMessage({
+      type: "saveConversation",
+    });
+  };
+
   const clearConversation = () => {
     document.getElementById("qa-list").innerHTML = "";
 
@@ -417,14 +447,8 @@
   };
 
   const exportConversation = () => {
-    const turndownService = new TurndownService({ codeBlockStyle: "fenced" });
-    turndownService.remove("no-export");
-    let markdown = turndownService.turndown(document.getElementById("qa-list"));
-
     vscode.postMessage({
-      type: "openNew",
-      value: markdown,
-      language: "markdown",
+      type: "exportConversation",
     });
   };
 
@@ -465,16 +489,16 @@
   document.addEventListener("click", (e) => {
     const targetButton = e.target.closest("button");
 
-    if (targetButton?.id === "more-button") {
-      e.preventDefault();
-      document
-        .getElementById("chat-button-wrapper")
-        ?.classList.toggle("hidden");
+    // if (targetButton?.id === "more-button") {
+    //   e.preventDefault();
+    //   document
+    //     .getElementById("chat-button-wrapper")
+    //     ?.classList.toggle("hidden");
 
-      return;
-    } else {
-      document.getElementById("chat-button-wrapper")?.classList.add("hidden");
-    }
+    //   return;
+    // } else {
+    //   document.getElementById("chat-button-wrapper")?.classList.add("hidden");
+    // }
 
     if (e.target?.id === "settings-button") {
       e.preventDefault();
@@ -495,6 +519,12 @@
     if (targetButton?.id === "ask-button") {
       e.preventDefault();
       addFreeTextQuestion();
+      return;
+    }
+
+    if (targetButton?.id === "save-button") {
+      e.preventDefault();
+      saveConversation();
       return;
     }
 
@@ -661,5 +691,55 @@
     while (autoCompleteList.firstChild) {
       autoCompleteList.removeChild(autoCompleteList.firstChild);
     }
+  });
+
+  const populatePredefinedConversations = () => {
+    // Loop through the array of messages and generate an option element for each one
+    // Use the message ID and a short excerpt of the 0th message as the title
+    // Store the full message object as a data attribute on the option element
+    // Use the index of the message in the array as the value of the option element
+    // Clear any existing options
+    conversationSelectElement.innerHTML =
+    '<option value="">Load conversation...</option>';
+    for (value of preDefinedConversations) {
+      if (value.label < 0) {
+        return;
+      }
+      const optionElement = document.createElement("option");
+      optionElement.value = value.label;
+      optionElement.setAttribute(
+        "data-message",
+        JSON.stringify(value)
+      );
+      // optionElement.textContent = description;
+      optionElement.text = value.description;
+      conversationSelectElement.appendChild(optionElement);
+      // console.log(`added option element: ${JSON.stringify(optionElement)}`);
+    }
+  };
+
+  conversationSelectElement.addEventListener("focus", function (event) {
+    addConversationList();
+    // populatePredefinedConversations();
+  });
+
+  // Add an event listener to the select element to listen for changes
+  conversationSelectElement.addEventListener("change", (event) => {
+    // Retrieve the selected option element and its associated message object
+    const selectedOption =
+    conversationSelectElement.options[
+      conversationSelectElement.selectedIndex
+      ];
+    const selectedMessage = JSON.parse(
+      selectedOption.getAttribute("data-message")
+    );
+    // console.log(`Got message: value ${selectedOption.value}, ${selectedOption.getAttribute("data-message")}, selected: ${JSON.stringify(selectedMessage)}`);
+
+    vscode.postMessage({
+      type: "loadConversation",
+      value: selectedMessage,
+    });
+    // Use the selected message object as needed
+    // console.log(selectedMessage);
   });
 })();

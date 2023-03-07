@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
-import * as prettier from 'prettier';
+import * as path from "path";
+
+import * as prettier from "prettier";
 import { v4 as uuidv4 } from "uuid";
 
 import Provider from "./strategy/strategy";
@@ -10,6 +12,11 @@ import { getOpenAIProvider } from "./setupstrategy";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import { getActiveDocumentLanguageID } from "./vscodeutils/vscodefunctions";
+import {
+  ConversationCollection,
+  loadConversations,
+} from "./strategy/conversation";
+import { ChatCompletionRoleEnum } from "./strategy/conversationspec";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -19,18 +26,14 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   // This variable holds a reference to the ChatGPTAPI instance
   private _apiProvider?: Provider;
   private _commandRunnerContext?: CommandRunnerContext;
-
+  private _conversationCollection?: ConversationCollection;
   private _response?: string;
   private _prompt?: string;
   private _fullPrompt?: string;
+  private _conversationHistoryPath?: string;
 
   public selectedInsideCodeblock = true;
   public pasteOnClick = false;
-
-  // private chatGptApi?: ChatGPTAPI;
-  // private chatGptConversation?: ChatGPTConversation;
-  // private sessionToken?: string;
-  // public subscribeToResponse: boolean;
 
   /**
    * Message to be rendered lazily if they haven't been rendered
@@ -49,11 +52,32 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     this._apiProvider = provider;
   }
 
+  public importConversations() {
+    // Get the base extension path
+    const extensionPath = this.context.extensionUri.fsPath;
+
+    // Define the path of the conversation history file relative to the extension path
+    this._conversationHistoryPath = path.join(
+      extensionPath,
+      "conversations.yml"
+    );
+
+    // Load conversations from the file
+    let conversations = loadConversations(this._conversationHistoryPath);
+    if (conversations) {
+      this._conversationCollection = conversations;
+    } else {
+      this._conversationCollection = new ConversationCollection();
+    }
+    this._conversationCollection.startNewConversation();
+    this.sendConversationListMessage();
+  }
+
   public setCommandRunnerContext(commandRunnerContext: CommandRunnerContext) {
     this._commandRunnerContext = commandRunnerContext;
   }
 
-  public importAllFiles() {
+  public importAllPromptFiles() {
     if (this._commandRunnerContext) {
       log.info("Importing files now");
       importAllPrompts(this._extensionUri, this._commandRunnerContext);
@@ -71,8 +95,31 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       description: c.description,
     }));
     this._view?.webview.postMessage({
-      type: "setArray",
+      type: "setCommandList",
       data: commandList,
+    });
+  }
+
+  private sendConversationListMessage() {
+    if (!this._conversationCollection || !this._conversationCollection.conversations) {
+      return;
+    }
+    if (this._conversationCollection.conversations.length === 1 && this._conversationCollection.conversations[0].getMessageStream().length === 0) {
+      return;  
+    }
+    let convoSlice = this._conversationCollection.conversations.slice(-20).reverse();
+    let conversationList: {label: number, description: string}[] = [];
+    for (const c of convoSlice){
+      if (c.getMessageStream().length > 0) {
+        conversationList.push({
+          label: c.id,
+          description: `${c.id}: ${c.getMessageStream()[0].content.substring(0, 32)}...`,
+        });
+      }
+    }
+    this._view?.webview.postMessage({
+      type: "setConversationList",
+      data: conversationList,
     });
   }
 
@@ -106,9 +153,35 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         //   this.search(data.value);
         //   break;
         // }
-        // case 'clearConversation':
-        // 	this.prepareConversation(true);
-        // 	break;
+        case "clearConversation":
+          this._conversationCollection?.saveAndStartNewConversation(
+            this._conversationHistoryPath
+          );
+          break;
+        case "saveConversation":
+          this._conversationCollection?.saveCurrentConversation(
+            this._conversationHistoryPath
+          );
+          break;
+        case "exportConversation":
+          const conversationYaml =
+            this._conversationCollection?.currentConversation.getConversationYML();
+          if (!conversationYaml) {
+            break;
+          }
+          const convoDocument = await vscode.workspace.openTextDocument({
+            content: conversationYaml,
+            language: "yaml",
+          });
+          vscode.window.showTextDocument(convoDocument);
+          break;
+        case "loadConversation":
+          let msg = data.value;
+          // log.info(`loading conversation for ${JSON.stringify(msg)}`);
+          this._conversationCollection?.setConversationAsActive(
+            msg.label
+          );
+          break;
         case "prompt": {
           this.search(data.value);
           break;
@@ -121,13 +194,15 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         case "openNew":
           const document = await vscode.workspace.openTextDocument({
             content: data.value,
-            language: data.language,
           });
           vscode.window.showTextDocument(document);
           break;
         case "getCommandListForWebView":
           this.sendCommandListMessage();
           break;
+        case "getConversationListForWebView":
+            this.sendConversationListMessage();
+            break;
         case "focus":
           vscode.commands.executeCommand(
             "workbench.action.focusActiveEditorGroup"
@@ -184,33 +259,13 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     await this._view?.webview.postMessage(message);
   }
 
-  private getSelectedText(prompt: string): string {
-    // Get the selected text of the active editor
-    const selection = vscode.window.activeTextEditor?.selection;
-    const selectedText =
-      vscode.window.activeTextEditor?.document.getText(selection);
-    let searchPrompt = prompt;
-    if (selection && selectedText) {
-      // If there is a selection, add the prompt and the selected text to the search prompt
-      if (this.selectedInsideCodeblock) {
-        searchPrompt = `${prompt}\n\`\`\`\n${selectedText}\n\`\`\``;
-      } else {
-        searchPrompt = `${prompt}\n${selectedText}\n`;
-      }
-    } else {
-      // Otherwise, just use the prompt if user typed it
-      searchPrompt = prompt;
-    }
-    return searchPrompt;
-  }
-
   async sendAPIRequest(
     inPrompt: string,
     uuid: string,
     suffix?: string
   ): Promise<string> {
     let response: string;
-    let fullResponse = "";
+    let fullResponseStr = "";
     try {
       let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
         inPrompt,
@@ -227,12 +282,20 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
       var crequest = this._apiProvider?.checkAndPopulateCompletionParams(
         question,
-        null,
-        command.requestparams,
+        this._conversationCollection?.currentConversation?.getMessagesAsRequests() ||
+          null,
+        command.requestparams
       );
       if (crequest) {
+        if (crequest.messages && crequest.messages.length >= 1) {
+          this._conversationCollection?.addMessagesToCurrent([
+            crequest.messages[crequest.messages.length - 1],
+          ]);
+        }
         const crequestJsonStr = JSON.stringify(crequest, null, 2);
-        const crequestStr = prettier.format(crequestJsonStr, { parser: 'json' });
+        const crequestStr = prettier.format(crequestJsonStr, {
+          parser: "json",
+        });
         // log.info(`sending api request. Full request: ${crequestStr}`);
         await this.sendMessage({
           type: "addQuestion",
@@ -241,22 +304,40 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           fullapi: crequestStr,
         });
 
-        let completionResponse = (await this._apiProvider?.completion(crequest));
+        let completionResponse = await this._apiProvider?.completion(crequest);
         // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
-        
+
         response = completionResponse?.data as string | "";
         // log.info(`Got response: ${response}`);
-
-        if (!response){
+        if (!response) {
           response = "Got empty response";
         }
-        fullResponse = completionResponse?.fullResponse;  
-        this._commandRunnerContext?.processAnswer(command, response, getActiveDocumentLanguageID());
-        let processedResponse = this._commandRunnerContext?.systemVariableContext.getVariable(systemVariableNames.answer);
+        fullResponseStr = JSON.stringify(
+          completionResponse?.fullResponse,
+          null,
+          2
+        );
+        if (completionResponse?.fullResponse?.choices[0]?.message) {
+          this._conversationCollection?.addMessagesToCurrent([
+            completionResponse?.fullResponse?.choices[0]?.message,
+          ]);
+        } else {
+          this._conversationCollection?.addMessagesToCurrent([
+            { role: "assistant" as ChatCompletionRoleEnum, content: response },
+          ]);
+        }
+        this._commandRunnerContext?.processAnswer(
+          command,
+          response,
+          getActiveDocumentLanguageID()
+        );
+        let processedResponse =
+          this._commandRunnerContext?.systemVariableContext.getVariable(
+            systemVariableNames.answer
+          );
         if (processedResponse) {
           response = processedResponse;
         }
-
       } else {
         throw Error("Could not process request");
       }
@@ -264,8 +345,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       log.error(e);
       response = `[ERROR] ${e}`;
     }
-    const cresponseJsonStr = JSON.stringify(fullResponse, null, 2);
-    const cresponseStr = prettier.format(cresponseJsonStr, { parser: 'json' });
+    const cresponseStr = prettier.format(fullResponseStr, { parser: "json" });
     await this.sendMessage({
       type: "addResponse",
       value: response,
@@ -358,6 +438,13 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 			</head>
 			<body class="overflow-hidden">
 				<div class="flex flex-col h-screen">
+          <select id="conversation-select" class="flex gap-3 p-2 flex-wrap items-center justify-end w-full shadow-sm sm:text-sm input-background rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="w-4 h-4">
+                <path fill="none" d="M0 0h24v24H0z"/>
+                <path stroke="currentColor" stroke-width="1.5"  fill="none" d="M6.455 19L2 22.5V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.455zM13 11h3l-4-4-4 4h3v4h2v-4z"/>
+            </svg>
+            <option value="">Load a conversation...</option>
+          </select>
 					<div id="introduction" class="flex h-full items-center justify-center px-6 w-full relative">
 						<div class="flex items-start text-center gap-3.5">
 							<div class="flex flex-col gap-3.5 flex-1">
@@ -388,7 +475,7 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 						</div>
 					</div>
 
-					<div class="flex-1 overflow-y-auto" id="qa-list"></div>
+          <div class="flex-1 overflow-y-auto" id="qa-list"></div>
 
 					<div id="in-progress" class="pl-4 pt-2 flex items-center hidden">
 						<div class="typing">Typing</div>
@@ -400,15 +487,23 @@ function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
 					</div>
 
 					<div id="chat-button-wrapper" class="w-full flex gap-4 justify-center items-center mt-2 hidden">
+            <button class="flex gap-2 justify-center items-center rounded-lg p-2 bg-gray-100 text-gray-700 hover:bg-gray-200" id="save-button">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 19V5C3 3.89543 3.89543 3 5 3H16.1716C16.702 3 17.2107 3.21071 17.5858 3.58579L20.4142 6.41421C20.7893 6.78929 21 7.29799 21 7.82843V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M8.6 9H15.4C15.7314 9 16 8.73137 16 8.4V3.6C16 3.26863 15.7314 3 15.4 3H8.6C8.26863 3 8 3.26863 8 3.6V8.4C8 8.73137 8.26863 9 8.6 9Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M18 13.6V21H6V13.6C6 13.2686 6.26863 13 6.6 13H17.4C17.7314 13 18 13.2686 18 13.6Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              </svg>          
+              Save
+            </button>
 						<button class="flex gap-2 justify-center items-center rounded-lg p-2" id="clear-button">
 							<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
-							Clear conversation
+							Clear
 						</button>
 						<button class="flex gap-2 justify-center items-center rounded-lg p-2" id="export-button">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
 							</svg>
-							Export all
+							Export
 						</button>
 					</div>
 

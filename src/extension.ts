@@ -30,7 +30,7 @@ function registerCommands(
   const commandAsk = vscode.commands.registerCommand(
     "flexigpt.ask",
     async () => {
-      provider.importAllFiles();
+      provider.importAllPromptFiles();
       provider.setFocus();
     }
   );
@@ -46,6 +46,7 @@ function registerCommands(
   // context.subscriptions.push(commandAsk);
 }
 
+
 function registerEvents(
   context: vscode.ExtensionContext,
   provider: ChatViewProvider
@@ -54,9 +55,9 @@ function registerEvents(
   vscode.workspace.onDidChangeConfiguration(
     (event: vscode.ConfigurationChangeEvent) => {
       if (event.affectsConfiguration("flexigpt.promptFiles")) {
-        provider.importAllFiles();
+        provider.importAllPromptFiles();
       } else if (event.affectsConfiguration("flexigpt.inBuiltPrompts")) {
-        provider.importAllFiles();
+        provider.importAllPromptFiles();
       } else if (event.affectsConfiguration("flexigpt.openai.timeout")) {
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
@@ -65,20 +66,25 @@ function registerEvents(
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);
-      } else if (event.affectsConfiguration("flexigpt.openai.defaultCompletionModel")) {
+      } else if (
+        event.affectsConfiguration("flexigpt.openai.defaultCompletionModel")
+      ) {
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);
-      } else if (event.affectsConfiguration("flexigpt.openai.defaultChatCompletionModel")) {
+      } else if (
+        event.affectsConfiguration("flexigpt.openai.defaultChatCompletionModel")
+      ) {
+        // add the new token to the provider
+        const apiProvider = getOpenAIProvider();
+        provider.setAPIProvider(apiProvider);
+      } else if (
+        event.affectsConfiguration("flexigpt.openai.defaultEditModel")
+      ) {
         // add the new token to the provider
         const apiProvider = getOpenAIProvider();
         provider.setAPIProvider(apiProvider);
       }
-      else if (event.affectsConfiguration("flexigpt.openai.defaultEditModel")) {
-        // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
-      }    
     }
   );
 }
@@ -96,7 +102,8 @@ export function activate(context: vscode.ExtensionContext) {
   registerCommands(context, provider);
   registerEvents(context, provider);
   registerWebView(context, provider);
-  provider.importAllFiles();
+  provider.importConversations();
+  provider.importAllPromptFiles();
   log.info("FlexiGPT is now active!");
 }
 
