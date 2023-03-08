@@ -1,16 +1,3 @@
-/**
- * @author Ali Gençay
- * https://github.com/gencay/vscode-chatgpt
- *
- * @license
- * Copyright (c) 2022 - Present, Ali Gençay
- *
- * All rights reserved. Code licensed under the MIT license
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- */
-
 // @ts-nocheck
 
 (function () {
@@ -386,6 +373,8 @@
         preDefinedQuestions = message.data.map(function (item) {
           return item.label;
         });
+        // populatePredefinedQuestions();
+        populateQuestionsFilteredByInput();
         break;
       case "setConversationList":
         // console.log(`${JSON.stringify(message.data)}`);
@@ -631,16 +620,20 @@
       // console.log("found accordian item");
       targetAccordionItem.classList.toggle("active");
     }
+
+    let autoList = document.getElementById("commandAutocompleteList");
+    // Collapse autocomplete list if click is outside it
+    if (autoList && !autoList.contains(e.target)) {
+      while (autoList.firstChild) {
+        autoList.removeChild(autoList.firstChild);
+      }
+    }
   });
 
-  // Listen for input changes
-  questionInput.addEventListener("input", function () {
-    // Clear the list
-    while (autoCompleteList.firstChild) {
-      autoCompleteList.removeChild(autoCompleteList.firstChild);
-    }
+  const populateQuestionsFilteredByInput = () => {
     // Get the input value
     let inputValue = questionInput.value;
+    
     // Filter the list based on the input value
     let filteredList = preDefinedQuestions.filter(function (string) {
       return (
@@ -648,38 +641,40 @@
         inputValue.toLowerCase()
       );
     });
-    filteredList.reverse();
+
+    filteredList.sort((a, b) => {
+      if (a > b) {
+        return -1;
+      } else if (b > a) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    // filteredList.reverse();
+
+    // Clear the list
+    while (autoCompleteList.firstChild) {
+      autoCompleteList.removeChild(autoCompleteList.firstChild);
+    }
+
     // Populate the autocomplete list with filtered items
     for (let i = 0; i < filteredList.length; i++) {
       let item = document.createElement("div");
       item.innerHTML = filteredList[i];
       autoCompleteList.appendChild(item);
     }
+  };
+
+  // Listen for input changes
+  questionInput.addEventListener("input", function () {
+    populateQuestionsFilteredByInput();
   });
 
   // Listen for clicks on the textarea
   questionInput.addEventListener("click", function () {
-    // Clear the list
-    while (autoCompleteList.firstChild) {
-      autoCompleteList.removeChild(autoCompleteList.firstChild);
-    }
-    // Get the input value
-    let inputValue = questionInput.value;
     addCommandList();
-    // Filter the list based on the input value
-    let filteredList = preDefinedQuestions.filter(function (string) {
-      return (
-        string.substr(0, inputValue.length).toLowerCase() ===
-        inputValue.toLowerCase()
-      );
-    });
-
-    // Populate the autocomplete list with filtered items
-    for (let i = 0; i < filteredList.length; i++) {
-      let item = document.createElement("div");
-      item.innerHTML = filteredList[i];
-      autoCompleteList.appendChild(item);
-    }
+    populateQuestionsFilteredByInput();
   });
 
   // Listen for item clicks
@@ -720,7 +715,6 @@
 
   conversationSelectElement.addEventListener("focus", function (event) {
     addConversationList();
-    // populatePredefinedConversations();
   });
 
   // Add an event listener to the select element to listen for changes

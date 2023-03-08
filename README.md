@@ -2,7 +2,11 @@
 
 Interact with GPT AI models (GPT3, ChatGPT, etc) as a power user.
 
-FlexiGPT is a Visual Studio Code extension that allows you to interact with GPT AI models (GPT3, ChatGPT, etc) as a power user. It provides an easy-to-use interface for generating and using prompts with these models, as well as customizing the configuration to your needs.
+FlexiGPT offers pre-defined prompts enriched with custom or predefined functions that can be engineered and fine-tuned to meet specific user needs. Prompts can be saved and used directly within VSCode, and the extension supports request parameter modifications for GPT APIs and post-processing response via responseHandlers in prompts.
+
+Users can use a chat activity bar interface for request/response interaction, load/save conversations from history, export conversations to a file, and copy/insert/create new files out of GPT response.
+
+FlexiGPT also offers a variety of UI and access features, including keyboard shortcuts, editor/command context, and command palette controls, making it easy to use and customizable.
 
 Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ppipada.flexigpt)
 
@@ -57,22 +61,22 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 - UI and access
 
-  - Keyboard shortcuts, editor/command context (right click in editor), command palette controls for quick access
   - Chat activity bar interface for request/response interaction
   - Load/Save conversations from history
   - Export conversations to a file
   - Copy, Insert, Create new file out of GPT response.
   - Detailed request and response to/from to GPT APIs available in activity bar itself for better prompt engineering and debugging
+  - Keyboard shortcuts, editor/command context (right click in editor), command palette controls for quick access
 
-- Detailed TODO:
+- Immediate term TODO:
 
+  - Additional features:
+    - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/)
   - Prompt files:
     - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
     - Collect definitions, strip them and pass on, etc.
     - Diff collection from a git branch for review
-  - Additional features:
-    - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/)
 
 ## Installation
 
@@ -126,7 +130,7 @@ Options:
 
   - To ask GPT AI models (GPT3, ChatGPT, etc) anything you want, use the `FlexiGPT: Ask` command from the Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`) or by using the `Ctrl` + `Alt` + `G` keyboard shortcut.
   - This should open the FlexiGPT activity bar with an input text box.
-  - On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode takes some time to load a dynamic list from file.)
+  - On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode may take some time to load dynamic lists from files.)
 
 - Ask something
 

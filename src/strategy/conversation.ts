@@ -231,10 +231,16 @@ export function loadConversations(
       id: number;
       messages: IMessage[];
     }[];
-    conversations.sort((a, b) => a.id - b.id);
+
+    if (!conversations) {
+      log.info(`No conversations found in ${filePath}`);
+      return conversationCollection;
+    }
+
     if (!Array.isArray(conversations)) {
       throw new Error("Invalid conversations file format");
     }
+    conversations.sort((a, b) => a.id - b.id);
 
     for (const conversationData of conversations) {
       if (
