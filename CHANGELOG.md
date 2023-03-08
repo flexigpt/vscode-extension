@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.7.3] - 2023-03-08
+## [v0.7.3]
 
 ### Added
 
@@ -11,7 +11,7 @@
 
 - Gitignore conversations.
 
-## [v0.7.2] - 2023-03-08
+## [v0.7.2]
 
 ### Added
 
@@ -22,13 +22,13 @@
 - Issue 3.
 - Add tests.
 
-## [v0.7.1] - 2023-03-08
+## [v0.7.1]
 
 ### Added
 
 - Chatintegrate initial.
 
-## [v0.7.0] - 2023-03-08
+## [v0.7.0]
 
 ### Added
 
@@ -39,13 +39,13 @@
 
 - Icon change.
 
-## [v0.6.1] - 2023-03-08
+## [v0.6.1]
 
 ### Changed
 
 - Logo change.
 
-## [v0.6.0] - 2023-03-08
+## [v0.6.0]
 
 ### Added
 
@@ -55,7 +55,7 @@
 
 - Icon change.
 
-## [v0.5.0] - 2023-03-08
+## [v0.5.0]
 
 ### Added
 
