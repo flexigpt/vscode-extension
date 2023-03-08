@@ -38,7 +38,12 @@ export function getValueWithKey(key: string, variables: Record<string, any>): an
     if (typeof value !== "object" || value === null) {
       return key;
     }
-    value = value[k];
+    const getter = value[k];
+    if (typeof getter === 'function') {
+      value = getter();
+    } else {
+      value = getter;
+    }
   }
   return value ?? key;
 }

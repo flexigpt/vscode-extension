@@ -66,9 +66,9 @@ export class CommandRunnerContext {
   runResponseHandler(
     responseHandler: string | { func: string; args: any } | undefined
   ): any {
-    let system = this.systemVariableContext.getVariables();
+    let system = this.systemVariableContext.getVariablesWithGetters();
     let functions = this.functionContext.getFunctions();
-    let user = this.userVariableContext.getVariables(system, functions);
+    let user = this.userVariableContext.getVariablesWithGetters(system, functions);
     let variables = { system, user };
 
     let functionName: string;
@@ -172,9 +172,9 @@ export class CommandRunnerContext {
     suffix?: string
   ): { question: string; command: Command } {
     let command = this.findCommand(text);
-    const system = this.systemVariableContext.getVariables();
+    const system = this.systemVariableContext.getVariablesWithGetters();
     const functions = this.functionContext.getFunctions();
-    const user = this.userVariableContext.getVariables(system, functions);
+    const user = this.userVariableContext.getVariablesWithGetters(system, functions);
     let question = command.prepare(system, user);
     if (suffix) {
       question += suffix;

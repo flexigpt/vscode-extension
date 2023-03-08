@@ -332,7 +332,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           getActiveDocumentLanguageID()
         );
         let processedResponse =
-          this._commandRunnerContext?.systemVariableContext.getVariable(
+          this._commandRunnerContext?.systemVariableContext.getVariableValue(
             systemVariableNames.answer
           );
         if (processedResponse) {

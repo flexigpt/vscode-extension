@@ -263,16 +263,17 @@ module.exports = {
 
 #### Predefined System Variables
 
-| Variable Name        | Description                         |
-| -------------------- | ----------------------------------- |
-| system.selection     | Selected text in editor             |
-| system.question      | OpenAI question                     |
-| system.answer        | OpenAI answer                       |
-| system.language      | Programming language of active file |
-| system.baseFolder    | Project base path                   |
-| system.fileName      | Name of active file                 |
-| system.filePath      | Full path of active file            |
-| system.fileExtension | Extension of active file            |
+| Variable Name           | Description                         |
+| ----------------------- | ----------------------------------- |
+| system.selection        | Selected text in editor             |
+| system.question         | OpenAI question                     |
+| system.answer           | OpenAI answer                       |
+| system.language         | Programming language of active file |
+| system.baseFolder       | Project base path                   |
+| system.fileName         | Name of active file                 |
+| system.filePath         | Full path of active file            |
+| system.fileExtension    | Extension of active file            |
+| system.commitAndTagList | Last 25 commits and associated tags |
 
 Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
 

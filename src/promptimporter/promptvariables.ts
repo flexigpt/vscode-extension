@@ -19,6 +19,21 @@ export class Variable {
       return this.getter(params, functions);
     }
   }
+
+  prepareGetter(params: any, functions: any): () => any {
+    let g = this.getter;
+    let value = this._value;
+    return function(): any {
+      // console.log(`Getting value for ${param1} and ${param2}`);
+      // Calculate value based on parameters
+      if (value) {
+        return value;
+      }
+      if (g) {
+        return g(params, functions);
+      }
+    };
+  }
 }
 
 export class VariableContext {
@@ -32,18 +47,18 @@ export class VariableContext {
     this.variables[variable.name] = variable;
   }
 
-  getVariables(params?: any, functions?: any): { [key: string]: any } {
+  getVariablesWithGetters(params?: any, functions?: any): { [key: string]: any } {
     const result: { [key: string]: any } = {};
     Object.keys(this.variables).forEach((key) => {
       const variable = this.variables[key];
       if (variable) {
-        result[key] = variable.get(params, functions);
+        result[key] = variable.prepareGetter(params, functions);
       }
     });
     return result;
   }
 
-  getVariable(key: string, params?: any, functions?: any): any {
+  getVariableValue(key: string, params?: any, functions?: any): any {
     let ret = this.variables[key];
     if (ret) {
       return ret.get(params, functions);

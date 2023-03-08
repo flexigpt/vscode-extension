@@ -408,15 +408,15 @@
   };
 
   const addFreeTextQuestion = () => {
-    const input = document.getElementById("question-input");
+    let input = document.getElementById("question-input");
     if (input.value?.length > 0) {
       vscode.postMessage({
         type: "addFreeTextQuestion",
         value: input.value,
       });
-
       input.value = "";
     }
+    input.rows = 1;
   };
 
   const saveConversation = () => {

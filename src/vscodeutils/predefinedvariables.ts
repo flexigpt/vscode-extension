@@ -10,4 +10,5 @@ export const systemVariableNames: { [key: string]: string } = {
     fileFolder: "fileFolder",
     fileExtension: "fileExtension",
     extensionUri: "extensionUri",
+    commitAndTagList: "commitAndTagList",
   };

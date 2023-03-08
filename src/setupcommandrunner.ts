@@ -15,6 +15,7 @@ import {
 
 import { Variable } from "./promptimporter/promptvariables";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
+import { getCommitAndTagListString } from "./vscodeutils/gitfunctions";
 
 export function setupCommandRunnerContext(
   context: vscode.ExtensionContext
@@ -58,6 +59,9 @@ function initDocumentContext(commandRunnerContext: CommandRunnerContext) {
   );
   commandRunnerContext.setSystemVariable(
     new Variable(systemVariableNames.fileFolder, getActiveDocumentFileFolder)
+  );
+  commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.commitAndTagList, getCommitAndTagListString)
   );
 }
 
