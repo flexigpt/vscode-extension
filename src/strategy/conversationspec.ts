@@ -11,6 +11,14 @@ export interface IMessage {
   name?: string;
 }
 
+export interface IView {
+  type: string,
+  value: string,
+  id: string,
+  full: string,
+  params?: { [key: string]: any } 
+}
+
 /**
  *
  * @export

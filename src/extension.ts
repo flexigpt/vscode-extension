@@ -109,3 +109,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+// INTERNAL TODOS:
+// - Args in command prompts as input
+// - Changelog prompt betterment after args are done.
+// - Add functionality to discover tags and then use them to generate change logs. Better to have ability to edit tags as well.
+// - Encorporate changelog additions in publishing workflow?

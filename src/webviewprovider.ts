@@ -16,7 +16,7 @@ import {
   ConversationCollection,
   loadConversations,
 } from "./strategy/conversation";
-import { ChatCompletionRoleEnum } from "./strategy/conversationspec";
+import { ChatCompletionRoleEnum, IView } from "./strategy/conversationspec";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -61,7 +61,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       extensionPath,
       "conversations.yml"
     );
-
+    log.info("Conversation history path: " + this._conversationHistoryPath);
     // Load conversations from the file
     let conversations = loadConversations(this._conversationHistoryPath);
     if (conversations) {
@@ -100,20 +100,42 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     });
   }
 
-  private sendConversationListMessage() {
-    if (!this._conversationCollection || !this._conversationCollection.conversations) {
+  private sendConversationsViewMessage(views: IView[] | undefined) {
+    if (!views) {
       return;
     }
-    if (this._conversationCollection.conversations.length === 1 && this._conversationCollection.conversations[0].getMessageStream().length === 0) {
-      return;  
+    // log.info("Sending conversations view message:" + JSON.stringify(views));
+    this._view?.webview.postMessage({
+      type: "setConversationsView",
+      data: views,
+    });
+  }
+
+  private sendConversationListMessage() {
+    if (
+      !this._conversationCollection ||
+      !this._conversationCollection.conversations
+    ) {
+      return;
     }
-    let convoSlice = this._conversationCollection.conversations.slice(-20).reverse();
-    let conversationList: {label: number, description: string}[] = [];
-    for (const c of convoSlice){
+    if (
+      this._conversationCollection.conversations.length === 1 &&
+      this._conversationCollection.conversations[0].getMessageStream()
+        .length === 0
+    ) {
+      return;
+    }
+    let convoSlice = this._conversationCollection.conversations
+      .slice(-20)
+      .reverse();
+    let conversationList: { label: number; description: string }[] = [];
+    for (const c of convoSlice) {
       if (c.getMessageStream().length > 0) {
         conversationList.push({
           label: c.id,
-          description: `${c.id}: ${c.getMessageStream()[0].content.substring(0, 32)}...`,
+          description: `${c.id}: ${c
+            .getMessageStream()[0]
+            .content.substring(0, 32)}...`,
         });
       }
     }
@@ -155,12 +177,14 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         // }
         case "clearConversation":
           this._conversationCollection?.saveAndStartNewConversation(
-            this._conversationHistoryPath
+            this._conversationHistoryPath,
+            true
           );
           break;
         case "saveConversation":
           this._conversationCollection?.saveCurrentConversation(
-            this._conversationHistoryPath
+            this._conversationHistoryPath,
+            true
           );
           break;
         case "exportConversation":
@@ -178,9 +202,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         case "loadConversation":
           let msg = data.value;
           // log.info(`loading conversation for ${JSON.stringify(msg)}`);
-          this._conversationCollection?.setConversationAsActive(
-            msg.label
-          );
+          this._conversationCollection?.setConversationAsActive(msg.label);
+          this.sendConversationsViewMessage(this._conversationCollection?.currentConversation.views);
           break;
         case "prompt": {
           this.search(data.value);
@@ -201,8 +224,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           this.sendCommandListMessage();
           break;
         case "getConversationListForWebView":
-            this.sendConversationListMessage();
-            break;
+          this.sendConversationListMessage();
+          break;
         case "focus":
           vscode.commands.executeCommand(
             "workbench.action.focusActiveEditorGroup"
@@ -303,6 +326,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           id: uuid,
           fullapi: crequestStr,
         });
+        this._conversationCollection?.addViewsToCurrent([
+          { type: "addQuestion", value: inPrompt, id: uuid, full: crequestStr },
+        ]);
 
         let completionResponse = await this._apiProvider?.completion(crequest);
         // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
@@ -354,6 +380,15 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       fullResponse: cresponseStr,
       docLanguage: getActiveDocumentLanguageID(),
     });
+    this._conversationCollection?.addViewsToCurrent([
+      {
+        type: "addResponse",
+        value: response,
+        id: uuid,
+        full: cresponseStr,
+        params: { done: true, docLanguage: getActiveDocumentLanguageID() },
+      },
+    ]);
     if (!response) {
       throw Error("Could not get response from Provider.");
     }

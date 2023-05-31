@@ -2,29 +2,11 @@
 
 (function () {
   const vscode = acquireVsCodeApi();
-  // var renderer = new marked.Renderer();
-  // renderer.code = function (code, language) {
-  //   return (
-  //     '<pre><code class="hljs ' +
-  //     language +
-  //     '">' +
-  //     hljs.highlight(language, code).value +
-  //     "</code></pre>"
-  //   );
-  // };
   marked.setOptions({
     renderer: new marked.Renderer(),
-    // renderer: renderer,
     highlight: function (code, lang) {
       return hljs.highlightAuto(code).value;
-      // return `<pre><code class="hljs hljs-wrap language-${language}">${highlighted}</code></pre>`;
-      // if (lang && hljs.getLanguage(lang)) {
-      //   return hljs.highlight(lang, code).value;
-      // } else {
-      //   return hljs.highlightAuto(code).value;
-      // }
     },
-    // langPrefix: "hljs language-",
     pedantic: false,
     gfm: true,
     breaks: true,
@@ -77,7 +59,7 @@
           );
         }
         const fullPrompt = hljs.highlight("json", message.fullapi).value;
-        const fullPromptHTML = `<pre class="input-background p-2 pb-2 block whitespace-pre overflow-x-scroll pre-wrap break-word max-w-[80ch]"><code>${fullPrompt}</code></pre>`;
+        const fullPromptHTML = `<pre class="input-background p-2 pb-2 block whitespace-pre overflow-x-auto pre-wrap break-word max-w-[80ch]"><code>${fullPrompt}</code></pre>`;
 
         list.innerHTML += `<div class="p-2 self-end mt-1 question-element-gnc relative input-background">
                         <h7 class="mb-1 flex">${userSvg}You</h7>
@@ -115,7 +97,7 @@
             "pb-1",
             "block",
             "whitespace-pre",
-            "overflow-x-scroll",
+            "overflow-x-auto",
             "pre-wrap",
             "break-word",
             "max-w-[80ch]"
@@ -177,9 +159,6 @@
         });
 
         document.getElementById("in-progress")?.classList?.remove("hidden");
-        // document
-        //   .getElementById("chat-button-wrapper")
-        //   ?.classList?.add("hidden");
         document.getElementById("introduction")?.classList?.add("hidden");
         list.lastChild?.scrollIntoView({
           behavior: "smooth",
@@ -205,7 +184,7 @@
               "json",
               message.fullResponse
             ).value;
-            const fullRPromptHTML = `<pre class="input-background p-2 pb-2 block whitespace-pre overflow-x-scroll pre-wrap break-word max-w-[80ch]"><code>${fullRPrompt}</code></pre>`;
+            const fullRPromptHTML = `<pre class="input-background p-2 pb-2 block whitespace-pre overflow-x-auto pre-wrap break-word max-w-[80ch]"><code>${fullRPrompt}</code></pre>`;
             markedResponse += `<br><div class="accordion rounded-lg">
                               <div class="accordion-item rounded-lg" id=fullresponse-${message.id}>
                                 <div class="accordion-title">
@@ -244,7 +223,7 @@
               "pb-1",
               "block",
               "whitespace-pre",
-              "overflow-x-scroll",
+              "overflow-x-auto",
               "pre-wrap",
               "break-word",
               "max-w-[80ch]"
@@ -384,6 +363,26 @@
         populatePredefinedConversations();
         // console.log(`predefinedConversations: ${JSON.stringify(preDefinedConversations)}`);
         break;
+      case "setConversationsView":
+        clearView();
+        message.data.forEach((chatMessage) => {
+          // Construct the event data
+          let eventData = {
+            type: chatMessage.type,
+            value: chatMessage.value,
+            id: chatMessage.id,
+          };
+
+          if (chatMessage.type === "addQuestion") {
+            eventData["fullapi"] = chatMessage.full;
+          } else if (chatMessage.type === "addResponse") {
+            eventData["fullResponse"] = chatMessage.full;
+            eventData["done"] = chatMessage.params?.done;
+            eventData["docLanguage"] = chatMessage.params?.docLanguage;
+          }
+          // Dispatch the event as if it was received from the extension
+          window.dispatchEvent(new MessageEvent("message", { data: eventData }));
+        });
       default:
         break;
     }
@@ -425,11 +424,14 @@
     });
   };
 
-  const clearConversation = () => {
+  const clearView = () => {
     document.getElementById("qa-list").innerHTML = "";
 
     document.getElementById("introduction")?.classList?.remove("hidden");
+  };
 
+  const clearConversation = () => {
+    clearView();
     vscode.postMessage({
       type: "clearConversation",
     });
@@ -459,35 +461,8 @@
     }
   });
 
-  // document.addEventListener("mousedown", (event) => {
-  //   console.log(JSON.stringify(event));
-  //   let autoList = document.getElementById("commandAutocompleteList");
-  //   if (autoList) {
-  //     if (
-  //       !questionInput.contains(event.target) &&
-  //       !autoList.contains(event.target)
-  //     ) {
-  //       // Clear the list
-  //       while (autoCompleteList.firstChild) {
-  //         autoCompleteList.removeChild(autoCompleteList.firstChild);
-  //       }
-  //     }
-  //   }
-  // });
-
   document.addEventListener("click", (e) => {
     const targetButton = e.target.closest("button");
-
-    // if (targetButton?.id === "more-button") {
-    //   e.preventDefault();
-    //   document
-    //     .getElementById("chat-button-wrapper")
-    //     ?.classList.toggle("hidden");
-
-    //   return;
-    // } else {
-    //   document.getElementById("chat-button-wrapper")?.classList.add("hidden");
-    // }
 
     if (e.target?.id === "settings-button") {
       e.preventDefault();

@@ -7,15 +7,18 @@ import {
   ChatCompletionRequestMessage,
   ChatCompletionResponseMessage,
   IMessage,
+  IView
 } from "./conversationspec";
 
 export class Conversation {
   private messages: IMessage[];
   public id: number;
+  public views: IView[];
 
   constructor(id: number) {
     this.messages = [];
     this.id = id;
+    this.views = [];
   }
 
   public isEmpty(): boolean {
@@ -24,6 +27,10 @@ export class Conversation {
 
   public addIMessages(messages: IMessage[]) {
     this.messages = this.messages.concat(messages);
+  }
+
+  public addIViews(views: IView[]) {
+    this.views = this.views.concat(views);
   }
 
   public addMessage(
@@ -71,7 +78,7 @@ export class Conversation {
     return messages;
   }
 
-  public getConversationYML(): string {
+  public getConversationYML(getViews: boolean = false): string {
     if (this.messages.length === 0) {
       return "";
     }
@@ -83,18 +90,32 @@ export class Conversation {
       content: message.content,
     }));
 
-    const conversationYaml = yaml.dump([
+    if (getViews && this.views.length !== 0) {
+      const views = this.views.map((view) => ({
+        type: view.type,
+        value: view.value,
+        id: view.id,
+        full: view.full,
+        params: view.params,
+      }));
+      return yaml.dump([
+        {
+          id: this.id,
+          messages: messages,
+          views: views,
+        },
+      ]);
+    }
+    return yaml.dump([
       {
         id: this.id,
         messages: messages,
       },
     ]);
-
-    return conversationYaml;
   }
 
-  public exportConversation(filePath: string): void {
-    const conversationYaml = this.getConversationYML();
+  public exportConversation(filePath: string, setViews: boolean = false): void {
+    const conversationYaml = this.getConversationYML(setViews);
     if (!conversationYaml) {
       return;
     }
@@ -139,14 +160,14 @@ export class ConversationCollection {
     }
   }
 
-  public startNewConversation(exportFilePath?: string): void {
+  public startNewConversation(exportFilePath?: string, setViews: boolean = false): void {
     if (!this._currentConversation.isEmpty()) {
       if (this._conversations.length >= this._maxConversations) {
         // Remove the oldest conversation
         const oldestConversation = this._conversations.shift();
       }
       // Save the current conversation before starting a new one
-      this.saveCurrentConversation(exportFilePath);
+      this.saveCurrentConversation(exportFilePath, setViews);
       const newConversation = new Conversation(this._idCounter);
       this._idCounter++;
       this._currentConversation = newConversation;
@@ -154,19 +175,20 @@ export class ConversationCollection {
     }
   }
 
-  public saveAndStartNewConversation(exportFilePath?: string): void {
+  public saveAndStartNewConversation(exportFilePath?: string, setViews: boolean = false): void {
     if (!this._currentConversation.isEmpty()) {
-      this.startNewConversation(exportFilePath);
+      this.startNewConversation(exportFilePath, setViews);
     }
   }
 
-  public addConversation(id: number, messages: IMessage[]): void {
+  public addConversation(id: number, messages: IMessage[], views: IView[]): void {
     this.startNewConversation();
     this._currentConversation.id = id;
     if (id >= this._idCounter) {
       this._idCounter = id + 1;
     }
     this._currentConversation.addIMessages(messages);
+    this._currentConversation.addIViews(views);
   }
 
   public addMessagesToCurrent(
@@ -178,13 +200,19 @@ export class ConversationCollection {
     }
   }
 
-  public exportConversations(filePath: string): void {
+  public addViewsToCurrent(
+    views: IView[],
+  ) {
+    this._currentConversation.addIViews(views);
+  }
+
+  public exportConversations(filePath: string, setViews: boolean = false): void {
     for (const conversation of this._conversations) {
-      conversation.exportConversation(filePath);
+      conversation.exportConversation(filePath, setViews);
     }
   }
 
-  public saveCurrentConversation(exportFilePath?: string): void {
+  public saveCurrentConversation(exportFilePath?: string, setViews: boolean = false): void {
     if (!exportFilePath) {
       return;
     }
@@ -192,17 +220,17 @@ export class ConversationCollection {
     if (fs.existsSync(exportFilePath)) {
       // Truncate the file to 0 size by opening it in 'w' mode
       fs.open(exportFilePath, "w", (err, file) => {
-        if (err) throw err;
+        if (err) {throw err;}
 
         // Close the file to complete the truncation process
         fs.close(file, (err) => {
-          if (err) throw err;
+          if (err) {throw err;}
         });
       });
     } else {
       log.info(`File ${exportFilePath} does not exist.`);
     }
-    this.exportConversations(exportFilePath);
+    this.exportConversations(exportFilePath, setViews);
   }
 }
 
@@ -230,6 +258,7 @@ export function loadConversations(
     let conversations = yaml.load(conversationsData) as {
       id: number;
       messages: IMessage[];
+      views: IView[];
     }[];
 
     if (!conversations) {
@@ -252,7 +281,9 @@ export function loadConversations(
       }
       conversationCollection.addConversation(
         conversationData.id,
-        conversationData.messages
+        conversationData.messages,
+        conversationData.views,
+
       );
       // log.info(
       //   `loaded conversation: ${JSON.stringify(conversationData, null, 2)}`
