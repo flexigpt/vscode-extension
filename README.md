@@ -15,6 +15,10 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
+  - [FlexiGPT level configuration](#flexigpt-level-configuration)
+  - [OpenAI provider configuration](#openai-provider-configuration)
+  - [Anthropic provider configuration](#anthropic-provider-configuration)
+  - [Sample Full configuration](#sample-full-configuration)
 - [Usage](#usage)
 - [Prompt file format](#prompt-file-format)
   - [Samples](#samples)
@@ -31,11 +35,12 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 ## Features
 
-- Ask GPT AI models (GPT3, ChatGPT, etc) anything you want
+- Ask GPT AI models (GPT3, ChatGPT, Claude, etc) anything you want
 
   - Currently supported:
-    - OpenAI chat completion APIs, with GPT3.5 models
+    - OpenAI chat completion APIs, with GPT3.5/4 models
     - OpenAI completion APIs, with GPT2/3 models
+    - Anthropic Claude\* models
 
 - Use pre-defined prompts in configuration files
 
@@ -56,8 +61,12 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
       - Optimize selection
 
     - [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+
       - Write godoc string
       - Generate unit test
+
+    - [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
+      - Generate Create, Read, Update, Delete (CRUD) code for a table specified as a struct selection in the editor using sqlx for db operations and squirrel for query building.
 
 - UI and access
 
@@ -91,9 +100,19 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 ## Configuration
 
-FlexiGPT requires an OpenAI API key to function. You can obtain one from your openAI account settings [here](https://beta.openai.com/account/api-keys).
-
 To configure FlexiGPT, open Visual Studio Code's settings (File > Preferences > Settings or by using the `Ctrl`/`Cmd` + `,` keyboard shortcut) and search for `flexigpt`.
+
+### FlexiGPT level configuration
+
+Options:
+
+- flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
+- flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js", "gobasic.js" and "gosql.js".
+- flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: openai, anthropic.
+
+### OpenAI provider configuration
+
+FlexiGPT requires an OpenAI API key to function. You can obtain one from your openAI account settings [here](https://beta.openai.com/account/api-keys).
 
 FlexiGPT uses defaultChatCompletionModel: `gpt-3.5-turbo`, unless the prompt overrides it.
 
@@ -110,19 +129,38 @@ Options:
   - You can always override the default model per prompt via the prompt file command declaration.
   - FlexiGPT basic prompts will use the default models set.
   - Default: `code-davinci-edit-001`.
-- flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
-- flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js" and "gobasic.js".
-- Sample Full configuration
 
-  ```text
-  "flexigpt.openai.apiKey": "sk-mkey",
-  "flexigpt.openai.timeout": "120",
-  "flexigpt.openai.defaultCompletionModel": "gpt-3.5-turbo",
-  "flexigpt.openai.defaultChatCompletionModel": "gpt-3.5-turbo",
-  "flexigpt.openai.defaultEditModel": "code-davinci-edit-001",
-  "flexigpt.promptFiles": "/home/me/my_prompt_files/myprompts.js",
-  "flexigpt.inBuiltPrompts": "gobasic.js"
-  ```
+### Anthropic provider configuration
+
+Options:
+
+- flexigpt.anthropic.apiKey: Your Anthropic API key, which can be obtained from the Anthropic website [here](https://docs.anthropic.com/claude/docs/getting-access-to-claude).
+- flexigpt.anthropic.timeout: The timeout for Anthropic requests, in seconds. Default: 60.
+- flexigpt.anthropic.defaultChatCompletionModel: Default model to use for chat completion requests.
+  - You can always override the default model per prompt via the prompt file command declaration.
+  - FlexiGPT basic prompts will use the default models set.
+  - Default: `claude-1`.
+- flexigpt.openai.defaultCompletionModel: Default model to use for completion requests.
+
+### Sample Full configuration
+
+```text
+"flexigpt.promptFiles": "/home/me/my_prompt_files/myprompts.js",
+"flexigpt.inBuiltPrompts": "gobasic.js;gosql.js",
+"flexigpt.defaultProvider": "openai",
+
+"flexigpt.openai.apiKey": "sk-mkey",
+"flexigpt.openai.timeout": "120",
+"flexigpt.openai.defaultCompletionModel": "gpt-3.5-turbo",
+"flexigpt.openai.defaultChatCompletionModel": "gpt-3.5-turbo",
+"flexigpt.openai.defaultEditModel": "code-davinci-edit-001",
+
+"flexigpt.anthropic.apiKey": "sk-mkey",
+"flexigpt.anthropic.timeout": "120",
+"flexigpt.anthropic.defaultCompletionModel": "claude-1-instant",
+"flexigpt.anthropic.defaultChatCompletionModel": "claude-1-instant",
+
+```
 
 ## Usage
 
@@ -148,6 +186,7 @@ Options:
 
 - [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
 - [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+- [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
 
 ### Here is a sample javascript (.js) prompt file
 
@@ -217,7 +256,7 @@ module.exports = {
     {
       name: "testFileName",
       value: ({ baseFolder, fileName, fileExtension }) =>
-        `${baseFolder}\\${fileName}_test.${fileExtension}`,
+        `${baseFolder}\\${fileName}_test${fileExtension}`,
     },
   ],
 };

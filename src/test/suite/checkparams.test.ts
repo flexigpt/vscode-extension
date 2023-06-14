@@ -5,9 +5,12 @@ import { describe, it } from "mocha";
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from "vscode";
-import OpenAIAPIStrategy from "../../strategy/openaiapi";
-import Provider from "../../strategy/strategy";
-import {ChatCompletionRequestMessage, ChatCompletionRoleEnum} from "../../strategy/conversationspec";
+import OpenAIAPIProvider from "../../strategy/openaiapi";
+import { CompletionProvider } from "../../strategy/strategy";
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRoleEnum,
+} from "../../strategy/conversationspec";
 
 suite("CheckParams Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests for checkparams.");
@@ -16,18 +19,19 @@ suite("CheckParams Test Suite", () => {
   const defaultChatCompletionModel = "gpt-3.5-turbo";
   const defaultEditModel = "code-davinci-edit-001";
   const timeout: BigInt = 60n;
-  const chatCompletion = new Provider(
-    new OpenAIAPIStrategy(
-      apiKey,
-      timeout,
-      defaultCompletionModel,
-      defaultChatCompletionModel,
-      defaultEditModel
-    )
+  const chatCompletion: CompletionProvider = new OpenAIAPIProvider(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultEditModel
   );
   const prompt = "Hello, how can I assist you?";
   const messages: ChatCompletionRequestMessage[] = [
-    { role: ChatCompletionRoleEnum.user, content: "I need help with my account" },
+    {
+      role: ChatCompletionRoleEnum.user,
+      content: "I need help with my account",
+    },
   ];
 
   test("should handle null prompt and null messages", () => {
@@ -64,7 +68,10 @@ suite("CheckParams Test Suite", () => {
     expect(completionParams).to.deep.equal({
       model: "gpt-3.5-turbo",
       prompt: null,
-      messages: [{ role: ChatCompletionRoleEnum.user, content: "Hello twice" }, { role: ChatCompletionRoleEnum.user, content: "Hello once" }],
+      messages: [
+        { role: ChatCompletionRoleEnum.user, content: "Hello twice" },
+        { role: ChatCompletionRoleEnum.user, content: "Hello once" },
+      ],
       suffix: undefined,
       maxTokens: 2048,
       temperature: 0.1,
@@ -134,7 +141,10 @@ suite("CheckParams Test Suite", () => {
     expect(completionParams).to.deep.equal({
       model: "gpt-3.5-turbo",
       prompt: null,
-      messages: [{ role: "user", content: "Hello1" }, { role: "user", content: "Hello2" }],
+      messages: [
+        { role: "user", content: "Hello1" },
+        { role: "user", content: "Hello2" },
+      ],
       suffix: undefined,
       maxTokens: 1024,
       temperature: 0.5,
@@ -169,7 +179,10 @@ suite("CheckParams Test Suite", () => {
     expect(completionParams).to.deep.equal({
       model: "curie",
       prompt: "Hello2",
-      messages: [{ role: "user", content: "Hello1" }, { role: "user", content: "Hello2" }],
+      messages: [
+        { role: "user", content: "Hello1" },
+        { role: "user", content: "Hello2" },
+      ],
       suffix: undefined,
       maxTokens: 1024,
       temperature: 0.5,
@@ -186,5 +199,4 @@ suite("CheckParams Test Suite", () => {
       user: "1234",
     });
   });
-
 });

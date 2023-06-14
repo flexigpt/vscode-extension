@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import log from "../logger/log";
 
 export function replace(newValue: string) {
   const editor = vscode.window.activeTextEditor;
@@ -56,10 +57,9 @@ export function getActiveDocumentFileFolder(): string {
 }
 
 export function getActiveFileName(): string | undefined {
-  const currentlyOpenTabfilePath: string = getActiveDocument()
-    ?.fileName as string;
-  const currentlyOpenTabfileName = path.basename(currentlyOpenTabfilePath);
-  return currentlyOpenTabfileName;
+  let fname = getActiveDocument()?.fileName as string;
+  const pathInfo = path.parse(fname);
+  return pathInfo.name;
 }
 
 export function append(newValue: string, position: string) {
@@ -91,6 +91,7 @@ export function writeFile(
       { flag: isAppend ? "a" : "w" },
       (writeFileError) => {
         if (writeFileError) {
+          log.error(writeFileError);
           reject(writeFileError);
           return;
         }

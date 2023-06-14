@@ -86,22 +86,40 @@
       "title": "flexiGPT",
       "type": "object",
       "properties": {
+        "flexigpt.promptFiles": {
+          "type": "string",
+          "default": "",
+          "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
+          "order": 1
+        },
+        "flexigpt.inBuiltPrompts": {
+          "type": "string",
+          "default": "",
+          "description": "prompt file names of inbuilt prompts to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled.",
+          "order": 2
+        },
+        "flexigpt.defaultProvider": {
+          "type": "string",
+          "default": "",
+          "description": "The provider to use if multiple providers are configured. Currently supported values: openai, anthropic. By default, any valid provider with a apikey in config will be used.",
+          "order": 3
+        },
         "flexigpt.openai.apiKey": {
           "type": "string",
           "description": "Your openAI API key. Can be seen at https://beta.openai.com/account/api-keys",
-          "order": 1
+          "order": 4
         },
         "flexigpt.openai.timeout": {
           "type": "integer",
           "default": 60,
           "description": "Timeout for OpenAI requests",
-          "order": 2
+          "order": 4
         },
         "flexigpt.openai.defaultCompletionModel": {
           "type": "string",
           "default": "gpt-3.5-turbo",
           "description": "Default model to use for completion requests",
-          "order": 3
+          "order": 4
         },
         "flexigpt.openai.defaultChatCompletionModel": {
           "type": "string",
@@ -113,19 +131,30 @@
           "type": "string",
           "default": "code-davinci-edit-001",
           "description": "Default model to use for completion requests",
+          "order": 4
+        },
+        "flexigpt.anthropic.apiKey": {
+          "type": "string",
+          "description": "Your anthropic API key.",
           "order": 5
         },
-        "flexigpt.promptFiles": {
-          "type": "string",
-          "default": "",
-          "description": "Path for user defined prompt config files. For multiple path separate with ';'  C:\\MyPromptFolder0\\goprompt.json;C:\\MyPromptFolder1\\pyprompt.json",
-          "order": 6
+        "flexigpt.anthropic.timeout": {
+          "type": "integer",
+          "default": 60,
+          "description": "Timeout for anthropic requests",
+          "order": 5
         },
-        "flexigpt.inBuiltPrompts": {
+        "flexigpt.anthropic.defaultCompletionModel": {
           "type": "string",
-          "default": "",
-          "description": "prompt file names of inbuilt prompts to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled.",
-          "order": 7
+          "default": "claude-1",
+          "description": "Default model to use for completion requests",
+          "order": 5
+        },
+        "flexigpt.anthropic.defaultChatCompletionModel": {
+          "type": "string",
+          "default": "claude-1",
+          "description": "Default model to use for chat completion requests",
+          "order": 5
         }
       }
     }

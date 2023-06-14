@@ -2,37 +2,25 @@ import log from "../logger/log";
 import {
   Configuration,
   OpenAIApi,
-  CreateChatCompletionRequestStop,
 } from "openai";
-import { CompletionRequest, EditRequest, Strategy } from "./strategy";
+import { CompletionRequest, CompletionProvider } from "./strategy";
 
 import {
   ChatCompletionRequestMessage,
-  ChatCompletionRoleEnum,
 } from "./conversationspec";
 
-import { unescapeChars } from "./regexmatcher";
+import {
+  checkAndPopulateCompletionParams,
+} from "./strategyutils";
 
 export const chatCompletionModelsEnum = {
   gptTurbo: "gpt-3.5-turbo",
   gptTurbo301: "gpt-3.5-turbo-0301",
+  gptTurbo613: "gpt-3.5-turbo-0613",
+  gpt4: "gpt-4",
 };
 
-let tempCodeString = `def get_openapi_completion_for_integration_sequence_test(intxt, value_type):
-response = openai.Completion.create(
-    model="text-davinci-003",
-    prompt=prompts.generate_prompt_integration_sequence_test(intxt, value_type),
-    temperature=0,
-    max_tokens=2560,
-    best_of=1,
-    stop=["##", "}}}}}}", "Generate workflow", "func Test"])
-
-return response`;
-
-let promptProcessorString =
-  "convert the response after processing previous prompt to a html code that highlights code elements using highlight.js";
-
-export default class OpenAIAPIStrategy implements Strategy {
+export default class OpenAIAPIProvider implements CompletionProvider {
   #api: OpenAIApi;
   #timeout: BigInt;
   defaultCompletionModel: string;
@@ -96,7 +84,7 @@ export default class OpenAIAPIStrategy implements Strategy {
     });
     return {
       fullResponse: data,
-      data: data.choices[0].text ? unescapeChars(data.choices[0].text) : "",
+      data: data.choices[0].text ? data.choices[0].text : "",
     };
     // return data.choices[0].text ? data.choices[0].text : null;
   }
@@ -127,49 +115,8 @@ export default class OpenAIAPIStrategy implements Strategy {
     });
     let fullResponse = data;
     let respText: string = data.choices[0].message?.content as string;
-    if (respText) {
-      respText = unescapeChars(respText);
-    }
     return { fullResponse: fullResponse, data: respText };
     // return data.choices[0].text ? data.choices[0].text : null;
-  }
-
-  async edit(input: EditRequest) {
-    const { data } = await this.#api.createEdit({
-      model: input.model,
-      input: input.input,
-      instruction: input.instruction,
-      n: input.n,
-      temperature: input.temperature,
-      top_p: input.topP,
-    });
-
-    return data.choices[0].text ? unescapeChars(data.choices[0].text) : null;
-  }
-
-  public getDefaultCompletionCommand(prompt?: string): CompletionRequest {
-    var crequest = {
-      model: this.defaultChatCompletionModel,
-      prompt: prompt,
-      temperature: 0,
-      maxTokens: 2048,
-      frequencyPenalty: 0.5,
-      presencePenalty: 0.0,
-      bestOf: 1,
-    };
-
-    return crequest;
-  }
-
-  public getDefaultEditCommand(prompt?: string): EditRequest {
-    var erequest = {
-      model: this.defaultEditModel,
-      input: prompt,
-      temperature: 0,
-      instruction: "Refactor this function",
-    };
-
-    return erequest;
   }
 
   public checkAndPopulateCompletionParams(
@@ -177,70 +124,16 @@ export default class OpenAIAPIStrategy implements Strategy {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    // log.info(`Input params read: ${JSON.stringify(inputParams, null, 2)}`);
-    let completionRequest: CompletionRequest = {
-      model: (inputParams?.model as string) || this.defaultChatCompletionModel,
-      prompt: prompt,
-      messages: messages,
-      suffix: inputParams?.suffix || undefined,
-      maxTokens:
-        inputParams?.maxTokens === 0 ? 0 : inputParams?.maxTokens || 2048,
-      temperature:
-        inputParams?.temperature === 0 ? 0 : inputParams?.temperature || 0.1,
-      topP: inputParams?.topP === 0 ? 0 : inputParams?.topP || undefined,
-      n: inputParams?.n === 0 ? 0 : inputParams?.n || undefined,
-      stream: false,
-      logprobs:
-        inputParams?.logprobs === 0 ? 0 : inputParams?.logprobs || undefined,
-      echo: (inputParams?.echo as boolean) || undefined,
-      stop: inputParams?.stop || undefined,
-      presencePenalty:
-        inputParams?.presencePenalty === 0
-          ? 0
-          : inputParams?.presencePenalty || 0.0,
-      frequencyPenalty:
-        inputParams?.frequencyPenalty === 0
-          ? 0
-          : inputParams?.frequencyPenalty || 0.5,
-      bestOf: inputParams?.bestOf === 0 ? 0 : inputParams?.bestOf || 1,
-      logitBias: inputParams?.logitBias || undefined,
-      user: (inputParams?.user as string) || undefined,
-    };
+    let model =
+      (inputParams?.model as string) || this.defaultChatCompletionModel;
+    let chatModel = this.checkEnumValue(model);
 
-    if (completionRequest.prompt) {
-      let message: ChatCompletionRequestMessage = {
-        role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt,
-      };
-      if (!completionRequest.messages) {
-        completionRequest.messages = [message];
-      } else {
-        completionRequest.messages.push(message);
-      }
-    }
-
-    let chatModel = this.checkEnumValue(completionRequest.model);
-    if (chatModel) {
-      completionRequest.prompt = null;
-    }
-    return completionRequest;
-  }
-
-  public checkAndPopulateEditParams(
-    prompt: string | null,
-    inputParams?: { [key: string]: any }
-  ): EditRequest {
-    let editRequest: EditRequest = {
-      model: (inputParams?.model as string) || this.defaultEditModel,
-      input: prompt,
-      instruction:
-        (inputParams?.instruction as string) || "Refactor this function",
-      temperature:
-        inputParams?.temperature === 0 ? 0 : inputParams?.temperature || 0.1,
-      topP: inputParams?.topP === 0 ? 0 : inputParams?.topP || undefined,
-      n: inputParams?.n === 0 ? 0 : inputParams?.n || undefined,
-    };
-
-    return editRequest;
+    return checkAndPopulateCompletionParams(
+      this.defaultChatCompletionModel,
+      prompt,
+      messages,
+      inputParams,
+      !!chatModel
+    );
   }
 }

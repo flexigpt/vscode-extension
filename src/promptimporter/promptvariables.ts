@@ -47,6 +47,25 @@ export class VariableContext {
     this.variables[variable.name] = variable;
   }
 
+  getVariableValue(key: string, params?: any, functions?: any): any {
+    let ret = this.variables[key];
+    if (ret) {
+      return ret.get(params, functions);
+    }
+    return undefined;
+  }
+
+  getVariablesWithValues(params?: any, functions?: any): { [key: string]: any } {
+    const result: { [key: string]: any } = {};
+    Object.keys(this.variables).forEach((key) => {
+      const variable = this.variables[key];
+      if (variable) {
+        result[key] = this.getVariableValue(key, params, functions);
+      }
+    });
+    return result;
+  }
+
   getVariablesWithGetters(params?: any, functions?: any): { [key: string]: any } {
     const result: { [key: string]: any } = {};
     Object.keys(this.variables).forEach((key) => {
@@ -58,11 +77,4 @@ export class VariableContext {
     return result;
   }
 
-  getVariableValue(key: string, params?: any, functions?: any): any {
-    let ret = this.variables[key];
-    if (ret) {
-      return ret.get(params, functions);
-    }
-    return undefined;
-  }
 }

@@ -1,55 +1,75 @@
 import { ChatCompletionRequestMessage } from "./conversationspec";
 
-export default class Provider {
-  constructor(private strategy: Strategy) {}
-
-  completion(input: CompletionRequest) {
-    return this.strategy.completion(input);
-  }
-
-  chatCompletion(input: CompletionRequest) {
-    return this.strategy.chatCompletion(input);
-  }
-
-  edit(input: EditRequest) {
-    return this.strategy.edit(input);
-  }
-
-  checkAndPopulateCompletionParams(
-    prompt: string | null,
-    messages: Array<ChatCompletionRequestMessage> | null,
-    inputParams?: { [key: string]: any }
-  ): CompletionRequest {
-    return this.strategy.checkAndPopulateCompletionParams(prompt, messages, inputParams);
-  }
-
-  checkAndPopulateEditParams(
-    prompt: string | null,
-    inputParams?: { [key: string]: any }
-  ): EditRequest {
-    return this.strategy.checkAndPopulateEditParams(prompt, inputParams);
-  }
-}
-
-export interface Strategy {
+export interface CompletionProvider {
   completion(
     input: CompletionRequest
   ): Promise<{ fullResponse: any; data: string | null }>;
   chatCompletion(
     input: CompletionRequest
   ): Promise<{ fullResponse: any; data: string | null }>;
-  edit(input: EditRequest): Promise<string | null>;
   checkAndPopulateCompletionParams(
     prompt: string | null,
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest;
-  checkAndPopulateEditParams(
-    prompt: string | null,
-    inputParams?: { [key: string]: any }
-  ): EditRequest;
 }
 
+export default class Providers {
+  public defaultProvider: string;
+  public providers: { [key: string]: CompletionProvider } = {};
+
+  constructor(defaultProvider: string) {
+    this.defaultProvider = defaultProvider;
+  }
+
+  public addProvider(name: string, provider: CompletionProvider | null) {
+    if (!provider) {
+      throw new Error("Provider cannot be null");
+    }
+    this.providers[name] = provider;
+    if (!this.defaultProvider || this.defaultProvider === "") {
+      this.defaultProvider = name;
+    }
+  }
+
+  public getProvider(
+    model: string,
+    providerName: string = ""
+  ): CompletionProvider {
+    if (providerName && providerName !== "" && this.providers[providerName]) {
+      return this.providers[providerName];
+    }
+    if (!model || model === "") {
+      if (this.defaultProvider && this.defaultProvider !== "") {
+        return this.providers[this.defaultProvider];
+      }
+      throw new Error("No default provider and No model as input");
+    }
+
+    let openAIModels = [
+      "text-davinci-003, text-davinci-002, davinci, curie, babbage, ada",
+      "gpt-4",
+      "gpt-3.5-turbo",
+    ];
+    let anthropicModels = ["claude"];
+    if (
+      openAIModels.some((search) => model.startsWith(search)) &&
+      this.providers.openai
+    ) {
+      return this.providers.openai;
+    }
+    if (
+      anthropicModels.some((search) => model.startsWith(search)) &&
+      this.providers.anthropic
+    ) {
+      return this.providers.anthropic;
+    }
+
+    throw new Error(
+      "No default provider and No provider found for model " + model
+    );
+  }
+}
 
 /**
  *
@@ -159,43 +179,4 @@ export interface CompletionRequest {
    * @memberof CompletionRequest
    */
   user?: string;
-}
-
-export interface EditRequest {
-  /**
-   * ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models/overview) for descriptions of them.
-   * @type {string}
-   * @memberof EditRequest
-   */
-  model: string;
-  /**
-   * The input text to use as a starting point for the edit.
-   * @type {string}
-   * @memberof EditRequest
-   */
-  input?: string | null;
-  /**
-   * The instruction that tells the model how to edit the prompt.
-   * @type {string}
-   * @memberof EditRequest
-   */
-  instruction: string;
-  /**
-   * How many edits to generate for the input and instruction.
-   * @type {number}
-   * @memberof EditRequest
-   */
-  n?: number | null;
-  /**
-   * What [sampling temperature](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277) to use. Higher values means the model will take more risks. Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.  We generally recommend altering this or `top_p` but not both.
-   * @type {number}
-   * @memberof EditRequest
-   */
-  temperature?: number | null;
-  /**
-   * An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.  We generally recommend altering this or `temperature` but not both.
-   * @type {number}
-   * @memberof EditRequest
-   */
-  topP?: number | null;
 }

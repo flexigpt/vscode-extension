@@ -5,7 +5,7 @@ import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
 
 import { Variable } from "./promptimporter/promptvariables";
-import { getOpenAIProvider } from "./setupstrategy";
+import { getAllProviders } from "./setupstrategy";
 import { setupCommandRunnerContext } from "./setupcommandrunner";
 
 function registerWebView(
@@ -46,7 +46,6 @@ function registerCommands(
   // context.subscriptions.push(commandAsk);
 }
 
-
 function registerEvents(
   context: vscode.ExtensionContext,
   provider: ChatViewProvider
@@ -58,42 +57,36 @@ function registerEvents(
         provider.importAllPromptFiles();
       } else if (event.affectsConfiguration("flexigpt.inBuiltPrompts")) {
         provider.importAllPromptFiles();
-      } else if (event.affectsConfiguration("flexigpt.openai.timeout")) {
-        // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
-      } else if (event.affectsConfiguration("flexigpt.openai.apiKey")) {
-        // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
       } else if (
-        event.affectsConfiguration("flexigpt.openai.defaultCompletionModel")
+        event.affectsConfiguration("flexigpt.defaultProvider") ||
+        event.affectsConfiguration("flexigpt.openai.timeout") ||
+        event.affectsConfiguration("flexigpt.openai.apiKey") ||
+        event.affectsConfiguration("flexigpt.openai.defaultCompletionModel") ||
+        event.affectsConfiguration(
+          "flexigpt.openai.defaultChatCompletionModel"
+        ) ||
+        event.affectsConfiguration("flexigpt.openai.defaultEditModel") ||
+        event.affectsConfiguration("flexigpt.anthropic.timeout") ||
+        event.affectsConfiguration("flexigpt.anthropic.apiKey") ||
+        event.affectsConfiguration(
+          "flexigpt.anthropic.defaultCompletionModel"
+        ) ||
+        event.affectsConfiguration(
+          "flexigpt.anthropic.defaultChatCompletionModel"
+        )
       ) {
         // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
-      } else if (
-        event.affectsConfiguration("flexigpt.openai.defaultChatCompletionModel")
-      ) {
-        // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
-      } else if (
-        event.affectsConfiguration("flexigpt.openai.defaultEditModel")
-      ) {
-        // add the new token to the provider
-        const apiProvider = getOpenAIProvider();
-        provider.setAPIProvider(apiProvider);
+        const apiProviders = getAllProviders();
+        provider.setAPIProviders(apiProviders);
       }
     }
   );
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  // Create a new OpenAIAPIStrategyProvider instance and register it with the extension's context
-  const apiProvider = getOpenAIProvider();
+  const apiProviders = getAllProviders();
   const provider = new ChatViewProvider(context.extensionUri, context);
-  provider.setAPIProvider(apiProvider);
+  provider.setAPIProviders(apiProviders);
   let commandRunnerContext = setupCommandRunnerContext(context);
   commandRunnerContext.setSystemVariable(
     new Variable(systemVariableNames.extensionUri, context.extensionUri)

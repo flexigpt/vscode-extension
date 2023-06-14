@@ -1,19 +1,72 @@
 import * as vscode from "vscode";
 
-import OpenAIAPIStrategy from "./strategy/openaiapi";
-import Provider from "./strategy/strategy";
+import OpenAIAPIProvider from "./strategy/openaiapi";
+import Providers, { CompletionProvider } from "./strategy/strategy";
+import { AnthropicAPI } from "./strategy/anthropic";
+import log from "./logger/log";
 
-export function getOpenAIProvider(): Provider {
-  const config = vscode.workspace.getConfiguration("flexigpt");
+export function getOpenAIProvider(
+  config: vscode.WorkspaceConfiguration
+): CompletionProvider | null {
   const apiKey = (config.get("openai.apiKey") as string) || "";
-  const defaultCompletionModel = (config.get("openai.defaultCompletionModel") as string) || "gpt-3.5-turbo";
-  const defaultChatCompletionModel = (config.get("openai.defaultChatCompletionModel") as string) || "gpt-3.5-turbo";
-  const defaultEditModel = (config.get("openai.defaultEditModel") as string) || "code-davinci-edit-001";
+  const defaultCompletionModel =
+    (config.get("openai.defaultCompletionModel") as string) || "gpt-3.5-turbo";
+  const defaultChatCompletionModel =
+    (config.get("openai.defaultChatCompletionModel") as string) ||
+    "gpt-3.5-turbo";
+  const defaultEditModel =
+    (config.get("openai.defaultEditModel") as string) ||
+    "code-davinci-edit-001";
   const timeout = (config.get("openai.timeout") as BigInt) || 60;
 
   if (apiKey) {
-    return new Provider(new OpenAIAPIStrategy(apiKey, timeout, defaultCompletionModel, defaultChatCompletionModel, defaultEditModel));
+    log.info("OpenAI API provider initialized");
+    return new OpenAIAPIProvider(
+      apiKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel,
+      defaultEditModel
+    );
   }
+  log.info("OpenAI API provider not initialized, no apikey");
+  return null;
+}
 
-  throw new Error("You must set an `apiKey` for OpenAI APIs");
+export function getAnthropicProvider(
+  config: vscode.WorkspaceConfiguration
+): CompletionProvider | null {
+  const apiKey = (config.get("anthropic.apiKey") as string) || "";
+  const defaultCompletionModel =
+    (config.get("anthropic.defaultCompletionModel") as string) || "claude-1";
+  const defaultChatCompletionModel =
+    (config.get("anthropic.defaultChatCompletionModel") as string) ||
+    "claude-1";
+  const timeout = (config.get("anthropic.timeout") as BigInt) || 60;
+  if (apiKey) {
+    log.info("Anthropic API provider initialized");
+    return new AnthropicAPI(
+      apiKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel
+    );
+  }
+  log.info("Anthropic API provider not initialized, no apikey");
+  return null;
+}
+
+export function getAllProviders(): Providers {
+  const config = vscode.workspace.getConfiguration("flexigpt");
+  const defaultProvider = config.get("defaultProvider") as string;
+  let providers: Providers = new Providers(defaultProvider);
+  let op = getOpenAIProvider(config);
+  if (op) {
+    providers.addProvider("openai", op);
+  }
+  let ap = getAnthropicProvider(config);
+  if (ap) {
+    providers.addProvider("anthropic", ap);
+  }
+  return providers;
 }

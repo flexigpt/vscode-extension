@@ -66,7 +66,7 @@ module.exports = {
         },
         {
             name: "testFileName",
-            value: ({ baseFolder,fileName,fileExtension }) => `${baseFolder}\\${fileName}_test.${fileExtension}`
+            value: ({ baseFolder,fileName,fileExtension }) => `${baseFolder}\\${fileName}_test${fileExtension}`
         },
     ]
 };

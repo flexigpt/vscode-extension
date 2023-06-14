@@ -4,11 +4,11 @@ import * as path from "path";
 import * as prettier from "prettier";
 import { v4 as uuidv4 } from "uuid";
 
-import Provider from "./strategy/strategy";
+import Providers, {CompletionProvider} from "./strategy/strategy";
 import log from "./logger/log";
 
 import { importAllPrompts } from "./setupprompts";
-import { getOpenAIProvider } from "./setupstrategy";
+import { getAllProviders } from "./setupstrategy";
 import { CommandRunnerContext } from "./promptimporter/promptcommands";
 import { systemVariableNames } from "./vscodeutils/predefinedvariables";
 import { getActiveDocumentLanguageID } from "./vscodeutils/vscodefunctions";
@@ -17,6 +17,7 @@ import {
   loadConversations,
 } from "./strategy/conversation";
 import { ChatCompletionRoleEnum, IView } from "./strategy/conversationspec";
+import { unescapeChars } from "./strategy/strategyutils";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -24,7 +25,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public _view?: vscode.WebviewView | undefined;
 
   // This variable holds a reference to the ChatGPTAPI instance
-  private _apiProvider?: Provider;
+  private _apiProvider: Providers | null = null;
   private _commandRunnerContext?: CommandRunnerContext;
   private _conversationCollection?: ConversationCollection;
   private _response?: string;
@@ -48,8 +49,19 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   ) {}
 
   // Set the api key and create a new API instance based on this
-  public setAPIProvider(provider: Provider) {
-    this._apiProvider = provider;
+  public setAPIProviders(providers: Providers) {
+    this._apiProvider = providers;
+  }
+
+  private _newAPI() {
+    this._apiProvider = getAllProviders();
+  }
+
+  getProvider(model: string, providerName: string = ""): CompletionProvider {
+    if (!this._apiProvider) {
+      this._newAPI();
+    }
+    return this._apiProvider!.getProvider(model, providerName);
   }
 
   public importConversations() {
@@ -83,10 +95,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       importAllPrompts(this._extensionUri, this._commandRunnerContext);
       this.sendCommandListMessage();
     }
-  }
-  // This private method initializes a new apiProvider instance
-  private _newAPI() {
-    this._apiProvider = getOpenAIProvider();
   }
 
   private sendCommandListMessage() {
@@ -303,7 +311,10 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       // If successfully signed in
       this._fullPrompt = question;
       // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
-      var crequest = this._apiProvider?.checkAndPopulateCompletionParams(
+      let model = command.requestparams?.model as string;
+      let providerName = (command.requestparams?.provider as string) || "";
+      let apiProvider = this.getProvider(model, providerName);
+      var crequest = apiProvider?.checkAndPopulateCompletionParams(
         question,
         this._conversationCollection?.currentConversation?.getMessagesAsRequests() ||
           null,
@@ -330,12 +341,13 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           { type: "addQuestion", value: inPrompt, id: uuid, full: crequestStr },
         ]);
 
-        let completionResponse = await this._apiProvider?.completion(crequest);
+        let completionResponse = await apiProvider?.completion(crequest);
         // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
 
         response = completionResponse?.data as string | "";
-        // log.info(`Got response: ${response}`);
-        if (!response) {
+        if (response) {
+          response = unescapeChars(response);
+        } else {
           response = "Got empty response";
         }
         fullResponseStr = JSON.stringify(
@@ -343,15 +355,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           null,
           2
         );
-        if (completionResponse?.fullResponse?.choices[0]?.message) {
-          this._conversationCollection?.addMessagesToCurrent([
-            completionResponse?.fullResponse?.choices[0]?.message,
-          ]);
-        } else {
-          this._conversationCollection?.addMessagesToCurrent([
-            { role: "assistant" as ChatCompletionRoleEnum, content: response },
-          ]);
-        }
+        this._conversationCollection?.addMessagesToCurrent([
+          { role: "assistant" as ChatCompletionRoleEnum, content: response },
+        ]);
         this._commandRunnerContext?.processAnswer(
           command,
           response,
@@ -390,19 +396,12 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       },
     ]);
     if (!response) {
-      throw Error("Could not get response from Provider.");
+      throw Error("Could not get response from CompletionProvider.");
     }
     return response;
   }
 
   public async search(prompt: string) {
-    // await this.prepareConversation();
-
-    // Check if the apiProvider instance is defined
-    if (!this._apiProvider) {
-      this._newAPI();
-    }
-
     // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
     if (this._view === null) {
       await vscode.commands.executeCommand("flexigpt.chatView.focus");
@@ -412,11 +411,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
     const uuid = uuidv4();
     let response = "";
-    if (this._apiProvider) {
-      response = await this.sendAPIRequest(prompt, uuid);
-    } else {
-      response = "[ERROR] Please enter an API key in the extension settings";
-    }
+  
+    response = await this.sendAPIRequest(prompt, uuid);
     // Saves the response
     this._response = response;
   }
