@@ -60,8 +60,9 @@ export default class OpenAIAPIProvider implements CompletionProvider {
 
   async completion(input: CompletionRequest) {
     // return tempCodeString;
-    let chatModel = this.checkEnumValue(input.model);
-    if (chatModel) {
+    let chatModel: boolean = false;
+    if (input.model.startsWith("gpt-3.5") || input.model.startsWith("gpt-4")) {
+      chatModel = true;
       return this.chatCompletion(input);
     }
     const { data } = await this.#api.createCompletion({
@@ -126,14 +127,17 @@ export default class OpenAIAPIProvider implements CompletionProvider {
   ): CompletionRequest {
     let model =
       (inputParams?.model as string) || this.defaultChatCompletionModel;
-    let chatModel = this.checkEnumValue(model);
+    let chatModel: boolean = false;
+    if (model.startsWith("gpt-3.5") || model.startsWith("gpt-4")) {
+      chatModel = true;
+    }
 
     return checkAndPopulateCompletionParams(
       this.defaultChatCompletionModel,
       prompt,
       messages,
       inputParams,
-      !!chatModel
+      chatModel
     );
   }
 }

@@ -75,7 +75,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
   }
 
   async chatCompletion(input: CompletionRequest): Promise<any> {
-    if (!input.messages) {
+    if (!input.prompt) {
       throw Error("No input messages found");
     }
 
@@ -146,17 +146,32 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     } 
     inputParams.stop = stoparg;
     
-    let req = checkAndPopulateCompletionParams(
-      this.defaultChatCompletionModel,
-      prompt,
-      messages,
-      inputParams
-    );
-    if (req.messages) {
-      req.prompt = this.generateMessageString(req.messages);
+    let completionRequest: CompletionRequest = {
+      model: (inputParams?.model as string) || this.defaultCompletionModel,
+      prompt: prompt,
+      messages: messages,
+      maxTokens: inputParams?.maxTokens || 16000,
+      temperature: inputParams?.temperature,
+      topP: inputParams?.topP,
+      n: inputParams?.n,
+      stream: false,
+      stop: inputParams?.stop || undefined,
+    };
+
+    if (completionRequest.prompt) {
+      let message: ChatCompletionRequestMessage = {
+        role: ChatCompletionRoleEnum.user,
+        content: completionRequest.prompt,
+      };
+      if (!completionRequest.messages) {
+        completionRequest.messages = [message];
+      } else {
+        completionRequest.messages.push(message);
+      }
     }
-
-    return req;
-
+    if (completionRequest.messages) {
+      completionRequest.prompt = this.generateMessageString(completionRequest.messages);
+    }
+    return completionRequest;
   }
 }
