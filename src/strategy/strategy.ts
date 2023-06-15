@@ -64,7 +64,7 @@ export default class Providers {
     ) {
       return this.providers.anthropic;
     }
-    let huggingfaceModels = ["microsoft/", "replit/", "Salesforce/"];
+    let huggingfaceModels = ["microsoft/", "replit/", "Salesforce/", "bigcode/"];
     if (
       huggingfaceModels.some((search) => model.startsWith(search)) &&
       this.providers.huggingface

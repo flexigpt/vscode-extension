@@ -169,7 +169,7 @@
         },
         "flexigpt.huggingface.defaultCompletionModel": {
           "type": "string",
-          "default": "Salesforce/codegen-2B-multi",
+          "default": "bigcode/starcoderbase",
           "description": "Default model to use for completion requests",
           "order": 6
         },

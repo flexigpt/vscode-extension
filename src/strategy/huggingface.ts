@@ -16,7 +16,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
   constructor(
     apiKey: string,
     timeout: BigInt,
-    defaultCompletionModel: string = "Salesforce/codegen-2B-multi",
+    defaultCompletionModel: string = "bigcode/starcoderbase",
     defaultChatCompletionModel: string = "microsoft/DialoGPT-large",
     headers: Record<string, string> = {}
   ) {
@@ -162,46 +162,34 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let req = checkAndPopulateCompletionParams(
-      this.defaultCompletionModel,
-      prompt,
-      messages,
-      inputParams
-    );
-    if (req.maxTokens) {
-      if (req.maxTokens > 500 || req.maxTokens <= 0) {
-        req.maxTokens = 500;
+    let completionRequest: CompletionRequest = {
+      model: (inputParams?.model as string) || this.defaultCompletionModel,
+      prompt: prompt,
+      messages: messages,
+      maxTokens: inputParams?.maxTokens,
+      temperature: inputParams?.temperature,
+      topP: inputParams?.topP,
+      n: inputParams?.n,
+      stream: false,
+      presencePenalty: inputParams?.presencePenalty,
+      timeout: inputParams?.timeout,
+    };
+
+    if (completionRequest.prompt) {
+      let message: ChatCompletionRequestMessage = {
+        role: ChatCompletionRoleEnum.user,
+        content: completionRequest.prompt,
+      };
+      if (!completionRequest.messages) {
+        completionRequest.messages = [message];
+      } else {
+        completionRequest.messages.push(message);
       }
-    } else {
-      req.maxTokens = 500;
     }
-    if (req.presencePenalty) {
-      if (req.presencePenalty > 100) {
-        req.presencePenalty = 100;
-      }
-      if (req.presencePenalty <= 0) {
-        req.presencePenalty = 1;
-      }
-      if (req.presencePenalty < 1) {
-        req.presencePenalty = req.presencePenalty * 100;
-      }
-    } else {
-      req.presencePenalty = 1;
-    }
-    if (req.temperature) {
-      if (req.temperature > 100) {
-        req.temperature = 100;
-      }
-      if (req.temperature <= 0) {
-        req.temperature = 1;
-      }
-      if (req.temperature < 1) {
-        req.temperature = req.temperature * 100;
-      }
-    } else {
-      req.temperature = 1;
+    if (completionRequest.messages) {
+      completionRequest.prompt = null;
     }
 
-    return req;
+    return completionRequest;
   }
 }

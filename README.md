@@ -153,7 +153,7 @@ Options:
   - FlexiGPT basic prompts will use the default models set.
   - Default: `microsoft/DialoGPT-large`.
 - flexigpt.huggingface.defaultCompletionModel: Default model to use for completion requests.
-  - Default: `Salesforce/codegen-2B-multi`.
+  - Default: `bigcode/starcoderbase`.
 
 ### Sample Full configuration
 
@@ -175,7 +175,7 @@ Options:
 
 "flexigpt.huggingfacce.apiKey": "hf-mkey",
 "flexigpt.huggingfacce.timeout": "120",
-"flexigpt.huggingfacce.defaultCompletionModel": "Salesforce/codegen-2B-multi",
+"flexigpt.huggingfacce.defaultCompletionModel": "bigcode/starcoderbase",
 "flexigpt.huggingfacce.defaultChatCompletionModel": "microsoft/DialoGPT-large",
 
 ```
