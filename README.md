@@ -1,6 +1,6 @@
 # FlexiGPT
 
-Interact with GPT AI models (GPT3, ChatGPT, etc) as a power user.
+Interact with GPT AI models (GPT3/3.5/4, Anthropic Claude, HuggingFace Inference API etc) as a power user.
 
 FlexiGPT offers pre-defined prompts enriched with custom or predefined functions that can be engineered and fine-tuned to meet specific user needs. Prompts can be saved and used directly within VSCode, and the extension supports request parameter modifications for GPT APIs and post-processing response via responseHandlers in prompts.
 
@@ -18,6 +18,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
   - [FlexiGPT level configuration](#flexigpt-level-configuration)
   - [OpenAI provider configuration](#openai-provider-configuration)
   - [Anthropic provider configuration](#anthropic-provider-configuration)
+  - [Huggingface provider configuration](#huggingface-provider-configuration)
   - [Sample Full configuration](#sample-full-configuration)
 - [Usage](#usage)
 - [Prompt file format](#prompt-file-format)
@@ -35,12 +36,13 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 ## Features
 
-- Ask GPT AI models (GPT3, ChatGPT, Claude, etc) anything you want
+- Ask GPT AI models (GPT3/3.5/4, Anthropic Claude, HuggingFace Inference API etc) anything you want
 
   - Currently supported:
     - OpenAI chat completion APIs, with GPT3.5/4 models
     - OpenAI completion APIs, with GPT2/3 models
     - Anthropic Claude\* models
+    - Huggingface inference API supported models (Text/Text2Text/Conversational tasks)
 
 - Use pre-defined prompts in configuration files
 
@@ -79,8 +81,6 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 - Immediate term TODO:
 
-  - Additional features:
-    - Support other models like: [Cohere](https://cohere.ai/), [AI21](https://docs.ai21.com/)
   - Prompt files:
     - Add support for Pre processing the prompt before sending the API.
   - Provide enriched data handling functions. E.g:
@@ -108,7 +108,7 @@ Options:
 
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
 - flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js", "gobasic.js" and "gosql.js".
-- flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: openai, anthropic.
+- flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: "openai", "anthropic", "huggingface".
 
 ### OpenAI provider configuration
 
@@ -119,7 +119,7 @@ FlexiGPT uses defaultChatCompletionModel: `gpt-3.5-turbo`, unless the prompt ove
 Options:
 
 - flexigpt.openai.apiKey: Your OpenAI API key, which can be obtained from the OpenAI website.
-- flexigpt.openai.timeout: The timeout for OpenAI requests, in seconds. Default: 60.
+- flexigpt.openai.timeout: The timeout for OpenAI requests, in seconds. Default: 120.
 - flexigpt.openai.defaultChatCompletionModel: Default model to use for chat completion requests.
   - You can always override the default model per prompt via the prompt file command declaration.
   - FlexiGPT basic prompts will use the default models set.
@@ -135,12 +135,25 @@ Options:
 Options:
 
 - flexigpt.anthropic.apiKey: Your Anthropic API key, which can be obtained from the Anthropic website [here](https://docs.anthropic.com/claude/docs/getting-access-to-claude).
-- flexigpt.anthropic.timeout: The timeout for Anthropic requests, in seconds. Default: 60.
+- flexigpt.anthropic.timeout: The timeout for Anthropic requests, in seconds. Default: 120.
 - flexigpt.anthropic.defaultChatCompletionModel: Default model to use for chat completion requests.
   - You can always override the default model per prompt via the prompt file command declaration.
   - FlexiGPT basic prompts will use the default models set.
   - Default: `claude-1`.
-- flexigpt.openai.defaultCompletionModel: Default model to use for completion requests.
+- flexigpt.anthropic.defaultCompletionModel: Default model to use for completion requests.
+
+### Huggingface provider configuration
+
+Options:
+
+- flexigpt.huggingface.apiKey: Your Huggingface API key, which can be obtained from the huggingface website [here](https://huggingface.co/settings/tokens).
+- flexigpt.huggingface.timeout: The timeout for huggingface requests, in seconds. Default: 120.
+- flexigpt.huggingface.defaultChatCompletionModel: Default model to use for chat completion requests.
+  - You can always override the default model per prompt via the prompt file command declaration.
+  - FlexiGPT basic prompts will use the default models set.
+  - Default: `microsoft/DialoGPT-large`.
+- flexigpt.huggingface.defaultCompletionModel: Default model to use for completion requests.
+  - Default: `Salesforce/codegen-2B-multi`.
 
 ### Sample Full configuration
 
@@ -159,6 +172,11 @@ Options:
 "flexigpt.anthropic.timeout": "120",
 "flexigpt.anthropic.defaultCompletionModel": "claude-1-instant",
 "flexigpt.anthropic.defaultChatCompletionModel": "claude-1-instant",
+
+"flexigpt.huggingfacce.apiKey": "hf-mkey",
+"flexigpt.huggingfacce.timeout": "120",
+"flexigpt.huggingfacce.defaultCompletionModel": "Salesforce/codegen-2B-multi",
+"flexigpt.huggingfacce.defaultChatCompletionModel": "microsoft/DialoGPT-large",
 
 ```
 
@@ -276,8 +294,10 @@ module.exports = {
 
 - requestparams: optional
   - This is an object of type `{ [key: string]: any }`.
+  - requestparams["provider"]: For setting a provider from non defaultProvider config
   - Any params relevant to the GPT provider API can be overridden.
   - Valid params for OpenAI completion request can be found in this [API reference](https://platform.openai.com/docs/api-reference/completions).
+
 - responseHandler: Optional
 
   - responseHandler is used to handle a response. By default, replace function is used. Handle function can be one of [Predefined System Function](#predefined-system-function) or a User defined function.

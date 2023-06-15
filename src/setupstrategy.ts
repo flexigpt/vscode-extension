@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import OpenAIAPIProvider from "./strategy/openaiapi";
 import Providers, { CompletionProvider } from "./strategy/strategy";
 import { AnthropicAPI } from "./strategy/anthropic";
+import { HuggingFaceAPI } from "./strategy/huggingface";
 import log from "./logger/log";
 
 export function getOpenAIProvider(
@@ -17,7 +18,7 @@ export function getOpenAIProvider(
   const defaultEditModel =
     (config.get("openai.defaultEditModel") as string) ||
     "code-davinci-edit-001";
-  const timeout = (config.get("openai.timeout") as BigInt) || 60;
+  const timeout = (config.get("openai.timeout") as BigInt) || 120;
 
   if (apiKey) {
     log.info("OpenAI API provider initialized");
@@ -42,7 +43,7 @@ export function getAnthropicProvider(
   const defaultChatCompletionModel =
     (config.get("anthropic.defaultChatCompletionModel") as string) ||
     "claude-1";
-  const timeout = (config.get("anthropic.timeout") as BigInt) || 60;
+  const timeout = (config.get("anthropic.timeout") as BigInt) || 120;
   if (apiKey) {
     log.info("Anthropic API provider initialized");
     return new AnthropicAPI(
@@ -53,6 +54,29 @@ export function getAnthropicProvider(
     );
   }
   log.info("Anthropic API provider not initialized, no apikey");
+  return null;
+}
+
+export function getHuggingFaceProvider(
+  config: vscode.WorkspaceConfiguration
+): CompletionProvider | null {
+  const apiKey = (config.get("huggingface.apiKey") as string) || "";
+  const defaultCompletionModel =
+    (config.get("huggingface.defaultCompletionModel") as string) || "claude-1";
+  const defaultChatCompletionModel =
+    (config.get("huggingface.defaultChatCompletionModel") as string) ||
+    "claude-1";
+  const timeout = (config.get("huggingface.timeout") as BigInt) || 120;
+  if (apiKey) {
+    log.info("HuggingFace API provider initialized");
+    return new HuggingFaceAPI(
+      apiKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel
+    );
+  }
+  log.info("HuggingFace API provider not initialized, no apikey");
   return null;
 }
 
@@ -67,6 +91,10 @@ export function getAllProviders(): Providers {
   let ap = getAnthropicProvider(config);
   if (ap) {
     providers.addProvider("anthropic", ap);
+  }
+  let hp = getHuggingFaceProvider(config);
+  if (hp) {
+    providers.addProvider("huggingface", hp);
   }
   return providers;
 }

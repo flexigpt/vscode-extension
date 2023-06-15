@@ -124,7 +124,6 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       }
       return { fullResponse: fullResponse, data: respText };
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }

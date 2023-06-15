@@ -1,4 +1,9 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosInstance,
+} from "axios";
 import log from "../logger/log";
 
 export class GptAPI {
@@ -7,8 +12,8 @@ export class GptAPI {
   apiKey: string;
   apiKeyHeaderKey: string;
   headers: Record<string, string>;
+  logRequests: boolean = false;
   private axiosInstance: AxiosInstance;
-
 
   constructor(
     origin: string,
@@ -29,18 +34,20 @@ export class GptAPI {
 
     this.axiosInstance = axios.create();
 
-    // Add interceptor once in constructor
-    // this.axiosInstance.interceptors.request.use(
-    //   (config: AxiosRequestConfig) => {
-    //     // Caution: avoid logging sensitive information in production
-    //     console.log("Axios Request:", config);
-    //     console.log("cURL Command:", this.generateCurlCommand(config));
-    //     return config;
-    //   },
-    //   (error) => {
-    //     throw error;
-    //   }
-    // );
+    if (this.logRequests) {
+      //Add interceptor once in constructor
+      this.axiosInstance.interceptors.request.use(
+        (config: AxiosRequestConfig) => {
+          // Caution: avoid logging sensitive information in production
+          console.log("Axios Request:", config);
+          console.log("cURL Command:", this.generateCurlCommand(config));
+          return config;
+        },
+        (error) => {
+          throw error;
+        }
+      );
+    }
   }
 
   // Function to generate the cURL command
@@ -78,9 +85,25 @@ export class GptAPI {
     };
 
     try {
-      const response: AxiosResponse<T> = await this.axiosInstance.request(config);
+      const response: AxiosResponse<T> = await this.axiosInstance.request(
+        config
+      );
       return response.data;
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Handle Axios error
+        const axiosError = error as AxiosError;
+        let errorData: string;
+        if (axiosError.response) {
+          errorData =
+            JSON.stringify(axiosError.response.data, null, 2) +
+            JSON.stringify(axiosError.response.status, null, 2) +
+            JSON.stringify(axiosError.response.headers, null, 2);
+        } else {
+          errorData = JSON.stringify(axiosError, null, 2);
+        }
+        error.message = errorData + error.message;
+      }
       throw error;
     }
   }

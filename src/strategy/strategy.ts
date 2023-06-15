@@ -51,18 +51,29 @@ export default class Providers {
       "gpt-4",
       "gpt-3.5-turbo",
     ];
-    let anthropicModels = ["claude"];
     if (
       openAIModels.some((search) => model.startsWith(search)) &&
       this.providers.openai
     ) {
       return this.providers.openai;
     }
+    let anthropicModels = ["claude"];
     if (
       anthropicModels.some((search) => model.startsWith(search)) &&
       this.providers.anthropic
     ) {
       return this.providers.anthropic;
+    }
+    let huggingfaceModels = ["microsoft/", "replit/", "Salesforce/"];
+    if (
+      huggingfaceModels.some((search) => model.startsWith(search)) &&
+      this.providers.huggingface
+    ) {
+      return this.providers.huggingface;
+    }
+    // No provider was given and input model didnt match any known models, but has slash in it, so assume its a huggingface model
+    if (model.includes("/")) {
+      return this.providers.huggingface;
     }
 
     throw new Error(
@@ -179,4 +190,10 @@ export interface CompletionRequest {
    * @memberof CompletionRequest
    */
   user?: string;
+  /**
+   * The amount of time in seconds that the query should take maximum. May or may not be enforceable.
+   * @type {number}
+   * @memberof CompletionRequest
+   */
+  timeout?: number | null;
 }

@@ -101,7 +101,7 @@
         "flexigpt.defaultProvider": {
           "type": "string",
           "default": "",
-          "description": "The provider to use if multiple providers are configured. Currently supported values: openai, anthropic. By default, any valid provider with a apikey in config will be used.",
+          "description": "The provider to use if multiple providers are configured. Currently supported values: openai, anthropic, huggingface. By default, any valid provider with a apikey in config will be used.",
           "order": 3
         },
         "flexigpt.openai.apiKey": {
@@ -111,7 +111,7 @@
         },
         "flexigpt.openai.timeout": {
           "type": "integer",
-          "default": 60,
+          "default": 120,
           "description": "Timeout for OpenAI requests",
           "order": 4
         },
@@ -140,7 +140,7 @@
         },
         "flexigpt.anthropic.timeout": {
           "type": "integer",
-          "default": 60,
+          "default": 120,
           "description": "Timeout for anthropic requests",
           "order": 5
         },
@@ -155,6 +155,29 @@
           "default": "claude-1",
           "description": "Default model to use for chat completion requests",
           "order": 5
+        },
+        "flexigpt.huggingface.apiKey": {
+          "type": "string",
+          "description": "Your huggingface API key.",
+          "order": 6
+        },
+        "flexigpt.huggingface.timeout": {
+          "type": "integer",
+          "default": 120,
+          "description": "Timeout for huggingface requests",
+          "order": 6
+        },
+        "flexigpt.huggingface.defaultCompletionModel": {
+          "type": "string",
+          "default": "Salesforce/codegen-2B-multi",
+          "description": "Default model to use for completion requests",
+          "order": 6
+        },
+        "flexigpt.huggingface.defaultChatCompletionModel": {
+          "type": "string",
+          "default": "microsoft/DialoGPT-large",
+          "description": "Default model to use for chat completion requests",
+          "order": 6
         }
       }
     }

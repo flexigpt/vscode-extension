@@ -1,9 +1,3 @@
-export enum ChatCompletionRoleEnum {
-  system = "system",
-  user = "user",
-  assistant = "assistant",
-}
-
 export interface IMessage {
   role: ChatCompletionRoleEnum;
   content: string;
@@ -17,6 +11,12 @@ export interface IView {
   id: string,
   full: string,
   params?: { [key: string]: any } 
+}
+
+export enum ChatCompletionRoleEnum {
+  system = "system",
+  user = "user",
+  assistant = "assistant",
 }
 
 /**

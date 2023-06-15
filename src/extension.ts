@@ -73,6 +73,14 @@ function registerEvents(
         ) ||
         event.affectsConfiguration(
           "flexigpt.anthropic.defaultChatCompletionModel"
+        ) ||
+        event.affectsConfiguration("flexigpt.huggingface.timeout") ||
+        event.affectsConfiguration("flexigpt.huggingface.apiKey") ||
+        event.affectsConfiguration(
+          "flexigpt.huggingface.defaultCompletionModel"
+        ) ||
+        event.affectsConfiguration(
+          "flexigpt.huggingface.defaultChatCompletionModel"
         )
       ) {
         // add the new token to the provider

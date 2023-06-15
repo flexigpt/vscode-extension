@@ -376,6 +376,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     } catch (e) {
       log.error(e);
       response = `[ERROR] ${e}`;
+      fullResponseStr = JSON.stringify(e, null, 2);
     }
     const cresponseStr = prettier.format(fullResponseStr, { parser: "json" });
     await this.sendMessage({
