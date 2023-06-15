@@ -5,9 +5,6 @@ import {
   ChatCompletionRoleEnum,
 } from "./conversationspec";
 import { AxiosRequestConfig } from "axios";
-import {
-  checkAndPopulateCompletionParams,
-} from "./strategyutils";
 
 export class AnthropicAPI extends GptAPI implements CompletionProvider {
   #timeout: BigInt;

@@ -5,7 +5,6 @@ import {
   ChatCompletionRoleEnum,
 } from "./conversationspec";
 import { AxiosRequestConfig } from "axios";
-import { checkAndPopulateCompletionParams } from "./strategyutils";
 import log from "../logger/log";
 
 export class HuggingFaceAPI extends GptAPI implements CompletionProvider {

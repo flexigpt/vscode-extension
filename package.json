@@ -225,8 +225,8 @@
     "@types/prettier": "^2.7.2",
     "@types/uuid": "^9.0.1",
     "@types/vscode": "^1.76.0",
+    "axios": "^1.4.0",
     "js-yaml": "^4.1.0",
-    "openai": "^3.2.1",
     "prettier": "^2.8.4",
     "uuid": "^9.0.0"
   }

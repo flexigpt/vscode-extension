@@ -4,7 +4,9 @@ import * as path from "path";
 import * as prettier from "prettier";
 import { v4 as uuidv4 } from "uuid";
 
-import Providers, {CompletionProvider} from "./strategy/strategy";
+import Providers, { CompletionProvider } from "./strategy/strategy";
+import { filterSensitiveInfoFromJsonString } from "./strategy/api";
+
 import log from "./logger/log";
 
 import { importAllPrompts } from "./setupprompts";
@@ -211,7 +213,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           let msg = data.value;
           // log.info(`loading conversation for ${JSON.stringify(msg)}`);
           this._conversationCollection?.setConversationAsActive(msg.label);
-          this.sendConversationsViewMessage(this._conversationCollection?.currentConversation.views);
+          this.sendConversationsViewMessage(
+            this._conversationCollection?.currentConversation.views
+          );
           break;
         case "prompt": {
           this.search(data.value);
@@ -376,7 +380,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     } catch (e) {
       log.error(e);
       response = `[ERROR] ${e}`;
-      fullResponseStr = JSON.stringify(e, null, 2);
+      fullResponseStr = filterSensitiveInfoFromJsonString(
+        JSON.stringify(e, null, 2)
+      );
     }
     const cresponseStr = prettier.format(fullResponseStr, { parser: "json" });
     await this.sendMessage({
@@ -412,7 +418,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
     const uuid = uuidv4();
     let response = "";
-  
+
     response = await this.sendAPIRequest(prompt, uuid);
     // Saves the response
     this._response = response;

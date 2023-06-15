@@ -86,6 +86,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
   - Provide enriched data handling functions. E.g:
     - Collect definitions, strip them and pass on, etc.
     - Diff collection from a git branch for review
+  - Streaming response support
 
 ## Installation
 
