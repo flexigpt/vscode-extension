@@ -101,7 +101,7 @@
         "flexigpt.defaultProvider": {
           "type": "string",
           "default": "",
-          "description": "The provider to use if multiple providers are configured. Currently supported values: openai, anthropic, huggingface. By default, any valid provider with a apikey in config will be used.",
+          "description": "The provider to use if multiple providers are configured. Currently supported values: openai, anthropic, huggingface, googlegl. By default, any valid provider with a apikey in config will be used.",
           "order": 3
         },
         "flexigpt.openai.apiKey": {
@@ -178,6 +178,29 @@
           "default": "microsoft/DialoGPT-large",
           "description": "Default model to use for chat completion requests",
           "order": 6
+        },
+        "flexigpt.googlegl.apiKey": {
+          "type": "string",
+          "description": "Your googlegl API key.",
+          "order": 7
+        },
+        "flexigpt.googlegl.timeout": {
+          "type": "integer",
+          "default": 120,
+          "description": "Timeout for requests",
+          "order": 7
+        },
+        "flexigpt.googlegl.defaultCompletionModel": {
+          "type": "string",
+          "default": "text-bison-001",
+          "description": "Default model to use for completion requests",
+          "order": 7
+        },
+        "flexigpt.googlegl.defaultChatCompletionModel": {
+          "type": "string",
+          "default": "chat-bison-001",
+          "description": "Default model to use for chat completion requests",
+          "order": 7
         }
       }
     }

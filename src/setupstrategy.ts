@@ -4,6 +4,7 @@ import OpenAIAPIProvider from "./strategy/openaiapi";
 import Providers, { CompletionProvider } from "./strategy/strategy";
 import { AnthropicAPI } from "./strategy/anthropic";
 import { HuggingFaceAPI } from "./strategy/huggingface";
+import { GoogleGenerativeLanguageAPI } from "./strategy/googleapis";
 import log from "./logger/log";
 
 export function getOpenAIProvider(
@@ -62,10 +63,10 @@ export function getHuggingFaceProvider(
 ): CompletionProvider | null {
   const apiKey = (config.get("huggingface.apiKey") as string) || "";
   const defaultCompletionModel =
-    (config.get("huggingface.defaultCompletionModel") as string) || "claude-1";
+    (config.get("huggingface.defaultCompletionModel") as string) || "bigcode/starcoderbase";
   const defaultChatCompletionModel =
     (config.get("huggingface.defaultChatCompletionModel") as string) ||
-    "claude-1";
+    "microsoft/DialoGPT-large";
   const timeout = (config.get("huggingface.timeout") as BigInt) || 120;
   if (apiKey) {
     log.info("HuggingFace API provider initialized");
@@ -77,6 +78,29 @@ export function getHuggingFaceProvider(
     );
   }
   log.info("HuggingFace API provider not initialized, no apikey");
+  return null;
+}
+
+export function getGoogleGenerativeLanguageProvider(
+  config: vscode.WorkspaceConfiguration
+): CompletionProvider | null {
+  const apiKey = (config.get("googlegl.apiKey") as string) || "";
+  const defaultCompletionModel =
+    (config.get("googlegl.defaultCompletionModel") as string) || "text-bison-001";
+  const defaultChatCompletionModel =
+    (config.get("googlegl.defaultChatCompletionModel") as string) ||
+    "chat-bison-001";
+  const timeout = (config.get("googlegl.timeout") as BigInt) || 120;
+  if (apiKey) {
+    log.info("GoogleGenerativeLanguage API provider initialized");
+    return new GoogleGenerativeLanguageAPI(
+      apiKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel
+    );
+  }
+  log.info("GoogleGenerativeLanguage API provider not initialized, no apikey");
   return null;
 }
 
@@ -95,6 +119,10 @@ export function getAllProviders(): Providers {
   let hp = getHuggingFaceProvider(config);
   if (hp) {
     providers.addProvider("huggingface", hp);
+  }
+  let gp = getGoogleGenerativeLanguageProvider(config);
+  if (gp) {
+    providers.addProvider("googlegl", gp);
   }
   return providers;
 }

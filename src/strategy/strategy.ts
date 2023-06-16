@@ -64,6 +64,13 @@ export default class Providers {
     ) {
       return this.providers.anthropic;
     }
+    let googleglModels = ["bison", "gecko"];
+    if (
+      googleglModels.some((search) => model.includes(search)) &&
+      this.providers.googlegl
+    ) {
+      return this.providers.googlegl;
+    }
     let huggingfaceModels = ["microsoft/", "replit/", "Salesforce/", "bigcode/"];
     if (
       huggingfaceModels.some((search) => model.startsWith(search)) &&
@@ -196,4 +203,10 @@ export interface CompletionRequest {
    * @memberof CompletionRequest
    */
   timeout?: number | null;
+  /**
+   * Integer to define the top tokens considered within the sample operation to create new text
+   * @type {number}
+   * @memberof CompletionRequest
+   */
+  topK?: number | null;
 }

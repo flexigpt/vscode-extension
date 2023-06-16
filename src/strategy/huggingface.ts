@@ -104,9 +104,11 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       max_length: input.maxTokens,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_k: input.n,
+      top_k: input.topK,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       top_p: input.topP,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      num_return_sequences: input.n,
       temperature: input.temperature,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       repetition_penalty: input.presencePenalty,
@@ -168,6 +170,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       maxTokens: inputParams?.maxTokens,
       temperature: inputParams?.temperature,
       topP: inputParams?.topP,
+      topK: inputParams?.topK,
       n: inputParams?.n,
       stream: false,
       presencePenalty: inputParams?.presencePenalty,

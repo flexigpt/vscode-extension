@@ -104,7 +104,7 @@ export class GptAPI {
 
   async request<T>(requestConfig: AxiosRequestConfig): Promise<T> {
     const mergedHeaders = {
-      [this.apiKeyHeaderKey]: this.apiKey,
+      ...(this.apiKeyHeaderKey ? { [this.apiKeyHeaderKey]: this.apiKey } : {}),
       ...this.headers,
       ...(requestConfig.headers || {}),
     };

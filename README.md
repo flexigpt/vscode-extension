@@ -1,6 +1,8 @@
 # FlexiGPT
 
-Interact with GPT AI models (GPT3/3.5/4, Anthropic Claude, HuggingFace Inference API etc) as a power user.
+Interact with GPT AI models as a power user.
+
+- Currently supported: [GPT3/3.5/4](https://platform.openai.com/docs/api-reference/introduction), [Anthropic Claude](https://docs.anthropic.com/claude/reference/complete_post), [HuggingFace Inference API](https://huggingface.co/docs/api-inference/detailed_parameters), Google Generative Language API i.e [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage)
 
 FlexiGPT offers pre-defined prompts enriched with custom or predefined functions that can be engineered and fine-tuned to meet specific user needs. Prompts can be saved and used directly within VSCode, and the extension supports request parameter modifications for GPT APIs and post-processing response via responseHandlers in prompts.
 
@@ -19,6 +21,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
   - [OpenAI provider configuration](#openai-provider-configuration)
   - [Anthropic provider configuration](#anthropic-provider-configuration)
   - [Huggingface provider configuration](#huggingface-provider-configuration)
+  - [Google generative language (PaLM API) provider configuration](#google-generative-language-palm-api-provider-configuration)
   - [Sample Full configuration](#sample-full-configuration)
 - [Usage](#usage)
 - [Prompt file format](#prompt-file-format)
@@ -36,13 +39,15 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 ## Features
 
-- Ask GPT AI models (GPT3/3.5/4, Anthropic Claude, HuggingFace Inference API etc) anything you want
+- Ask GPT AI models anything you want
 
   - Currently supported:
-    - OpenAI chat completion APIs, with GPT3.5/4 models
-    - OpenAI completion APIs, with GPT2/3 models
-    - Anthropic Claude\* models
-    - Huggingface inference API supported models (Text/Text2Text/Conversational tasks)
+    - [OpenAI](https://platform.openai.com/docs/api-reference/introduction):
+      - Chat completion APIs, with GPT3.5/4 models
+      - Completion APIs, with GPT2/3 models
+    - [Anthropic](https://docs.anthropic.com/claude/reference/complete_post) Claude\* models
+    - [Huggingface inference API](https://huggingface.co/docs/api-inference/detailed_parameters) supported models (Text/Text2Text/Conversational tasks)
+    - Google Generative Language API i.e [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage) (untested).
 
 - Use pre-defined prompts in configuration files
 
@@ -109,7 +114,7 @@ Options:
 
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
 - flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js", "gobasic.js" and "gosql.js".
-- flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: "openai", "anthropic", "huggingface".
+- flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: "openai", "anthropic", "huggingface", "googlegl".
 
 ### OpenAI provider configuration
 
@@ -156,6 +161,19 @@ Options:
 - flexigpt.huggingface.defaultCompletionModel: Default model to use for completion requests.
   - Default: `bigcode/starcoderbase`.
 
+### Google generative language (PaLM API) provider configuration
+
+Options:
+
+- flexigpt.googlegl.apiKey: Your API key, which can be obtained from the website [here](https://developers.generativeai.google/tutorials/setup).
+- flexigpt.googlegl.timeout: The timeout for requests, in seconds. Default: 120.
+- flexigpt.googlegl.defaultChatCompletionModel: Default model to use for chat completion requests.
+  - You can always override the default model per prompt via the prompt file command declaration.
+  - FlexiGPT basic prompts will use the default models set.
+  - Default: `chat-bison-001`.
+- flexigpt.googlegl.defaultCompletionModel: Default model to use for completion requests.
+  - Default: `text-bison-001`.
+
 ### Sample Full configuration
 
 ```text
@@ -174,10 +192,15 @@ Options:
 "flexigpt.anthropic.defaultCompletionModel": "claude-1-instant",
 "flexigpt.anthropic.defaultChatCompletionModel": "claude-1-instant",
 
-"flexigpt.huggingfacce.apiKey": "hf-mkey",
-"flexigpt.huggingfacce.timeout": "120",
-"flexigpt.huggingfacce.defaultCompletionModel": "bigcode/starcoderbase",
-"flexigpt.huggingfacce.defaultChatCompletionModel": "microsoft/DialoGPT-large",
+"flexigpt.huggingface.apiKey": "hf-mkey",
+"flexigpt.huggingface.timeout": "120",
+"flexigpt.huggingface.defaultCompletionModel": "bigcode/starcoderbase",
+"flexigpt.huggingface.defaultChatCompletionModel": "microsoft/DialoGPT-large",
+
+"flexigpt.googlegl.apiKey": "gl-mkey",
+"flexigpt.googlegl.timeout": "120",
+"flexigpt.googlegl.defaultCompletionModel": "text-bison-001",
+"flexigpt.googlegl.defaultChatCompletionModel": "chat-bison-001",
 
 ```
 
@@ -294,6 +317,7 @@ module.exports = {
   - To use user variable add `{user.*variableName*}`, variableName must be in variables field in prompt file.
 
 - requestparams: optional
+
   - This is an object of type `{ [key: string]: any }`.
   - requestparams["provider"]: For setting a provider from non defaultProvider config
   - Any params relevant to the GPT provider API can be overridden.

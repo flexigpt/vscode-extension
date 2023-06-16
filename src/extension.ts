@@ -81,6 +81,14 @@ function registerEvents(
         ) ||
         event.affectsConfiguration(
           "flexigpt.huggingface.defaultChatCompletionModel"
+        ) ||
+        event.affectsConfiguration("flexigpt.googlegl.timeout") ||
+        event.affectsConfiguration("flexigpt.googlegl.apiKey") ||
+        event.affectsConfiguration(
+          "flexigpt.googlegl.defaultCompletionModel"
+        ) ||
+        event.affectsConfiguration(
+          "flexigpt.googlegl.defaultChatCompletionModel"
         )
       ) {
         // add the new token to the provider

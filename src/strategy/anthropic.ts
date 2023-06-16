@@ -99,7 +99,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       top_p: input.topP,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_k: input.n,
+      top_k: input.topK,
       stream: false,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       stop_sequences: stoparg,
@@ -150,7 +150,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       maxTokens: inputParams?.maxTokens || 16000,
       temperature: inputParams?.temperature,
       topP: inputParams?.topP,
-      n: inputParams?.n,
+      topK: inputParams?.topK,
       stream: false,
       stop: inputParams?.stop || undefined,
     };
