@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import log from "./logger/log";
+import log from "../logger/log";
 
-import { FilesImporter } from "./promptimporter/promptfiles";
-import { CommandRunnerContext } from "./promptimporter/promptcommands";
+import { FilesImporter } from "./promptfiles";
+import { CommandRunnerContext } from "./promptcommandrunner";
 
 export function importAllPrompts(
   extensionUri: vscode.Uri,

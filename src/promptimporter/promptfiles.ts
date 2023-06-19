@@ -1,15 +1,34 @@
 import * as vscode from "vscode";
 import axios from "axios";
+import { promises as fs } from "fs";
+
 import log from "../logger/log";
 
-import { fileExists, isHttpAddress } from "./promptutils";
-import { FunctionWrapper } from "./promptfunctions";
-import { Variable } from "./promptvariables";
+import { FunctionWrapper } from "../promptdef/promptfunctions";
+import { Variable } from "../promptdef/promptvariables";
+import { Command } from "../promptdef/promptcommand";
+
 import {
-  Command,
   CommandRunnerContext,
   DEFAULT_RESPONSE_HANDLER,
-} from "./promptcommands";
+} from "./promptcommandrunner";
+
+export async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+export const isHttpAddress = (urlString: string): boolean => {
+  try {
+    return urlString.toLowerCase().startsWith("http");
+  } catch (e) {
+    return false;
+  }
+};
 
 export class FilesImporter {
   commandRunnerContext: CommandRunnerContext;

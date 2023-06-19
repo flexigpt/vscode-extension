@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 import log from "./logger/log";
 
-import { systemVariableNames } from "./vscodeutils/predefinedvariables";
+import { systemVariableNames } from "./promptimporter/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
 
-import { Variable } from "./promptimporter/promptvariables";
-import { getAllProviders } from "./setupstrategy";
-import { setupCommandRunnerContext } from "./setupcommandrunner";
+import { Variable } from "./promptdef/promptvariables";
+import { getAllProviders } from "./strategy/setupstrategy";
+import { setupCommandRunnerContext } from "./promptimporter/setupcommandrunner";
 
 function registerWebView(
   context: vscode.ExtensionContext,

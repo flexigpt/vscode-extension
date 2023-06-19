@@ -9,17 +9,16 @@ import { filterSensitiveInfoFromJsonString } from "./strategy/api";
 
 import log from "./logger/log";
 
-import { importAllPrompts } from "./setupprompts";
-import { getAllProviders } from "./setupstrategy";
-import { CommandRunnerContext } from "./promptimporter/promptcommands";
-import { systemVariableNames } from "./vscodeutils/predefinedvariables";
+import { importAllPrompts } from "./promptimporter/setupprompts";
+import { getAllProviders } from "./strategy/setupstrategy";
+import { CommandRunnerContext } from "./promptimporter/promptcommandrunner";
+import { systemVariableNames } from "./promptimporter/predefinedvariables";
 import { getActiveDocumentLanguageID } from "./vscodeutils/vscodefunctions";
 import {
   ConversationCollection,
   loadConversations,
 } from "./strategy/conversation";
 import { ChatCompletionRoleEnum, IView } from "./strategy/conversationspec";
-import { unescapeChars } from "./strategy/strategyutils";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -58,6 +57,13 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   private _newAPI() {
     this._apiProvider = getAllProviders();
   }
+
+  unescapeChars(text: string) {
+    return text
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  };
 
   getProvider(model: string, providerName: string = ""): CompletionProvider {
     if (!this._apiProvider) {
@@ -350,7 +356,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
 
         response = completionResponse?.data as string | "";
         if (response) {
-          response = unescapeChars(response);
+          response = this.unescapeChars(response);
         } else {
           response = "Got empty response";
         }

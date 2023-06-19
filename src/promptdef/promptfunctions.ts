@@ -1,6 +1,26 @@
-import { append, replace, writeFile } from "../vscodeutils/predefinedfunctions";
+import log from "../logger/log";
 
-import { createFunctionFromString } from "./promptutils";
+export function createFunctionFromString(fnString: string): {
+  name: string;
+  fn: Function;
+} | null {
+  try {
+    const match = fnString.match(/function\s+(\w+)\(([^)]*)\)\s*\{([\s\S]*)\}/);
+    if (!match) {
+      throw new Error(
+        `The string "${fnString}" doesn't match the expected format of a function.`
+      );
+    }
+    const name = match[1];
+    const args = match[2].split(",").map((arg) => arg.trim());
+    const body = match[3];
+    const fn = new Function(...args, body);
+    return { name, fn };
+  } catch (error) {
+    log.error(error);
+    return null;
+  }
+}
 
 export class FunctionWrapper {
   _function: Function;
@@ -32,13 +52,6 @@ export class FunctionWrapper {
   }
 }
 
-export const preDefinedFunctions = [
-  new FunctionWrapper("append", append),
-  new FunctionWrapper("replace", replace),
-  new FunctionWrapper("writeFile", writeFile),
-  new FunctionWrapper("noop", function noop() {}),
-];
-
 export class FunctionContext {
   functions: { [key: string]: FunctionWrapper };
 
@@ -65,3 +78,5 @@ export class FunctionContext {
     return result;
   }
 }
+
+

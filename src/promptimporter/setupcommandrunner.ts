@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import { systemVariableNames } from "./vscodeutils/predefinedvariables";
-import { preDefinedFunctions } from "./promptimporter/promptfunctions";
+import { systemVariableNames } from "./predefinedvariables";
+import { preDefinedFunctions } from "./predefinedfunctions";
 
 import {
   getBaseFolder,
@@ -11,11 +11,11 @@ import {
   getActiveDocumentFilePath,
   getActiveDocumentLanguageID,
   getActiveFileName,
-} from "./vscodeutils/vscodefunctions";
+} from "../vscodeutils/vscodefunctions";
 
-import { Variable } from "./promptimporter/promptvariables";
-import { CommandRunnerContext } from "./promptimporter/promptcommands";
-import { getCommitAndTagListString } from "./vscodeutils/gitfunctions";
+import { Variable } from "../promptdef/promptvariables";
+import { CommandRunnerContext } from "./promptcommandrunner";
+import { getCommitAndTagListString } from "../vscodeutils/gitfunctions";
 
 export function setupCommandRunnerContext(
   context: vscode.ExtensionContext
@@ -70,24 +70,6 @@ function initEvents(commandRunnerContext: CommandRunnerContext) {
     if (!e) {
       return;
     }
-    // commandRunnerContext.setSystemVariable(
-    //   new Variable(systemVariableNames.language, e.document.languageId)
-    // );
-    // commandRunnerContext.setSystemVariable(
-    //   new Variable(systemVariableNames.filePath, e.document.fileName)
-    // );
-    // const { extension, fileName, fileFolder } = getFileNameAndExtension(
-    //   e.document.fileName
-    // );
-    // commandRunnerContext.setSystemVariable(
-    //   new Variable(systemVariableNames.fileName, fileName)
-    // );
-    // commandRunnerContext.setSystemVariable(
-    //   new Variable(systemVariableNames.fileExtension, extension)
-    // );
-    // commandRunnerContext.setSystemVariable(
-    //   new Variable(systemVariableNames.fileFolder, fileFolder)
-    // );
   });
 
   vscode.window.onDidChangeTextEditorSelection(async (e) => {

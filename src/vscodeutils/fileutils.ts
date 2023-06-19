@@ -9,6 +9,16 @@ function formatPath(filePath: string): string {
   return filePath.split('\\').join(path.sep);
 }
 
+
+export function getFileNameAndExtension(filePath: string) {
+  const pathInfo = path.parse(filePath);
+  return {
+    extension: pathInfo.ext,
+    fileName: pathInfo.name,
+    fileFolder: pathInfo.dir,
+  };
+}
+
 export function writeFile({ filePath, content, system: { answer } }: { filePath: string, content: string, system: { answer: string } }): void {
   filePath = formatPath(filePath);
   log.info(`writeFile: ${filePath}`);

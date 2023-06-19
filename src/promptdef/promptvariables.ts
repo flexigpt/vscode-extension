@@ -78,3 +78,34 @@ export class VariableContext {
   }
 
 }
+
+export function getValueWithKey(key: string, variables: Record<string, any>): any {
+  const keys = key.split(".");
+  let value = variables;
+  for (const k of keys) {
+    if (typeof value !== "object" || value === null) {
+      return key;
+    }
+    const getter = value[k];
+    if (typeof getter === 'function') {
+      value = getter();
+    } else {
+      value = getter;
+    }
+  }
+  return value ?? key;
+}
+
+// export function getValueWithKey(key: string, variables: any) {
+//   try {
+//     const keys = key.split(".");
+//     let value = variables;
+//     for (const k of keys) {
+//       value = value[k];
+//     }
+//     return value ?? key;
+//   } catch {
+//     return key;
+//   }
+// }
+

@@ -27,9 +27,4 @@ export const getGeneratorLines = (text: string) => {
   return text.match(GENERATOR_REGEX);
 };
 
-export const unescapeChars = (text: string) => {
-  return text
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
-};
+

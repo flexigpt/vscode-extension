@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 
-import OpenAIAPIProvider from "./strategy/openaiapi";
-import Providers, { CompletionProvider } from "./strategy/strategy";
-import { AnthropicAPI } from "./strategy/anthropic";
-import { HuggingFaceAPI } from "./strategy/huggingface";
-import { GoogleGenerativeLanguageAPI } from "./strategy/googleapis";
-import log from "./logger/log";
+import OpenAIAPIProvider from "./openaiapi";
+import Providers, { CompletionProvider } from "./strategy";
+import { AnthropicAPI } from "./anthropic";
+import { HuggingFaceAPI } from "./huggingface";
+import { GoogleGenerativeLanguageAPI } from "./googleapis";
+import log from "../logger/log";
 
 export function getOpenAIProvider(
   config: vscode.WorkspaceConfiguration
