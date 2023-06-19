@@ -1,9 +1,10 @@
 import log from "../logger/log";
 import { GptAPI } from "./api";
-import { CompletionRequest, CompletionProvider } from "./strategy";
+import { CompletionProvider } from "./strategy";
 import { AxiosRequestConfig } from "axios";
 
 import {
+  CompletionRequest,
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
 } from "./conversationspec";

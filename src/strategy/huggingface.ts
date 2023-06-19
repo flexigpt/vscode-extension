@@ -1,6 +1,7 @@
 import { GptAPI } from "./api";
-import { CompletionRequest, CompletionProvider } from "./strategy";
+import { CompletionProvider } from "./strategy";
 import {
+  CompletionRequest,
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
 } from "./conversationspec";
