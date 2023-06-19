@@ -111,8 +111,10 @@ export class FilesImporter {
 
     if (userDefinitions?.functions) {
       userDefinitions.functions.forEach((fn: Function) => {
+        // log.info(`Importing function ${fn.name}`);
         this.commandRunnerContext.setFunction(FunctionWrapper.fromFunction(fn));
       });
+      // log.info(`Imported functions: ${JSON.stringify(this.commandRunnerContext.functionContext.getFunctions())} `);
     }
   }
 
