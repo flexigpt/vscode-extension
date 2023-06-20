@@ -31,7 +31,7 @@ module.exports = {
             - Write the function as a method on a Datalayer struct as: "type DL struct { db *sqlx.DB}"
             - Dont add any logging. Add appropriate comments.`,
       responseHandler: {
-        func: "getFileNameAndExtension",
+        func: "writeFile",
         args: {
           filePath: "user.dlFileName",
         },
@@ -89,6 +89,25 @@ module.exports = {
             - Dont add any logging. Add appropriate comments.`,
       responseHandler: {
         func: "writeFile",
+        args: {
+          filePath: "user.dlFileName",
+        },
+      },
+    },
+    {
+      name: "Go sqlx + squirrel: (no file write) Generate CreateFunc",
+      template: `Task: Given a Go struct with properly defined database tags, generate the "Delete" function code. This function should take an id of input struct and delete the database entry.\n
+            The input model struct is:\n
+            {selection}\n
+            Constraints:\n
+            - Use the sqlx for MySQL and Squirrel libraries for database handling and query building respectively. Dont generate the database connection code.
+            - Assume that string constants for the tablename and column names are available in a package called "spec". Dont use any hardcoded strings.
+            - Use "ctx context.Context" as the first argument to the function. Use appropriate context methods from the packages.
+            - Each function should appropriately handle any errors encountered during the database operation.
+            - Write the function as a method on a Datalayer struct as: "type DL struct { db *sqlx.DB}"
+            - Dont add any logging. Add appropriate comments.`,
+      responseHandler: {
+        func: "getFileNameAndExtension",
         args: {
           filePath: "user.dlFileName",
         },

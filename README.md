@@ -43,7 +43,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
   - Currently supported:
     - [OpenAI](https://platform.openai.com/docs/api-reference/introduction):
-      - Chat completion APIs, with GPT3.5/4 models
+      - Chat completion APIs, with GPT3.5/4 models (function calling is also supported)
       - Completion APIs, with GPT2/3 models
     - [Anthropic](https://docs.anthropic.com/claude/reference/complete_post) Claude\* models
     - [Huggingface inference API](https://huggingface.co/docs/api-inference/detailed_parameters) supported models (Text/Text2Text/Conversational tasks)
@@ -54,7 +54,8 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
   - Engineer and fine tune prompts, save them and use them directly within VSCode.
   - Prompts can be enriched using predefined functions or custom functions. Multiple inbuilt [predefined functions](#predefined-system-function) available.
   - Supports request parameter modifications for GPT APIs
-  - Supports post-processing response via responseHandlers in prompts.
+  - Supports post-processing response via responseHandlers in prompts. Multiple inbuilt [predefined responseHandlers](#predefined-system-function) available. Also supports custom responseHandlers. Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js).
+  - Function calling feature of GPT3.5/4 models is also supported. Example can be found in [this prompt file](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js).
   - Available inbuilt prompts:
 
     - [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
@@ -289,7 +290,8 @@ module.exports = {
     },
   ],
   functions: [
-    // you could also write your own responseHandler
+    // you could also write your own responseHandler.
+    // Note that it takes a single object as input.
     function myHandler({ system, user }) {
       console.table({ system });
       console.table({ user });
