@@ -2,7 +2,7 @@
   "name": "flexigpt",
   "displayName": "FlexiGPT",
   "description": "Interact with GPT AI models (GPT3/3.5/4, Anthropic Claude, HuggingFace Inference API, GoogleGL i.e PaLM API, etc) as a power user",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "publisher": "ppipada",
   "pricing": "Free",
   "icon": "resources/extensionIcon.png",
