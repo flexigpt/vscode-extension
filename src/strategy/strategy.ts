@@ -1,3 +1,4 @@
+import log from "../logger/log";
 import {
   ChatCompletionRequestMessage,
   CompletionRequest,
@@ -95,4 +96,61 @@ export default class Providers {
       "No default provider and No provider found for model " + model
     );
   }
+}
+
+export function unescapeChars(text: string) {
+  return text
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
+function countTokensInContent(content: string): number {
+  // Regular expression to split the content into tokens based on common delimiters.
+  // This includes whitespaces, brackets, arithmetic operators, and punctuation.
+  const tokenRegex = /[\s{}\[\]()+-=*/<>,;:.!&|\\]+/;
+
+  // Split the content into tokens based on the regex and filter out empty strings.
+  const tokens = content.split(tokenRegex).filter((token) => token !== "");
+
+  // Return the count of tokens.
+  return tokens.length;
+}
+
+export function filterMessagesByTokenCount(
+  messages: ChatCompletionRequestMessage[],
+  maxTokenCount: number
+): ChatCompletionRequestMessage[] {
+  let totalTokens = 0;
+  let filteredMessages: ChatCompletionRequestMessage[] = [];
+
+  // Loop through the messages in reverse order (prioritizing the last element)
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    let c = message.content || "";
+    const tokensInMessage = countTokensInContent(c);
+
+    // Check if adding this message will not exceed maxTokenCount
+    // or if the filteredMessages array is empty, then at least add this message
+    if (
+      totalTokens + tokensInMessage <= maxTokenCount ||
+      filteredMessages.length === 0
+    ) {
+      filteredMessages.push(message);
+      totalTokens += tokensInMessage;
+
+      // Always include at least one message, so if we've added one we can now enforce maxTokenCount
+      if (totalTokens > maxTokenCount) {
+        break;
+      }
+    } else {
+      break;
+    }
+  }
+  if (filteredMessages.length < messages.length) {
+    log.info(
+      `Filtered messages count (${filteredMessages.length}) is less than input messages count (${messages.length})`
+    );
+  }
+  return filteredMessages.reverse();
 }

@@ -25,7 +25,7 @@ export function getGitRootPath(): string | undefined {
   if (!rootPath) {
     throw new Error("No workspace folder open.");
   }
-  log.info(`Got rootpath: ${rootPath}`);
+  // log.info(`Got rootpath: ${rootPath}`);
   // const gitPath = path.join(rootPath, ".git");
   // const isGitRepository = vscode.workspace.workspaceFolders?.some(
   //   (workspaceFolder) => workspaceFolder.uri.fsPath === gitPath

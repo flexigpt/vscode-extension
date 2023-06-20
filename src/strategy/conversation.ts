@@ -43,7 +43,7 @@ export class Conversation {
 
     const timestamp = new Date(Date.now()).toISOString();
     const role = message.role;
-    const content = message.content;
+    const content: string = message.content ? message.content : "" ;
     const newMessage: IMessage = { role, content, timestamp, name };
     this.messages.push(newMessage);
   }

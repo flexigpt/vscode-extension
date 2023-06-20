@@ -1,6 +1,6 @@
 import log from "../logger/log";
 import { GptAPI } from "./api";
-import { CompletionProvider } from "./strategy";
+import { CompletionProvider, unescapeChars, filterMessagesByTokenCount } from "./strategy";
 import { AxiosRequestConfig } from "axios";
 
 import {
@@ -8,13 +8,6 @@ import {
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
 } from "./conversationspec";
-
-function unescapeChars(text: string) {
-  return text
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
-};
 
 export default class OpenAIAPIProvider
   extends GptAPI
@@ -90,7 +83,11 @@ export default class OpenAIAPIProvider
     let modelpath = "/completions";
     if (chatModel) {
       modelpath = "/chat/completions";
-      request.messages = input.messages;
+      let filterTokens = 2048;
+      if (input.maxTokens) {
+        filterTokens = input.maxTokens;
+      }
+      request.messages = filterMessagesByTokenCount(input.messages, filterTokens);
       request.functions = input?.functions;
       // eslint-disable-next-line @typescript-eslint/naming-convention
       request.function_call = input?.functionCall;
@@ -124,7 +121,9 @@ export default class OpenAIAPIProvider
       ) {
         if (chatModel) {
           let responseMessage = data.choices[0].message;
-          respText = responseMessage?.content ? responseMessage?.content as string : "";
+          respText = responseMessage?.content
+            ? (responseMessage?.content as string)
+            : "";
           if (
             "function_call" in responseMessage &&
             responseMessage["function_call"]

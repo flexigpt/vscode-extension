@@ -1,5 +1,5 @@
 import { GptAPI } from "./api";
-import { CompletionProvider } from "./strategy";
+import { CompletionProvider, filterMessagesByTokenCount } from "./strategy";
 import {
   CompletionRequest,
   ChatCompletionRequestMessage,
@@ -77,17 +77,18 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     let text: string = "";
 
     for (let i = 0; i < messages.length; i++) {
+      let icontent: string = messages[i].content || "";
       if (messages[i].role === ChatCompletionRoleEnum.assistant) {
-        generated_responses.push(messages[i].content);
+        generated_responses.push(icontent);
       } else if (
         messages[i].role === ChatCompletionRoleEnum.user ||
         messages[i].role === ChatCompletionRoleEnum.system
       ) {
-        past_user_inputs.push(messages[i].content);
+        past_user_inputs.push(icontent);
 
         // Assuming the last input from the user is at the end of the array
         if (i === messages.length - 1) {
-          text = messages[i].content;
+          text = icontent;
         }
       }
     }
@@ -122,6 +123,11 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
         parameters.max_length = 250;
       }
     }
+    let filterTokens = 250;
+    if (parameters.max_length) {
+      filterTokens = parameters.max_length;
+    }
+    let messages = filterMessagesByTokenCount(input.messages, filterTokens);
 
     const inputmessages = this.getInputs(input.messages);
 

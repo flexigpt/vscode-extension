@@ -1,5 +1,5 @@
 import { GptAPI } from "./api";
-import { CompletionProvider } from "./strategy";
+import { CompletionProvider, filterMessagesByTokenCount } from "./strategy";
 import {
   CompletionRequest,
   ChatCompletionRequestMessage,
@@ -168,7 +168,12 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       }
     }
     if (completionRequest.messages) {
-      completionRequest.prompt = this.generateMessageString(completionRequest.messages);
+      let filterTokens = 2048;
+      if (completionRequest.maxTokens) {
+        filterTokens = completionRequest.maxTokens;
+      }
+      let messages = filterMessagesByTokenCount(completionRequest.messages, filterTokens);
+      completionRequest.prompt = this.generateMessageString(messages);
     }
     return completionRequest;
   }
