@@ -1,3 +1,5 @@
+import log from "../logger/log";
+
 export class Variable {
   private _value: any;
 
@@ -23,7 +25,7 @@ export class Variable {
   prepareGetter(params: any, functions: any): () => any {
     let g = this.getter;
     let value = this._value;
-    return function(): any {
+    return function (): any {
       // console.log(`Getting value for ${param1} and ${param2}`);
       // Calculate value based on parameters
       if (value) {
@@ -55,31 +57,47 @@ export class VariableContext {
     return undefined;
   }
 
-  getVariablesWithValues(params?: any, functions?: any): { [key: string]: any } {
+  getVariablesWithValues(
+    params?: any,
+    functions?: any
+  ): { [key: string]: any } {
     const result: { [key: string]: any } = {};
     Object.keys(this.variables).forEach((key) => {
       const variable = this.variables[key];
       if (variable) {
-        result[key] = this.getVariableValue(key, params, functions);
+        try {
+          result[key] = this.getVariableValue(key, params, functions);
+        } catch (e) {
+          log.error(`Error getting variable ${key}: ${e}`);
+        }
       }
     });
     return result;
   }
 
-  getVariablesWithGetters(params?: any, functions?: any): { [key: string]: any } {
+  getVariablesWithGetters(
+    params?: any,
+    functions?: any
+  ): { [key: string]: any } {
     const result: { [key: string]: any } = {};
     Object.keys(this.variables).forEach((key) => {
       const variable = this.variables[key];
       if (variable) {
-        result[key] = variable.prepareGetter(params, functions);
+        try {
+          result[key] = variable.prepareGetter(params, functions);
+        } catch (e) {
+          log.error(`Error getting variable ${key}: ${e}`);
+        }
       }
     });
     return result;
   }
-
 }
 
-export function getValueWithKey(key: string, variables: Record<string, any>): any {
+export function getValueWithKey(
+  key: string,
+  variables: Record<string, any>
+): any {
   const keys = key.split(".");
   let value = variables;
   for (const k of keys) {
@@ -87,8 +105,12 @@ export function getValueWithKey(key: string, variables: Record<string, any>): an
       return key;
     }
     const getter = value[k];
-    if (typeof getter === 'function') {
-      value = getter();
+    if (typeof getter === "function") {
+      try {
+        value = getter();
+      } catch (e) {
+        log.error(`Error getting variable ${k}: ${e}`);
+      }
     } else {
       value = getter;
     }
@@ -108,4 +130,3 @@ export function getValueWithKey(key: string, variables: Record<string, any>): an
 //     return key;
 //   }
 // }
-

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import log from "./logger/log";
+import log, { setOutputChannel } from "./logger/log";
 
 import { systemVariableNames } from "./promptimporter/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
@@ -100,6 +100,10 @@ function registerEvents(
 }
 
 export function activate(context: vscode.ExtensionContext) {
+  const outputChannel = vscode.window.createOutputChannel('FlexiGPT');
+  setOutputChannel(outputChannel);
+  context.subscriptions.push(outputChannel);
+  
   const apiProviders = getAllProviders();
   const provider = new ChatViewProvider(context.extensionUri, context);
   provider.setAPIProviders(apiProviders);

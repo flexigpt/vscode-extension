@@ -9,6 +9,13 @@ import {
   ChatCompletionRoleEnum,
 } from "./conversationspec";
 
+function unescapeChars(text: string) {
+  return text
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+};
+
 export default class OpenAIAPIProvider
   extends GptAPI
   implements CompletionProvider
@@ -80,9 +87,13 @@ export default class OpenAIAPIProvider
       logit_bias: input.logitBias,
       user: input.user,
     };
-
+    let modelpath = "/completions";
     if (chatModel) {
+      modelpath = "/chat/completions";
       request.messages = input.messages;
+      request.functions = input?.functions;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      request.function_call = input?.functionCall;
     } else {
       request.prompt = input.prompt;
       request.suffix = input.suffix;
@@ -92,10 +103,6 @@ export default class OpenAIAPIProvider
       request.max_tokens = input.maxTokens ? input.maxTokens : 2048;
     }
 
-    let modelpath = "/completions";
-    if (chatModel) {
-      modelpath = "/chat/completions";
-    }
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
       method: "POST",
@@ -108,19 +115,50 @@ export default class OpenAIAPIProvider
         throw new Error("Invalid data response. Expected an object." + data);
       }
       let respText = "";
+      let functionName = "";
+      let functionArgs: any;
       if (
         "choices" in data &&
         Array.isArray(data.choices) &&
         data.choices.length > 0
       ) {
         if (chatModel) {
-          respText = data.choices[0].message?.content as string;
+          let responseMessage = data.choices[0].message;
+          respText = responseMessage?.content ? responseMessage?.content as string : "";
+          if (
+            "function_call" in responseMessage &&
+            responseMessage["function_call"]
+          ) {
+            functionName = responseMessage["function_call"]["name"];
+            respText += "\nFunction call:\nName:" + functionName;
+            try {
+              functionArgs = JSON.parse(
+                unescapeChars(responseMessage["function_call"]["arguments"])
+              );
+            } catch (error) {
+              log.error(
+                "Error parsing function call arguments: " +
+                  error +
+                  " " +
+                  responseMessage["function_call"]["arguments"]
+              );
+              respText += "\nError in parsing returned args\n";
+              functionArgs = responseMessage["function_call"]["arguments"];
+            }
+            respText += "\nArgs: " + JSON.stringify(functionArgs, null, 2);
+          }
         } else {
           respText = data.choices[0].text ? data.choices[0].text : "";
         }
       }
-      return { fullResponse: fullResponse, data: respText };
+      return {
+        fullResponse: fullResponse,
+        data: respText,
+        functionName: functionName,
+        functionArgs: functionArgs,
+      };
     } catch (error) {
+      log.error("Error in completion request: " + error);
       throw error;
     }
   }
@@ -163,7 +201,10 @@ export default class OpenAIAPIProvider
       logitBias: inputParams?.logitBias || undefined,
       user: (inputParams?.user as string) || undefined,
     };
-
+    if (chatModel) {
+      completionRequest.functions = inputParams?.functions || undefined;
+      completionRequest.functionCall = inputParams?.functionCall || undefined;
+    }
     if (completionRequest.prompt) {
       let message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
