@@ -383,6 +383,7 @@
           // Dispatch the event as if it was received from the extension
           window.dispatchEvent(new MessageEvent("message", { data: eventData }));
         });
+        break;
       default:
         break;
     }

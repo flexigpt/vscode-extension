@@ -166,7 +166,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     context: vscode.WebviewViewResolveContext,
     _token: vscode.CancellationToken
   ) {
-    this._view = webviewView;
 
     // set options for the webview
     webviewView.webview.options = {
@@ -255,11 +254,13 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       }
     });
 
-    this._view?.onDidChangeVisibility((e) => {
-      if (this._view && !this._view!.visible) {
-        this._view = undefined;
-      }
-    });
+    this._view = webviewView;
+
+    // this._view?.onDidChangeVisibility((e) => {
+    //   if (this._view && !this._view!.visible) {
+    //     this._view = undefined;
+    //   }
+    // });
 
     if (this.leftOverMessage !== null) {
       // If there were any messages that wasn't delivered, render after resolveWebView is called.
