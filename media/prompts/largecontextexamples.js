@@ -1,4 +1,5 @@
 module.exports = {
+    namespace: "LargeContext",
     commands: [
         {
             name: "Anthropic: Write Go workflow test with swagger",

@@ -30,7 +30,7 @@ export function setupCommandRunnerContext(
 function initPreDefinedFunctions(commandRunnerContext: CommandRunnerContext) {
   if (preDefinedFunctions) {
     for (const fn of preDefinedFunctions) {
-      commandRunnerContext.setFunction(fn);
+      commandRunnerContext.setSystemFunction(fn);
     }
   }
 }

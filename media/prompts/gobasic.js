@@ -24,9 +24,10 @@ let testcaseSeparatorSchema = {
 };
 
 module.exports = {
+  namespace: "GoBasic",
   commands: [
     {
-      name: "Go: Write godoc string",
+      name: "Write godoc string",
       template: `Write godoc for following code.
             code:
             {system.selection}`,
@@ -38,7 +39,7 @@ module.exports = {
       },
     },
     {
-      name: "Go: Generate unit test",
+      name: "Generate unit test",
       template: `
             Go language\n
             Generate one data point covering zero value and error expectation,
@@ -65,7 +66,7 @@ module.exports = {
       },
     },
     {
-        name: "Go: Generate testcases",
+        name: "Generate testcases",
         template: `
               Go language\n
               Generate one data point covering zero value and error expectation,

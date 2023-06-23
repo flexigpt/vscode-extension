@@ -30,9 +30,6 @@ export function importAllPrompts(
     fi.importPromptFiles(fullPrompts);
   }
 
-  let allc = commandRunnerContext
-    .getCommands()
-    .map((item) => item.name)
-    .join(", ");
-  log.info(`Commands: ${allc}`);
+  let allc = commandRunnerContext.getAllCommandsAsLabels();
+  log.info(`Commands: ${JSON.stringify(allc, null, 2)}`);
 }

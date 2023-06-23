@@ -2,7 +2,7 @@ export const systemVariableNames: { [key: string]: string } = {
     selection: "selection",
     question: "question",
     answer: "answer",
-    answerCode: "answerCode",
+    sanitizedAnswer: "sanitizedAnswer",
     language: "language",
     baseFolder: "baseFolder",
     fileName: "fileName",

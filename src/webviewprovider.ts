@@ -19,6 +19,7 @@ import {
   loadConversations,
 } from "./strategy/conversation";
 import { ChatCompletionRoleEnum, IView } from "./strategy/conversationspec";
+import { Command } from "./promptdef/promptcommand";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -106,13 +107,12 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   private sendCommandListMessage() {
-    let commandList = this._commandRunnerContext?.getCommands()?.map((c) => ({
-      label: c.name,
-      description: c.description,
-    }));
+    if (!this._commandRunnerContext) {
+      return;
+    }
     this._view?.webview.postMessage({
       type: "setCommandList",
-      data: commandList,
+      data: this._commandRunnerContext.getAllCommandsAsLabels(),
     });
   }
 
@@ -374,8 +374,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           getActiveDocumentLanguageID()
         );
         let processedResponse =
-          this._commandRunnerContext?.systemVariableContext.getVariableValue(
-            systemVariableNames.answer
+          this._commandRunnerContext?.getSystemVariable(
+            systemVariableNames.sanitizedAnswer
           );
         if (processedResponse) {
           response = processedResponse;

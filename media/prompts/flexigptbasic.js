@@ -1,50 +1,51 @@
 
 module.exports = {
+    namespace: "FlexiGPT",
     commands: [
         {
-            name: "FlexiGPT: Refactor selection",
+            name: "Refactor selection",
             template: `Rectify and refactor given {system.language} code.
             code:
             {system.selection}`,
             description: "Refactor the selected code",
         },
         {
-            name: "FlexiGPT: Generate unit test",
+            name: "Generate unit test",
             template: `Create unit test for following function. 
             code:
             {system.selection}`,
             description: "Generate unit tests for the selected code",
         },
         {
-            name: "FlexiGPT: Complete",
+            name: "Complete",
             template: `Complete following {system.language} function. Just give code
             code:
             {system.selection}`,
             description: "Complete the function",
         },
         {
-            name: "FlexiGPT: Explain code",
+            name: "Explain code",
             template: `Explain following code.
             code:
             {system.selection}`,
             description: "Explain the code",
         },
         {
-            name: "FlexiGPT: Generate Documentation",
+            name: "Generate Documentation",
             template: `Write docstring for the following code.
             code:
             {system.selection}`,
             description: "Generate documentation for the selected code",
         },
         {
-            name: "FlexiGPT: Find problems",
+            name: "Find problems",
             template: `Find problems with the following code, fix them and explain what was wrong (Do not change anything else).
             code:
             {system.selection}`,
             description: "Find problems in the selected code",
         },
         {
-            name: "FlexiGPT: Optimize selection",
+            name: "Optimize selection",
             template: `Optimize the following code.
             code:
             {system.selection}`,

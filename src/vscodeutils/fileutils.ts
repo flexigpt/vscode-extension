@@ -19,7 +19,7 @@ export function getFileNameAndExtension(filePath: string) {
   };
 }
 
-export function writeFile({ filePath, content, system: { answer } }: { filePath: string, content: string, system: { answer: string } }): void {
+export function writeFile({ filePath, content, answer }: { filePath: string, content: string, answer: string }): void {
   filePath = formatPath(filePath);
   log.info(`writeFile: ${filePath}`);
   content = content || answer + "\n";
@@ -33,7 +33,7 @@ export function writeFile({ filePath, content, system: { answer } }: { filePath:
   });
 }
 
-export function replace({ textToReplace, system: { answer } }: { textToReplace: string, system: { answer: string } }): void {
+export function replace({ textToReplace,  answer }: { textToReplace: string, answer: string }): void {
  textToReplace = textToReplace || answer + "\n";
   try {
     vsCodeReplace(textToReplace);
@@ -42,7 +42,8 @@ export function replace({ textToReplace, system: { answer } }: { textToReplace: 
   }
 }
 
-export function append({ textToAppend, position = "end", system: { answer } }: { textToAppend: string, position: string, system: { answer: string } }): void {
+export function append({ textToAppend, position = "end", answer }: { textToAppend: string, position: string, answer: string }): void {
+  // log.info(`append: ${textToAppend} ${position} ${answer}`);
   textToAppend = textToAppend || answer + "\n";
   try {
     vsCodeAppend(textToAppend, position);

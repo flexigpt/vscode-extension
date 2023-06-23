@@ -239,6 +239,7 @@ Options:
 
 ```js
 module.exports = {
+  namespace: "myprompts",
   commands: [
     {
       name: "Refactor",
@@ -254,6 +255,7 @@ module.exports = {
 
 ```js
 module.exports = {
+  namespace: "MyComplexPrompts",
   commands: [
     {
       name: "Create unit test.",
@@ -485,7 +487,7 @@ commands: [
 
 ### Creating Functions
 
-TODO
+TODO: Add description
 
 ## License
 

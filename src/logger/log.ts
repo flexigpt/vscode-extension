@@ -1,24 +1,42 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 let outputChannel: vscode.OutputChannel;
 
 export function setOutputChannel(channel: vscode.OutputChannel) {
-    outputChannel = channel;
+  outputChannel = channel;
+}
+
+function formatMessage(...args: unknown[]): string {
+  return args
+    .map((arg) =>
+      typeof arg === "object" ? JSON.stringify(arg, null, 2) : arg
+    )
+    .join(" ");
+}
+
+function writeToChannel(prefix: string, message: string): void {
+  if (outputChannel) {
+    outputChannel.appendLine(`[${prefix}]: ${message}`);
+  } else {
+    console.log(`[${prefix}]: ${message}`);
+  }
 }
 
 const log = {
-    log: (...args: any[]) => {
-        const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg)).join(' ');
-        outputChannel.appendLine(`[Log]: ${message}`);
-    },
-    error: (...args: any[]) => {
-        const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg)).join(' ');
-        outputChannel.appendLine(`[Error]: ${message}`);
-    },
-    info: (...args: any[]) => {
-        const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg)).join(' ');
-        outputChannel.appendLine(`[Info]: ${message}`);
+  log: (...args: unknown[]) => {
+    writeToChannel("Log", formatMessage(...args));
+  },
+  error: (...args: unknown[]) => {
+    const message = formatMessage(...args);
+    if (outputChannel) {
+      outputChannel.appendLine(`[Error]: ${message}`);
+    } else {
+      console.error(`[Error]: ${message}`);
     }
+  },
+  info: (...args: unknown[]) => {
+    writeToChannel("Info", formatMessage(...args));
+  },
 };
 
 export default log;

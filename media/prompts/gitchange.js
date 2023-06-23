@@ -1,7 +1,8 @@
 module.exports = {
+    namespace: "GIT",
     commands: [
         {
-            name: "GIT changes: Generate Changelog",
+            name: "Generate Changelog",
             template: `Generate changelog in keepachangelog.com format.
             Add tags at h2 level and subsections at h3 level. 
             Skip unreleased section, skip heading section.

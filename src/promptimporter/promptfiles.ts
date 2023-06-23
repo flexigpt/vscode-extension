@@ -12,6 +12,7 @@ import {
   CommandRunnerContext,
   DEFAULT_RESPONSE_HANDLER,
 } from "./promptcommandrunner";
+import { getFileNameAndExtension } from "../vscodeutils/fileutils";
 
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -32,7 +33,7 @@ export const isHttpAddress = (urlString: string): boolean => {
 
 export class FilesImporter {
   commandRunnerContext: CommandRunnerContext;
-  
+
   constructor(commandRunnerContext: CommandRunnerContext) {
     this.commandRunnerContext = commandRunnerContext;
   }
@@ -66,7 +67,11 @@ export class FilesImporter {
     });
   }
 
-  processFileContents(userDefinitions: any) {
+  processFileContents(promptFile: string, userDefinitions: any) {
+    let namespace = getFileNameAndExtension(promptFile).fileName;
+    if (userDefinitions?.namespace) {
+      namespace = userDefinitions.namespace;
+    }
     if (userDefinitions?.commands) {
       userDefinitions.commands.forEach(
         (command: {
@@ -76,11 +81,13 @@ export class FilesImporter {
           description: any;
           requestparams: any;
         }) => {
+          let intmpl = command.template as string;
           let addc = new Command(
             command.name,
-            command.template,
+            intmpl,
             command.responseHandler,
-            command.description
+            command.description,
+            namespace
           );
           if (command.description as string) {
             addc.description = command.description;
@@ -103,6 +110,7 @@ export class FilesImporter {
       userDefinitions.variables.forEach(
         (variable: { name: any; value: any }) => {
           this.commandRunnerContext.setUserVariable(
+            namespace,
             new Variable(variable.name, variable.value)
           );
         }
@@ -112,7 +120,7 @@ export class FilesImporter {
     if (userDefinitions?.functions) {
       userDefinitions.functions.forEach((fn: Function) => {
         // log.info(`Importing function ${fn.name}`);
-        this.commandRunnerContext.setFunction(FunctionWrapper.fromFunction(fn));
+        this.commandRunnerContext.setFunction(namespace, FunctionWrapper.fromFunction(fn));
       });
       // log.info(`Imported functions: ${JSON.stringify(this.commandRunnerContext.functionContext.getFunctions())} `);
     }
@@ -123,7 +131,7 @@ export class FilesImporter {
       .then((data) => {
         let c = data as string;
         let userDefinitions = eval(c);
-        this.processFileContents(userDefinitions);
+        this.processFileContents(promptFile, userDefinitions);
       })
       .then(undefined, (err) => {
         log.error(`Error in readfile ${err}`);
@@ -138,7 +146,7 @@ export class FilesImporter {
       .then((data) => {
         let c = data as string;
         let userDefinitions = JSON.parse(c);
-        this.processFileContents(userDefinitions);
+        this.processFileContents(promptFile, userDefinitions);
         // log.info(data);
       })
       .then(undefined, (err) => {

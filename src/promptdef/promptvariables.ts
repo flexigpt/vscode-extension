@@ -1,132 +1,135 @@
 import log from "../logger/log";
 
+export type VariableValue = any;
+export type VariableGetter = (
+  variables: { [name: string]: VariableValue },
+  functions: any
+) => VariableValue;
+
+// Defines a class called Variable
 export class Variable {
-  private _value: any;
+  // Declares a readonly property 'name' of type string, meaning it can't be changed after the instance is created
+  readonly name: string;
 
-  constructor(public name: string, value: any) {
-    if (value instanceof Function) {
-      this.getter = value;
-    } else {
-      this._value = value;
+  // Declares a private readonly property 'value' that can be of type VariableValue or a function of type VariableGetter
+  private readonly value: VariableValue | VariableGetter;
+
+  // The constructor for the Variable class, which takes a name and value or function
+  constructor(name: string, value: VariableValue | VariableGetter) {
+    // Validates if the name is a non-empty string, if not, throws an error
+    if (typeof name !== "string" || !name) {
+      throw new Error("Variable name must be a non-empty string");
     }
+
+    // Assigns the given name and value/function to the instance properties
+    this.name = name;
+    this.value = value;
   }
 
-  getter?: (params: any, functions: any) => any;
+  // Method to get the value of the variable instance. Optional parameters params and functions can be passed.
+  getValue(params?: any, functions?: any): VariableValue {
+    // Checks if the value is a function
+    if (typeof this.value === "function") {
+      // If params is an instance of VariableContext, create a proxy to get values from it
+      const valueParams =
+        params instanceof VariableContext
+          ? new Proxy(
+              {},
+              {
+                // A handler object for the Proxy which specifies a custom behavior for the property access
+                get: (_, prop: string) => params.getValue(prop),
+              }
+            )
+          : params;
 
-  get(params: any, functions: any) {
-    if (this._value) {
-      return this._value;
+      try {
+        // Attempts to execute the function, passing the parameters and functions, and returns the result
+        return (this.value as VariableGetter)(valueParams, functions);
+      } catch (e) {
+        // If there is an error during the function execution, logs it to the console and returns undefined
+        console.error(`Error getting value for variable ${this.name}: ${e}`);
+        return undefined;
+      }
     }
-    if (this.getter) {
-      return this.getter(params, functions);
-    }
-  }
 
-  prepareGetter(params: any, functions: any): () => any {
-    let g = this.getter;
-    let value = this._value;
-    return function (): any {
-      // console.log(`Getting value for ${param1} and ${param2}`);
-      // Calculate value based on parameters
-      if (value) {
-        return value;
-      }
-      if (g) {
-        return g(params, functions);
-      }
-    };
+    // If value is not a function, it returns the value directly
+    return this.value;
   }
 }
 
 export class VariableContext {
-  variables: { [key: string]: Variable };
+  private readonly variables: Map<string, Variable | VariableContext>;
+  private defaultNamespace: string | null;
 
   constructor() {
-    this.variables = {};
+    this.variables = new Map();
+    this.defaultNamespace = null;
   }
 
-  set(variable: Variable): void {
-    this.variables[variable.name] = variable;
-  }
-
-  getVariableValue(key: string, params?: any, functions?: any): any {
-    let ret = this.variables[key];
-    if (ret) {
-      return ret.get(params, functions);
+  setDefaultNamespace(namespace: string) {
+    if (typeof namespace !== "string" || !namespace) {
+      throw new Error("Namespace name must be a non-empty string");
     }
-    return undefined;
+    if (!this.variables.has(namespace)) {
+      throw new Error(`Namespace "${namespace}" does not exist`);
+    }
+    this.defaultNamespace = namespace;
   }
 
-  getVariablesWithValues(
-    params?: any,
-    functions?: any
-  ): { [key: string]: any } {
-    const result: { [key: string]: any } = {};
-    Object.keys(this.variables).forEach((key) => {
-      const variable = this.variables[key];
-      if (variable) {
+  addVariable(variable: Variable) {
+    if (!(variable instanceof Variable)) {
+      throw new Error("Invalid variable");
+    }
+    this.variables.set(variable.name, variable);
+  }
+
+  addNamespace(namespace: string) {
+    if (typeof namespace !== "string" || !namespace) {
+      throw new Error("Namespace name must be a non-empty string");
+    }
+    if (this.variables.has(namespace)) {
+      throw new Error(`Namespace "${namespace}" already exists`);
+    }
+    this.variables.set(namespace, new VariableContext());
+  }
+
+  getNamespace(namespace: string): VariableContext | undefined {
+    const ns = this.variables.get(namespace);
+    return ns instanceof VariableContext ? ns : undefined;
+  }
+
+  getValue(key: string, functions?: any): VariableValue {
+    if (typeof key !== "string" || !key) {
+      log.error("Key must be a non-empty string");
+      return undefined;
+    }
+
+    const keys = key.split(".");
+    let value: any = this;
+    for (const k of keys) {
+      value =
+        value instanceof VariableContext ? value.variables.get(k) : undefined;
+      if (value === undefined) {
+        // Try default namespace
+        if (this.defaultNamespace && keys.length === 1) {
+          return (
+            this.getNamespace(this.defaultNamespace)?.getValue(
+              key,
+              functions
+            ) ?? undefined
+          );
+        }
+        return undefined;
+      }
+      if (typeof value === "function") {
         try {
-          result[key] = this.getVariableValue(key, params, functions);
+          value = value();
         } catch (e) {
-          log.error(`Error getting variable ${key}: ${e}`);
+          log.error(`Error getting variable ${k}: ${e}`);
+          return undefined;
         }
       }
-    });
-    return result;
-  }
-
-  getVariablesWithGetters(
-    params?: any,
-    functions?: any
-  ): { [key: string]: any } {
-    const result: { [key: string]: any } = {};
-    Object.keys(this.variables).forEach((key) => {
-      const variable = this.variables[key];
-      if (variable) {
-        try {
-          result[key] = variable.prepareGetter(params, functions);
-        } catch (e) {
-          log.error(`Error getting variable ${key}: ${e}`);
-        }
-      }
-    });
-    return result;
+    }
+    return value instanceof Variable ? value.getValue(this, functions) : value;
   }
 }
-
-export function getValueWithKey(
-  key: string,
-  variables: Record<string, any>
-): any {
-  const keys = key.split(".");
-  let value = variables;
-  for (const k of keys) {
-    if (typeof value !== "object" || value === null) {
-      return key;
-    }
-    const getter = value[k];
-    if (typeof getter === "function") {
-      try {
-        value = getter();
-      } catch (e) {
-        log.error(`Error getting variable ${k}: ${e}`);
-      }
-    } else {
-      value = getter;
-    }
-  }
-  return value ?? key;
-}
-
-// export function getValueWithKey(key: string, variables: any) {
-//   try {
-//     const keys = key.split(".");
-//     let value = variables;
-//     for (const k of keys) {
-//       value = value[k];
-//     }
-//     return value ?? key;
-//   } catch {
-//     return key;
-//   }
-// }

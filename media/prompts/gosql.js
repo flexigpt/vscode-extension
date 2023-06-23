@@ -17,9 +17,10 @@ const getFileNameAndExtension = ({filePath}) => {
   };
 
 module.exports = {
+  namespace: "GoSqlx",
   commands: [
     {
-      name: "Go sqlx + squirrel: Generate CreateFunc for an input model struct",
+      name: "Generate CreateFunc for an input model struct",
       template: `Task: Given a Go struct with properly defined database tags, generate the "Create" function code. This function should take an instance of input struct and insert it into the database.\n
             The input model struct is:\n
             {selection}\n
@@ -38,7 +39,7 @@ module.exports = {
       },
     },
     {
-      name: "Go sqlx + squirrel: Generate ReadFunc for an input model struct",
+      name: "Generate ReadFunc for an input model struct",
       template: `Task: Given a Go struct with properly defined database tags, generate the "Read" function code. This function should take an id as input and return the database entry.\n
             The input model struct is:\n
             {selection}\n
@@ -57,7 +58,7 @@ module.exports = {
       },
     },
     {
-      name: "Go sqlx + squirrel: Generate UpdateFunc for an input model struct",
+      name: "Generate UpdateFunc for an input model struct",
       template: `Task: Given a Go struct with properly defined database tags, generate the "Update" function code. This function should take an instance of input struct and update the database entry.\n
             The input model struct is:\n
             {selection}\n
@@ -76,7 +77,7 @@ module.exports = {
       },
     },
     {
-      name: "Go sqlx + squirrel: Generate DeleteFunc for an input model struct",
+      name: "Generate DeleteFunc for an input model struct",
       template: `Task: Given a Go struct with properly defined database tags, generate the "Delete" function code. This function should take an id of input struct and delete the database entry.\n
             The input model struct is:\n
             {selection}\n
@@ -95,7 +96,7 @@ module.exports = {
       },
     },
     {
-      name: "Go sqlx + squirrel: (no file write) Generate CreateFunc",
+      name: "Generate CreateFunc: (no file write)",
       template: `Task: Given a Go struct with properly defined database tags, generate the "Delete" function code. This function should take an id of input struct and delete the database entry.\n
             The input model struct is:\n
             {selection}\n
