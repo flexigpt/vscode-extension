@@ -85,9 +85,9 @@ export class GoogleGenerativeLanguageAPI
       request.stopSequences = stoparg;
     }
 
-    let modelpath = `/models/${input.model}:generateText?key=${this.apiKey}}`;
+    let modelpath = `/models/${input.model}:generateText?key=${this.apiKey}`;
     if (chatModel) {
-      modelpath = `/models/${input.model}:generateMessage?key=${this.apiKey}}`;
+      modelpath = `/models/${input.model}:generateMessage?key=${this.apiKey}`;
     }
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
