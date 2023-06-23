@@ -47,7 +47,7 @@ Download from: [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
       - Completion APIs, with GPT2/3 models
     - [Anthropic](https://docs.anthropic.com/claude/reference/complete_post) Claude\* models
     - [Huggingface inference API](https://huggingface.co/docs/api-inference/detailed_parameters) supported models (Text/Text2Text/Conversational tasks)
-    - Google Generative Language API i.e [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage) (untested).
+    - Google Generative Language API i.e [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage).
 
 - Use pre-defined prompts in configuration files
 
