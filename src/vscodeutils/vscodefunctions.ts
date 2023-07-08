@@ -1,7 +1,5 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import * as fs from "fs";
-import log from "../logger/log";
 
 export function replace(newValue: string) {
   const editor = vscode.window.activeTextEditor;
@@ -62,6 +60,29 @@ export function getActiveFileName(): string | undefined {
   return pathInfo.name;
 }
 
+export function getWorkspaceRoot(): string | undefined {
+  const activeEditor = vscode.window.activeTextEditor;
+  if (!activeEditor) {
+    throw new Error("No open editors.");
+  }
+
+  const rootPath = vscode.workspace.getWorkspaceFolder(
+    activeEditor.document.uri
+  )?.uri.fsPath;
+  if (!rootPath) {
+    throw new Error("No workspace folder open.");
+  }
+  // log.info(`Got rootpath: ${rootPath}`);
+  // const gitPath = path.join(rootPath, ".git");
+  // const isGitRepository = vscode.workspace.workspaceFolders?.some(
+  //   (workspaceFolder) => workspaceFolder.uri.fsPath === gitPath
+  // );
+  // if (!isGitRepository) {
+  //   throw new Error("The workspace folder is not a Git repository.");
+  // }
+  return rootPath;
+}
+
 export function append(newValue: string, position: string) {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
@@ -74,29 +95,4 @@ export function append(newValue: string, position: string) {
   }
 }
 
-export function writeFile(
-  filePath: string,
-  fileContent: string,
-  isAppend: boolean = false
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const dirname = path.dirname(filePath);
-    if (!fs.existsSync(dirname)) {
-      fs.mkdirSync(dirname, { recursive: true });
-    }
 
-    fs.writeFile(
-      filePath,
-      fileContent,
-      { flag: isAppend ? "a" : "w" },
-      (writeFileError) => {
-        if (writeFileError) {
-          log.error(writeFileError);
-          reject(writeFileError);
-          return;
-        }
-        resolve(filePath);
-      }
-    );
-  });
-}

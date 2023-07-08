@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { getCommitAndTagList } from "./../../vscodeutils/gitfunctions";
+import { getCommitAndTagList } from "./../../prompthelpers/gitutils";
 import { describe, it, before, after } from "mocha";
 import log from "../../logger/log";
 
@@ -80,7 +80,12 @@ describe("getCommitAndTagList function", () => {
   });
 
   it("should return an array of Commits with a length of maxCommits when given a maxCommits argument and only destination", () => {
-    const result = getCommitAndTagList(undefined, "db4bd5103ccb7c1ce02579dff84ca27eeffca9c3", rootPath, 20);
+    const result = getCommitAndTagList(
+      undefined,
+      "db4bd5103ccb7c1ce02579dff84ca27eeffca9c3",
+      rootPath,
+      20
+    );
     // expect(result.commits).to.be.an("array").with.lengthOf(10);
     expect(result.tags).to.be.an("array");
     result.commits.forEach((item) => {

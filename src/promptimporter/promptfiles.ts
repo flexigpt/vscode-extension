@@ -12,7 +12,7 @@ import {
   CommandRunnerContext,
   DEFAULT_RESPONSE_HANDLER,
 } from "./promptcommandrunner";
-import { getFileNameAndExtension } from "../vscodeutils/fileutils";
+import { getFileNameAndExtension } from "../prompthelpers/fileutils";
 
 export async function fileExists(filePath: string): Promise<boolean> {
   try {

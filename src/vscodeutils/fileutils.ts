@@ -1,30 +1,18 @@
 import log from "../logger/log";
 import * as path from "path";
 
-import { writeFile as vsCodeWriteFile } from "./vscodefunctions";
+import { formatPath, writeFile as fsUtilWriteFile } from "../prompthelpers/fileutils";
+
 import { replace as vsCodeReplace } from "./vscodefunctions";
 import { append as vsCodeAppend } from "./vscodefunctions";
 
-function formatPath(filePath: string): string {
-  return filePath.split('\\').join(path.sep);
-}
-
-
-export function getFileNameAndExtension(filePath: string) {
-  const pathInfo = path.parse(filePath);
-  return {
-    extension: pathInfo.ext,
-    fileName: pathInfo.name,
-    fileFolder: pathInfo.dir,
-  };
-}
 
 export function writeFile({ filePath, content, answer }: { filePath: string, content: string, answer: string }): void {
   filePath = formatPath(filePath);
   log.info(`writeFile: ${filePath}`);
   content = content || answer + "\n";
 
-  vsCodeWriteFile(filePath, content)
+  fsUtilWriteFile(filePath, content)
   .then((filePath) => {
     log.log(`File "${filePath}" has been written successfully.`);
   })
