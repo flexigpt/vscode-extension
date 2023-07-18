@@ -16,9 +16,16 @@ Interact with GPT AI models as a power user.
   - Google Generative Language API i.e
     [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage)
 
-- Rich custom prompts support
+- Rich prompt engineering support
 
   - Inbuilt pre-defined prompts providing large set of [features](/features)
+    - Refactor selection
+    - Generate unit test
+    - Complete
+    - Explain code
+    - Generate Documentation
+    - Find problems
+    - Optimize selection
   - Openly available
     [prompt files](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts)
     that can be tweaked as needed.
@@ -252,6 +259,55 @@ Options:
 
 # Features
 
+## Get Code
+
+Get code using a comment in the editor.
+
+- Write a comment asking for a specific code/functionality (Keep your cursor at
+  the end of the same comment line)
+- Press `Ctrl` + `Alt` + `G`
+  - Also available via select text/code and right-click as `FlexiGPT: Get Code`
+    option to click/enter
+- Get code output below your cursor
+
+## Inbuilt Prompts
+
+Steps to get all the below functionality (similar for all configured prompts;
+inbuilt or custom):
+
+- Select your code in the editor
+- Invoke via `Ctrl` + `Alt` + `A`
+  - Any other mechanism from [below](#invocation) is also ok
+- Click on the respective prompt text
+
+### Refactor selection
+
+Rectify and refactor selected code.
+
+### Generate unit test
+
+Create unit test for selected code.
+
+### Complete
+
+Complete the selection.
+
+### Explain code
+
+Explain the selection.
+
+### Generate Documentation
+
+Generate documentation for the selected code.
+
+### Find problems
+
+Find problems with the selection, fix them and explain what was wrong.
+
+### Optimize selection
+
+Optimize the selected code
+
 ## Chat
 
 ### UI behavior
@@ -273,7 +329,7 @@ The chat activity bar can be opened in following ways:
    `FlexiGPT: Ask` option to click/enter
 1. Command Palette (`Ctrl`/`Cmd` + `Shift` + `P`): You should get a
    `FlexiGPT: Ask` option to click/enter
-1. Keyboard shortcut: `Ctrl` + `Alt` + `G`
+1. Keyboard shortcut: `Ctrl` + `Alt` + `A`
 
 ### Prompts behavior
 

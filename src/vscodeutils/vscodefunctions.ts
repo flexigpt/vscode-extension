@@ -95,4 +95,18 @@ export function append(newValue: string, position: string) {
   }
 }
 
+export function getActiveLine(): string | undefined {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        vscode.window.showInformationMessage('No editor is active');
+        return;
+    }
+
+    const document: vscode.TextDocument = editor.document;
+    const selection: vscode.Selection = editor.selection;
+    const activeLine: vscode.TextLine = document.lineAt(selection.active.line);
+    
+    return activeLine.text;
+}
 

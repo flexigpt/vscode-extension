@@ -1,4 +1,3 @@
-
 Interact with GPT AI models as a power user.
 
 - Supports multiple [AI providers](/aiproviders)
@@ -8,9 +7,16 @@ Interact with GPT AI models as a power user.
   - [HuggingFace Inference API](https://huggingface.co/docs/api-inference/detailed_parameters)
   - Google Generative Language API i.e [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage)
 
-- Rich custom prompts support
+- Rich prompt engineering support
 
   - Inbuilt pre-defined prompts providing large set of [features](/features)
+    - Refactor selection
+    - Generate unit test
+    - Complete
+    - Explain code
+    - Generate Documentation
+    - Find problems
+    - Optimize selection
   - Openly available [prompt files](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts) that can be tweaked as needed.
   - Prompts can be enriched with custom or predefined functions that can be engineered and fine-tuned to meet specific user needs.
   - Prompts can be saved and used directly within VSCode

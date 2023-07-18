@@ -35,6 +35,13 @@ function registerCommands(
     }
   );
 
+  const commandGetCode = vscode.commands.registerCommand(
+    "flexigpt.getcode",
+    () => {
+      provider.getCodeUsingComment();
+    }
+  );
+
   const commadFocus = vscode.commands.registerCommand("flexigpt.focus", () => {
     if (!provider._view) {
       vscode.commands.executeCommand("workbench.view.flexigpt.chatView");

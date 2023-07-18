@@ -62,7 +62,7 @@ export class CommandRunnerContext {
         }
       }
     }
-    // add the answer arg as extra 
+    // add the answer arg as extra
     args["answer"] = this.fullVariableContext.getValue("system.answer");
     let fn = this.functionContext[command.namespace].get(
       functionName
@@ -160,9 +160,7 @@ export class CommandRunnerContext {
       }
     }
     // const updatedValueStr = prettier.format(updatedValue, { parser: 'json' });
-    this.setSystemVariable(
-      new Variable(systemVariableNames.answer, answer)
-    );
+    this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
     this.setSystemVariable(
       new Variable(systemVariableNames.sanitizedAnswer, updatedValue)
     );
@@ -228,17 +226,19 @@ export class CommandRunnerContext {
 
   prepareAndSetCommand(
     text: string,
-    suffix?: string
+    suffix?: string,
+    setSystemVariable = true
   ): { question: string; command: Command } {
     let command = this.findCommand(text);
     let question = this.prepare(command);
     if (suffix) {
       question += suffix;
     }
-
-    this.setSystemVariable(
-      new Variable(systemVariableNames.question, question)
-    );
+    if (setSystemVariable) {
+      this.setSystemVariable(
+        new Variable(systemVariableNames.question, question)
+      );
+    }
     return { question, command };
   }
 }

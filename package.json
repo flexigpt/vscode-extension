@@ -20,7 +20,7 @@
   "keywords": [
     "openai",
     "prompt engineering",
-    "gpt3",
+    "gpt-4",
     "chatgpt",
     "ai",
     "explain",
@@ -33,7 +33,8 @@
   "activationEvents": [
     "onStartup",
     "onView:fexigpt.chatView",
-    "onCommand:fexigpt.ask"
+    "onCommand:fexigpt.ask",
+    "onCommand:fexigpt.getcode"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -41,6 +42,10 @@
       {
         "command": "flexigpt.ask",
         "title": "FlexiGPT: Ask"
+      },
+      {
+        "command": "flexigpt.getcode",
+        "title": "FlexiGPT: Get Code"
       }
     ],
     "menus": {
@@ -49,9 +54,17 @@
           "command": "flexigpt.ask",
           "when": "editorTextFocus",
           "group": "flexigpt-menu-group@1"
+        },
+        {
+          "command": "flexigpt.getcode",
+          "when": "editorTextFocus",
+          "group": "flexigpt-menu-group@1"
         }
       ],
       "commandPalette": [
+        {
+          "command": "flexigpt.ask"
+        },
         {
           "command": "flexigpt.ask"
         }
@@ -77,8 +90,13 @@
     },
     "keybindings": [
       {
-        "key": "ctrl+alt+g",
+        "key": "ctrl+alt+a",
         "command": "flexigpt.ask",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+alt+g",
+        "command": "flexigpt.getcode",
         "when": "editorTextFocus"
       }
     ],

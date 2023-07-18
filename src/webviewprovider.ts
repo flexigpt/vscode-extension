@@ -13,7 +13,7 @@ import { importAllPrompts } from "./promptimporter/setupprompts";
 import { getAllProviders } from "./strategy/setupstrategy";
 import { CommandRunnerContext } from "./promptimporter/promptcommandrunner";
 import { systemVariableNames } from "./promptimporter/predefinedvariables";
-import { getActiveDocumentLanguageID } from "./vscodeutils/vscodefunctions";
+import { append, getActiveDocumentFilePath, getActiveDocumentLanguageID, getActiveLine } from "./vscodeutils/vscodefunctions";
 import {
   ConversationCollection,
   loadConversations,
@@ -104,6 +104,77 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       importAllPrompts(this._extensionUri, this._commandRunnerContext);
       this.sendCommandListMessage();
     }
+  }
+
+  public getCodeUsingComment() {
+    let line = getActiveLine();
+    if (!line) {
+      return "";
+    }
+    let fpath = getActiveDocumentFilePath();
+    let lang = getActiveDocumentLanguageID();
+    let inline = `Give code using the below comment.\nFilename: ${fpath}\nLang:${lang}\nComment:` + line.trim();
+    this.getResponseUsingInput(inline).then((response) => {
+      append("\n"+response, "end");
+    });
+  }
+
+  async getResponseUsingInput(line: string) {
+    let response: string;
+    let fullResponseStr = "";
+    try {
+      let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
+        line, "", false
+      );
+      let question = (preparedIn?.question as string) || "";
+      let command = preparedIn?.command;
+      if (!command) {
+        throw Error("Could not get prepared command");
+      }
+      // Send the search prompt to the API instance
+      this._fullPrompt = question;
+      // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
+      let model = command.requestparams?.model as string;
+      let providerName = (command.requestparams?.provider as string) || "";
+      let apiProvider = this.getProvider(model, providerName);
+      var crequest = apiProvider?.checkAndPopulateCompletionParams(
+        question,
+        null,
+        command.requestparams
+      );
+      if (crequest) {
+        const crequestJsonStr = JSON.stringify(crequest, null, 2);
+        const crequestStr = prettier.format(crequestJsonStr, {
+          parser: "json",
+        });
+        log.info(`sending api request. Full request: ${crequestStr}`);
+        
+        let completionResponse = await apiProvider?.completion(crequest);
+        // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
+
+        response = completionResponse?.data as string | "";
+        if (response) {
+          response = this.unescapeChars(response);
+        } else {
+          response = "Got empty response";
+        }
+        fullResponseStr = JSON.stringify(
+          completionResponse?.fullResponse,
+          null,
+          2
+        );
+      } else {
+        throw Error("Could not process request");
+      }
+    } catch (e) {
+      log.error(e);
+      response = `[ERROR] ${e}`;
+      fullResponseStr = filterSensitiveInfoFromJsonString(
+        JSON.stringify(e, null, 2)
+      );
+    }
+    log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
+    return response;
   }
 
   private sendCommandListMessage() {

@@ -31,5 +31,6 @@ export function importAllPrompts(
   }
 
   let allc = commandRunnerContext.getAllCommandsAsLabels();
-  log.info(`Commands: ${JSON.stringify(allc, null, 2)}`);
+  log.info(`Loaded all commands`);
+  // log.info(`Commands: ${JSON.stringify(allc, null, 2)}`);
 }
