@@ -7,6 +7,8 @@ import ChatViewProvider from "./webviewprovider";
 import { Variable } from "./promptdef/promptvariables";
 import { getAllProviders } from "./strategy/setupstrategy";
 import { setupCommandRunnerContext } from "./promptimporter/setupcommandrunner";
+import { getActiveLine } from "./vscodeutils/vscodefunctions";
+import { executeSearch } from "./stackoverflow/search";
 
 function registerWebView(
   context: vscode.ExtensionContext,
@@ -49,8 +51,25 @@ function registerCommands(
     provider._view?.webview.postMessage({ type: "focus" });
   });
 
-  context.subscriptions.push(commandAsk, commadFocus);
-  // context.subscriptions.push(commandAsk);
+  const searchWithPrompt = vscode.commands.registerCommand('flexigpt.stackoverflow-search', async () => {
+      const selectedLine = getActiveLine();
+      let inline = '';
+      if (selectedLine && selectedLine.trim() !== '') {
+        inline = selectedLine;
+      }
+      
+      const searchTerm = await vscode.window.showInputBox({
+          ignoreFocusOut: inline === '',
+          placeHolder: 'Enter your Stack Overflow search query',
+          prompt: 'Search Stack Overflow',
+          value: inline,
+          valueSelection: [0, inline.length + 1],
+      });
+
+      await executeSearch(searchTerm!);
+  });
+
+  context.subscriptions.push(commandAsk, commadFocus, commandGetCode, searchWithPrompt);
 }
 
 function registerEvents(

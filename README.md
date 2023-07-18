@@ -44,6 +44,8 @@ Interact with GPT AI models as a power user.
   - Ask FlexiGPT via editor/command context (select and right-click)
   - Ask FlexiGPT via command palette control (ctrl/cmd + shift + p)
 
+- Search Stack Overflow from within the editor
+
 # Getting started
 
 ## Installation
@@ -336,6 +338,18 @@ The chat activity bar can be opened in following ways:
 - Click the input text box to load default and configured inbuilt/custom
   prompts.
 - Full behavior and documentation can be found [here](/prompts).
+
+## Search Stack Overflow
+
+Search for stack overflow questions from your editor.
+
+- Press `Ctrl` + `Alt` + `S`
+  - Also available via select text/code and right-click as
+    `FlexiGPT: Stackoverfow Search` option to click/enter
+- An input box opens with your current line or selection autofilled. You can
+  modify it or use it as is.
+- Enter and get search results.
+- Click on result to open stack overflow page.
 
 # Prompts
 

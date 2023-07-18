@@ -1,7 +1,7 @@
 {
   "name": "flexigpt",
   "displayName": "FlexiGPT",
-  "description": "Interact with GPT AI models (GPT3/3.5/4, Anthropic Claude, HuggingFace Inference API, GoogleGL i.e PaLM API, etc) as a power user",
+  "description": "Interact with GPT AI models (GPT 3.5/4, Anthropic Claude, HuggingFace Inference API, GoogleGL i.e PaLM API, etc) as a power user",
   "version": "0.11.4",
   "publisher": "ppipada",
   "pricing": "Free",
@@ -34,7 +34,8 @@
     "onStartup",
     "onView:fexigpt.chatView",
     "onCommand:fexigpt.ask",
-    "onCommand:fexigpt.getcode"
+    "onCommand:fexigpt.getcode",
+    "onCommand:fexigpt.stackoverflow-search"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -46,6 +47,10 @@
       {
         "command": "flexigpt.getcode",
         "title": "FlexiGPT: Get Code"
+      },
+      {
+        "command": "flexigpt.stackoverflow-search",
+        "title": "FlexiGPT: Stackoverflow Search"
       }
     ],
     "menus": {
@@ -59,6 +64,11 @@
           "command": "flexigpt.getcode",
           "when": "editorTextFocus",
           "group": "flexigpt-menu-group@1"
+        },
+        {
+          "command": "flexigpt.stackoverflow-search",
+          "when": "editorTextFocus",
+          "group": "flexigpt-menu-group@1"
         }
       ],
       "commandPalette": [
@@ -66,7 +76,10 @@
           "command": "flexigpt.ask"
         },
         {
-          "command": "flexigpt.ask"
+          "command": "flexigpt.getcode"
+        },
+        {
+          "command": "flexigpt.stackoverflow-search"
         }
       ]
     },
@@ -97,6 +110,11 @@
       {
         "key": "ctrl+alt+g",
         "command": "flexigpt.getcode",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+alt+s",
+        "command": "flexigpt.stackoverflow-search",
         "when": "editorTextFocus"
       }
     ],

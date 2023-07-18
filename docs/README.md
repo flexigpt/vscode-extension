@@ -24,9 +24,12 @@ Interact with GPT AI models as a power user.
   - Post-process response via responseHandlers in prompts.
 
 - [Flexible UI](/features)
+
   - Chat activity bar interface for request/response interaction
     - Load/save conversations from history
     - Export conversations to a file
     - Copy/Insert/Create new files out of GPT response.
   - Ask FlexiGPT via editor/command context (select and right-click)
   - Ask FlexiGPT via command palette control (ctrl/cmd + shift + p)
+
+- Search Stack Overflow from within the editor
