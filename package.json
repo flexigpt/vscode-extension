@@ -146,13 +146,13 @@
         },
         "flexigpt.anthropic.defaultCompletionModel": {
           "type": "string",
-          "default": "claude-1",
+          "default": "claude-2",
           "description": "Default model to use for completion requests",
           "order": 5
         },
         "flexigpt.anthropic.defaultChatCompletionModel": {
           "type": "string",
-          "default": "claude-1",
+          "default": "claude-2",
           "description": "Default model to use for chat completion requests",
           "order": 5
         },
