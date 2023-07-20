@@ -2,7 +2,7 @@ import { systemVariableNames } from "./predefinedvariables";
 
 import { FunctionWrapper, FunctionContext } from "../promptdef/promptfunctions";
 import { Variable, VariableContext } from "../promptdef/promptvariables";
-import { Command } from "../promptdef/promptcommand";
+import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
 
 export const DEFAULT_COMMAND: string = "Ask";
 export const DEFAULT_NAMESPACE: string = "FlexiGPT";
@@ -112,15 +112,24 @@ export class CommandRunnerContext {
     return this.commands;
   }
 
-  getAllCommandsAsLabels(): {
+  getAllCommandsAsLabels(commandtype: string = "all"): {
     label: string;
     description: string;
     command: Command;
   }[] {
     const commandList = Object.keys(this.commands)
       .flatMap((namespaceKey) => Object.values(this.commands[namespaceKey]))
+      .filter(
+        (command: Command) =>
+          commandtype === "all" || command.type === commandtype
+      )
       .map((command: Command) => ({
-        label: `[${command.namespace}] ${command.name}`,
+        label:
+          `[${command.namespace}]` +
+          (command.type === COMMAND_TYPE_CLI
+            ? `[${COMMAND_TYPE_CLI.toUpperCase()}]`
+            : "") +
+          ` ${command.name}`,
         description: command.description,
         command: command,
       }));

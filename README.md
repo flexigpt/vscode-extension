@@ -46,6 +46,8 @@ Interact with GPT AI models as a power user.
 
 - Search Stack Overflow from within the editor
 
+- Invoke pre-cooked custom CLI commands from within your editor
+
 # Getting started
 
 ## Installation
@@ -79,7 +81,7 @@ Options:
 
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined
   prompt configuration files. Prompt file configuration is detailed
-  [below](#prompt-file-format).
+  [here](/promptfiles).
 - flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt
   filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js'
   will always be enabled. Inbuilt prompts can be found at
@@ -145,6 +147,10 @@ Options:
 
 - FlexiGPT uses defaultChatCompletionModel: `gpt-3.5-turbo`, unless the prompt
   overrides it.
+
+- For an example on how to use `Function calling` feature of OpenAI look at this
+  prompt file
+  [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js).
 
 - Configuration Options:
 
@@ -345,27 +351,57 @@ Search for stack overflow questions from your editor.
 
 - Press `Ctrl` + `Alt` + `S`
   - Also available via select text/code and right-click as
-    `FlexiGPT: Stackoverfow Search` option to click/enter
+    `FlexiGPT: Stackoverflow Search` option to click/enter
+  - Also available via command Palette (`Ctrl`/`Cmd` + `Shift` + `P`): You
+    should get a `FlexiGPT: Stackoverflow Search` option to click/enter
 - An input box opens with your current line or selection autofilled. You can
   modify it or use it as is.
 - Enter and get search results.
 - Click on result to open stack overflow page.
 
-# Prompts
+## Run Custom CLIs from within editor
+
+- Define your custom CLIs as `cliCommands` in your prompt files.
+  - Example can be found
+    [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+  - Full documentation of how to define the prompt is in the
+    [prompt files format](/promptfiles#creating-cli-commands) documentation.
+- Press `Ctrl` + `Alt` + `C`
+  - Also available via right click in editor as `FlexiGPT: Run CLI Command` to
+    click/enter
+  - Also available via command Palette (`Ctrl`/`Cmd` + `Shift` + `P`): You
+    should get a `FlexiGPT: Run CLI Command` option to click/enter
+  - Also available via the chat interface invocation to click/enter
+  - Note that CLI command runs do not become part of your conversation with AI,
+    even if it appears in the chat interface.
+- An options box opens with available CLIs.
+- Click on a CLI to open chat bar with your request and get response.
+
+# Prompting
 
 ## Prompting
 
 ### Features
 
 - Engineer and fine tune prompts, save them and use them directly within VSCode.
+
 - Supports request parameter modifications for GPT APIs
-- Prompts can be enriched using predefined functions or custom functions.
-  Multiple inbuilt [predefined functions](#predefined-system-functions)
-  available.
+
+- [Predefined system variables](/promptfiles#predefined-system-variables) can be
+  used to enhance your question.
+
+  - E.g: you can use `{system.selection}` to pass on the selected text in the
+    editor (code or otherwise).
+  - Note that the `system.` prefix for a system variable is optional. Therefore,
+    you can even use only `{selection}` to use the selected text, or
+    `{language}` instead of `{system.language}` for language of your file.
+
 - Supports post-processing response via responseHandlers in prompts. Multiple
-  inbuilt [predefined responseHandlers](#predefined-system-functions) available.
-  Also supports custom responseHandlers. Example can be found
+  inbuilt
+  [predefined responseHandlers](/promptfiles#predefined-system-functions)
+  available. Also supports custom responseHandlers. Example can be found
   [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js).
+
 - Function calling feature of GPT3.5/4 models is also supported. Example can be
   found in
   [this prompt file](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js).
@@ -385,16 +421,9 @@ Search for stack overflow questions from your editor.
   Other command options will also be taken from the definition itself.
 
 - If you type a free floating question in the text box, the text itself will be
-  used as prompt directly.
-
-- [Predefined system variables](/prompts#predefined-system-variables) can be
-  used to enhance your question.
-
-  - E.g: you can use `{system.selection}` to pass on the selected text in the
-    editor (code or otherwise).
-  - Note that the `system.` prefix for a system variable is optional. Therefore,
-    you can even use only `{selection}` to use the selected text, or
-    `{language}` instead of `{system.language}` for language of your file.
+  used as prompt directly. You can use
+  [predefined system variables](/promptfiles#predefined-system-variables) to
+  enhance your free floating question too.
 
 ## Inbuilt prompts
 
@@ -422,15 +451,15 @@ Search for stack overflow questions from your editor.
     struct selection in the editor using sqlx for db operations and squirrel for
     query building.
 
-## Prompt file format
+# Prompt files format
 
-### Sample files in repo
+## Sample prompt files in repo
 
 - [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
 - [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
 - [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
 
-### Simple javascript (.js) prompt file
+## Simple javascript (.js) prompt file
 
 ```js
 module.exports = {
@@ -446,7 +475,7 @@ module.exports = {
 };
 ```
 
-### Complex javascript (.js) prompt file
+## Complex javascript (.js) prompt file
 
 ```js
 module.exports = {
@@ -504,6 +533,13 @@ module.exports = {
         `${baseFolder}\\${fileName}_test${fileExtension}`,
     },
   ],
+  cliCommands: [
+    {
+      name: "Go generate all",
+      command: `go generate ./...`,
+      description: "Run go generate in the workspace",
+    },
+  ],
 };
 ```
 
@@ -513,9 +549,13 @@ module.exports = {
 
   - Name of command, can be whatever you want
 
+- description: Optional
+
+  - Description of command, can be whatever you want
+
 - template: Required
 
-  - prompt template to use for create GPT model requests (OpenAI, etc). Use can
+  - prompt template to use for create GPT model requests (OpenAI, etc). You can
     use system or user defined variable in template. variables will replaced
     with proper value while preparing request
   - To use system variable add `{system.*variableName*}`, variableName can be
@@ -558,7 +598,51 @@ module.exports = {
     }
     ```
 
-## Predefined System Variables
+## Creating Variables
+
+Any of the `variables` items can be used in a command template. User-defined
+values must have the "user" prefix. For example, if "testFileName" is defined in
+variables, it can be used as "user.TestFileName" in the template file or passed
+to a function.
+
+Variable values can be static or dynamic. For dynamic values, you should create
+a getter method. When calling the variable getter, system variables(see
+Predefined System Variables) and functions are passed as arguments, the first
+argument is a system variable and the second one is a function.
+
+```js
+module.exports = {
+variables: [
+    {
+        //static
+        name: "testingFramework",
+        value: "xUnit"
+    },
+    {
+        //dynamic
+        name: "typeNameInResponse",
+        value: ({ answer/*system variable*/ }, { extractTypeName/*user defined function*/ }) => extractTypeName({ code: answer })
+    },
+]
+functions: [function extractTypeName({ code, system }) {/**/}],
+commands: [
+    {
+        name: "Create DTO",
+        template: `Create unit test with {user.testingFramework} for following class.
+        class:
+        {system.selection}`,
+        responseHandler: {
+            func: 'writeFile',
+            args: {
+                filePath: 'user.typeNameInResponse'/*usage for function arg*/
+            }
+        }
+    }
+]
+}
+```
+
+### Predefined System Variables
 
 | Variable Name | Description | | ----------------------- |
 ----------------------------------- | | system.selection | Selected text in
@@ -572,7 +656,13 @@ Note that the `system.` prefix for a system variable is optional. Therefore, you
 can even use only `{selection}` to use the selected text, or `{language}`
 instead of `{system.language}` for language of your file.
 
-## Predefined System Functions
+## Creating Functions
+
+- Write a simple javascript function which takes exactly one object as input.
+- Add that function to the `functions` list.
+- Use in response handler as needed
+
+### Predefined System Functions
 
 | Function Name | Description | params(default) | | ------------- |
 --------------------- | ------------------------------------------------- | |
@@ -655,53 +745,27 @@ file | filePath(),content(system.answer) |
         ],
     ```
 
-## Creating Variables
+## Creating CLI Commands
 
-Any of the `variables` items can be used in a command template. User-defined
-values must have the "user" prefix. For example, if "testFileName" is defined in
-variables, it can be used as "user.TestFileName" in the template file or passed
-to a function.
+- name: Required
 
-Variable values can be static or dynamic. For dynamic values, you should create
-a getter method. When calling the variable getter, system variables(see
-Predefined System Variables) and functions are passed as arguments, the first
-argument is a system variable and the second one is a function.
+  - Name of the cli command, can be whatever you want
 
-```js
-module.exports = {
-variables: [
-    {
-        //static
-        name: "testingFramework",
-        value: "xUnit"
-    },
-    {
-        //dynamic
-        name: "typeNameInResponse",
-        value: ({ answer/*system variable*/ }, { extractTypeName/*user defined function*/ }) => extractTypeName({ code: answer })
-    },
-]
-functions: [function extractTypeName({ code, system }) {/**/}],
-commands: [
-    {
-        name: "Create DTO",
-        template: `Create unit test with {user.testingFramework} for following class.
-        class:
-        {system.selection}`,
-        responseHandler: {
-            func: 'writeFile',
-            args: {
-                filePath: 'user.typeNameInResponse'/*usage for function arg*/
-            }
-        }
-    }
-]
-}
-```
+- description: Optional
 
-## Creating Functions
+  - Description of the cli command, can be whatever you want
 
-TODO: Add description
+- command: Required
+
+  - The cli string that you want to execute.
+  - Note that the directory in which the command is executed is the root
+    directory of your workspace.
+  - You can use system or user defined variable in the command. Variables will
+    replaced with proper values while preparing request
+  - To use system variable add `{system.*variableName*}`, variableName can be
+    one of [Predefined System Variables](#predefined-system-variables)
+  - To use user variable add `{user.*variableName*}`, variableName must be in
+    variables field in prompt file.
 
 # License
 

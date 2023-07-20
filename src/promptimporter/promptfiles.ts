@@ -6,7 +6,7 @@ import log from "../logger/log";
 
 import { FunctionWrapper } from "../promptdef/promptfunctions";
 import { Variable } from "../promptdef/promptvariables";
-import { Command } from "../promptdef/promptcommand";
+import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
 
 import {
   CommandRunnerContext,
@@ -123,6 +123,32 @@ export class FilesImporter {
         this.commandRunnerContext.setFunction(namespace, FunctionWrapper.fromFunction(fn));
       });
       // log.info(`Imported functions: ${JSON.stringify(this.commandRunnerContext.functionContext.getFunctions())} `);
+    }
+
+    if (userDefinitions?.cliCommands) {
+      userDefinitions.cliCommands.forEach(
+      (cliCommand: {
+        name: any;
+        command: any;
+        description: any;
+      }) => {
+        let intmpl = cliCommand.command as string;
+        let addc = new Command(
+          cliCommand.name,
+          intmpl,
+          undefined,
+          cliCommand.description,
+          namespace,
+          undefined,
+          COMMAND_TYPE_CLI,
+        );
+        if (cliCommand.description as string) {
+          addc.description = cliCommand.description;
+        } else {
+          addc.description = cliCommand.name;
+        }
+        this.commandRunnerContext.addCommand(addc);
+      });
     }
   }
 

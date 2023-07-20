@@ -74,7 +74,21 @@ The chat activity bar can be opened in following ways:
 Search for stack overflow questions from your editor.
 
 - Press `Ctrl` + `Alt` + `S`
-  - Also available via select text/code and right-click as `FlexiGPT: Stackoverfow Search` option to click/enter
+  - Also available via select text/code and right-click as `FlexiGPT: Stackoverflow Search` option to click/enter
+  - Also available via command Palette (`Ctrl`/`Cmd` + `Shift` + `P`): You should get a `FlexiGPT: Stackoverflow Search` option to click/enter
 - An input box opens with your current line or selection autofilled. You can modify it or use it as is.
 - Enter and get search results.
 - Click on result to open stack overflow page.
+
+## Run Custom CLIs from within editor
+
+- Define your custom CLIs as `cliCommands` in your prompt files.
+  - Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+  - Full documentation of how to define the prompt is in the [prompt files format](/promptfiles#creating-cli-commands) documentation.
+- Press `Ctrl` + `Alt` + `C`
+  - Also available via right click in editor as `FlexiGPT: Run CLI Command` to click/enter
+  - Also available via command Palette (`Ctrl`/`Cmd` + `Shift` + `P`): You should get a `FlexiGPT: Run CLI Command` option to click/enter
+  - Also available via the chat interface invocation to click/enter
+  - Note that CLI command runs do not become part of your conversation with AI, even if it appears in the chat interface.
+- An options box opens with available CLIs.
+- Click on a CLI to open chat bar with your request and get response.

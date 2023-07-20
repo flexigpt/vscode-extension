@@ -16,6 +16,8 @@
 
 - FlexiGPT uses defaultChatCompletionModel: `gpt-3.5-turbo`, unless the prompt overrides it.
 
+- For an example on how to use `Function calling` feature of OpenAI look at this prompt file [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js).
+
 - Configuration Options:
 
   - flexigpt.openai.apiKey: Your OpenAI API key.

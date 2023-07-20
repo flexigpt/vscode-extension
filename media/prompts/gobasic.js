@@ -66,8 +66,8 @@ module.exports = {
       },
     },
     {
-        name: "Generate testcases",
-        template: `
+      name: "Generate testcases",
+      template: `
               Go language\n
               Generate one data point covering zero value and error expectation,
               one data point covering MAX value,
@@ -76,14 +76,16 @@ module.exports = {
               These data points are to be used to write table driven tests using {user.unitTestFramework} go framework.\n
               code:\n
               {system.selection}\n`,
-        description: "Generate test cases for the selected code",
-        requestparams: {
-          frequencyPenalty: 0.0,
-          presencePenalty: 0.1,
-          functions: [{ name: "testcaseSeparator", parameters: testcaseSeparatorSchema }],
-          functionCall: { name: "testcaseSeparator" },
-        },
-      },  
+      description: "Generate test cases for the selected code",
+      requestparams: {
+        frequencyPenalty: 0.0,
+        presencePenalty: 0.1,
+        functions: [
+          { name: "testcaseSeparator", parameters: testcaseSeparatorSchema },
+        ],
+        functionCall: { name: "testcaseSeparator" },
+      },
+    },
   ],
   functions: [{}],
   variables: [
@@ -103,6 +105,13 @@ module.exports = {
       name: "testFileName",
       value: ({ baseFolder, fileName, fileExtension }) =>
         `${baseFolder}\\${fileName}_test${fileExtension}`,
+    },
+  ],
+  cliCommands: [
+    {
+      name: "Go generate all",
+      command: `go generate ./...`,
+      description: "Run go generate in the workspace",
     },
   ],
 };

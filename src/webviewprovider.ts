@@ -13,13 +13,21 @@ import { importAllPrompts } from "./promptimporter/setupprompts";
 import { getAllProviders } from "./strategy/setupstrategy";
 import { CommandRunnerContext } from "./promptimporter/promptcommandrunner";
 import { systemVariableNames } from "./promptimporter/predefinedvariables";
-import { append, getActiveDocumentFilePath, getActiveDocumentLanguageID, getActiveLine } from "./vscodeutils/vscodefunctions";
+import {
+  append,
+  getActiveDocumentFilePath,
+  getActiveDocumentLanguageID,
+  getActiveLine,
+  runCommandInShell,
+} from "./vscodeutils/vscodefunctions";
 import {
   ConversationCollection,
   loadConversations,
 } from "./strategy/conversation";
 import { ChatCompletionRoleEnum, IView } from "./strategy/conversationspec";
-import { Command } from "./promptdef/promptcommand";
+import { COMMAND_TYPE_CLI, Command } from "./promptdef/promptcommand";
+import { getWebviewHtmlv2 } from "./webviewhtml";
+// import { getWebviewHtmlv2 } from "./webviewhtml";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -64,7 +72,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&amp;/g, "&");
-  };
+  }
 
   getProvider(model: string, providerName: string = ""): CompletionProvider {
     if (!this._apiProvider) {
@@ -106,6 +114,34 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  public async runCLIOptions() {
+    if (!this._commandRunnerContext) {
+      return;
+    }
+    let items =
+      this._commandRunnerContext.getAllCommandsAsLabels(COMMAND_TYPE_CLI);
+    let result = await vscode.window.showQuickPick(items, {
+      placeHolder: "Pick an CLI to run",
+    });
+    if (result) {
+      log.info(`Running CLI: ${result.label}`);
+      await vscode.commands.executeCommand("flexigpt.chatView.focus");
+      let prompt = result.label;
+      const uuid = uuidv4();
+      let response = "";
+
+      let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(prompt);
+      let preparedQuestion = (preparedIn?.question as string) || "";
+      let command = preparedIn?.command;
+      if (!command) {
+        throw Error("Could not get prepared command");
+      }
+      response = await this.processCli(prompt, uuid, preparedQuestion, command);
+      // Saves the response
+      this._response = response;
+    }
+  }
+
   public getCodeUsingComment() {
     let line = getActiveLine();
     if (!line) {
@@ -113,9 +149,11 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     }
     let fpath = getActiveDocumentFilePath();
     let lang = getActiveDocumentLanguageID();
-    let inline = `Give code using the below comment.\nFilename: ${fpath}\nLang:${lang}\nComment:` + line.trim();
+    let inline =
+      `Give code using the below comment.\nFilename: ${fpath}\nLang:${lang}\nComment:` +
+      line.trim();
     this.getResponseUsingInput(inline).then((response) => {
-      append("\n"+response, "end");
+      append("\n" + response, "end");
     });
   }
 
@@ -124,21 +162,23 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     let fullResponseStr = "";
     try {
       let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
-        line, "", false
+        line,
+        "",
+        false
       );
-      let question = (preparedIn?.question as string) || "";
+      let preparedQuestion = (preparedIn?.question as string) || "";
       let command = preparedIn?.command;
       if (!command) {
         throw Error("Could not get prepared command");
       }
       // Send the search prompt to the API instance
-      this._fullPrompt = question;
+      this._fullPrompt = preparedQuestion;
       // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
       let model = command.requestparams?.model as string;
       let providerName = (command.requestparams?.provider as string) || "";
       let apiProvider = this.getProvider(model, providerName);
       var crequest = apiProvider?.checkAndPopulateCompletionParams(
-        question,
+        preparedQuestion,
         null,
         command.requestparams
       );
@@ -148,7 +188,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           parser: "json",
         });
         log.info(`sending api request. Full request: ${crequestStr}`);
-        
+
         let completionResponse = await apiProvider?.completion(crequest);
         // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
 
@@ -237,7 +277,6 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     context: vscode.WebviewViewResolveContext,
     _token: vscode.CancellationToken
   ) {
-
     // set options for the webview
     webviewView.webview.options = {
       // Allow scripts in the webview
@@ -369,35 +408,37 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       this._view?.show?.(true);
     }
     // log.info(" posting message focus");
+    // await this._view?.webview.postMessage(message);
+    await new Promise<void>((resolve) => {
+      const interval = setInterval(() => {
+        if (this._view?.webview?.postMessage) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+
     await this._view?.webview.postMessage(message);
   }
 
   async sendAPIRequest(
     inPrompt: string,
     uuid: string,
-    suffix?: string
+    preparedQuestion: string,
+    command: Command
   ): Promise<string> {
     let response: string;
     let fullResponseStr = "";
     try {
-      let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
-        inPrompt,
-        suffix
-      );
-      let question = (preparedIn?.question as string) || "";
-      let command = preparedIn?.command;
-      if (!command) {
-        throw Error("Could not get prepared command");
-      }
       // Send the search prompt to the ChatGPTAPI instance and store the response
       // If successfully signed in
-      this._fullPrompt = question;
+      this._fullPrompt = preparedQuestion;
       // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
       let model = command.requestparams?.model as string;
       let providerName = (command.requestparams?.provider as string) || "";
       let apiProvider = this.getProvider(model, providerName);
       var crequest = apiProvider?.checkAndPopulateCompletionParams(
-        question,
+        preparedQuestion,
         this._conversationCollection?.currentConversation?.getMessagesAsRequests() ||
           null,
         command.requestparams
@@ -445,10 +486,9 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
           response,
           getActiveDocumentLanguageID()
         );
-        let processedResponse =
-          this._commandRunnerContext?.getSystemVariable(
-            systemVariableNames.sanitizedAnswer
-          );
+        let processedResponse = this._commandRunnerContext?.getSystemVariable(
+          systemVariableNames.sanitizedAnswer
+        );
         if (processedResponse) {
           response = processedResponse;
         }
@@ -486,6 +526,54 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     return response;
   }
 
+  async processCli(
+    inPrompt: string,
+    uuid: string,
+    preparedQuestion: string,
+    command: Command
+  ): Promise<string> {
+    let response = "";
+    let fullResponseStr = "";
+    await this.sendMessage({
+      type: "addQuestion",
+      value: inPrompt,
+      id: uuid,
+      fullapi: preparedQuestion,
+    });
+
+    try {
+      let result = await runCommandInShell(preparedQuestion);
+      if (result[1]) {
+        response = "\n```shell\n" + result[1] + "\n```\n";
+      }
+      fullResponseStr = JSON.stringify(
+        {
+          cwd: result[0],
+          command: preparedQuestion,
+          response: response,
+          exitCode: result[2],
+        },
+        null,
+        2
+      );
+    } catch (e) {
+      log.error(e);
+      response = `[ERROR] ${e}`;
+      fullResponseStr = filterSensitiveInfoFromJsonString(
+        JSON.stringify(e, null, 2)
+      );
+    }
+    await this.sendMessage({
+      type: "addResponse",
+      value: response,
+      id: uuid,
+      done: true,
+      fullResponse: prettier.format(fullResponseStr, { parser: "json" }),
+      docLanguage: "shell",
+    });
+    return response;
+  }
+
   public async search(prompt: string) {
     // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
     if (this._view === null) {
@@ -497,153 +585,25 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     const uuid = uuidv4();
     let response = "";
 
-    response = await this.sendAPIRequest(prompt, uuid);
+    let preparedIn = this._commandRunnerContext?.prepareAndSetCommand(prompt);
+    let preparedQuestion = (preparedIn?.question as string) || "";
+    let command = preparedIn?.command;
+    if (!command) {
+      throw Error("Could not get prepared command");
+    }
+
+    if (command.type === COMMAND_TYPE_CLI) {
+      response = await this.processCli(prompt, uuid, preparedQuestion, command);
+    } else {
+      response = await this.sendAPIRequest(
+        prompt,
+        uuid,
+        preparedQuestion,
+        command
+      );
+    }
     // Saves the response
     this._response = response;
   }
 }
 
-function getWebviewHtmlv2(webview: vscode.Webview, extensionUri: vscode.Uri) {
-  const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "main.js")
-  );
-  const stylesMainUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "main.css")
-  );
-
-  const vendorHighlightCss = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "highlight.min.css")
-  );
-  const vendorAutocompleteCss = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "autocomplete.css")
-  );
-  // const vendorAutocompleteJs = webview.asWebviewUri(
-  //   vscode.Uri.joinPath(extensionUri, "media", "scripts", "autocomplete.js")
-  // );
-  // <script src="${vendorAutocompleteJs}"></script>
-  const vendorHighlightJs = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "highlight.min.js")
-  );
-  const vendorMarkedJs = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "marked.min.js")
-  );
-  const vendorTailwindJs = webview.asWebviewUri(
-    vscode.Uri.joinPath(
-      extensionUri,
-      "media",
-      "scripts",
-      "tailwindcss.3.2.4.min.js"
-    )
-  );
-  const vendorTurndownJs = webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "media", "scripts", "turndown.js")
-  );
-
-  return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${stylesMainUri}" rel="stylesheet">
-				<link href="${vendorHighlightCss}" rel="stylesheet">
-        <link href="${vendorAutocompleteCss}" rel="stylesheet">
-				<script src="${vendorHighlightJs}"></script>
-				<script src="${vendorMarkedJs}"></script>
-				<script src="${vendorTailwindJs}"></script>
-				<script src="${vendorTurndownJs}"></script>
-			</head>
-			<body class="overflow-hidden">
-				<div class="flex flex-col h-screen">
-          <select id="conversation-select" class="flex gap-3 p-2 flex-wrap items-center justify-end w-full shadow-sm sm:text-sm input-background rounded-md">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="w-4 h-4">
-                <path fill="none" d="M0 0h24v24H0z"/>
-                <path stroke="currentColor" stroke-width="1.5"  fill="none" d="M6.455 19L2 22.5V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.455zM13 11h3l-4-4-4 4h3v4h2v-4z"/>
-            </svg>
-            <option value="">Load a conversation...</option>
-          </select>
-					<div id="introduction" class="flex h-full items-center justify-center px-6 w-full relative">
-						<div class="flex items-start text-center gap-3.5">
-							<div class="flex flex-col gap-3.5 flex-1">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-6 h-6 m-auto">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
-								</svg>
-								<h2 class="text-lg font-normal">Features</h2>
-								<ul class="flex flex-col gap-3.5">
-								  <li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Become a power user of GPT models</li>	
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Improve your code, add tests & find bugs</li>
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Syntax highlighting with auto language detection</li>
-                  <li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">Optimized for dialogue</li>
-								</ul>
-							</div>
-							<div class="flex flex-col gap-3.5 flex-1">
-								<svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 m-auto" height="1em" width="1em"
-									xmlns="http://www.w3.org/2000/svg">
-									<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-									<line x1="12" y1="9" x2="12" y2="13"></line>
-									<line x1="12" y1="17" x2="12.01" y2="17"></line>
-								</svg>
-								<h2 class="text-lg font-normal">Limitations</h2>
-								<ul class="flex flex-col gap-3.5">
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">May occasionally take long time to respond/fail</li>
-									<li class="w-full bg-gray-50 dark:bg-white/5 p-2 rounded-md text-gray-600">May throw HTTP 429, if you make too many requests; or a partial response if you exceed max_tokens</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-
-          <div class="flex-1 overflow-y-auto" id="qa-list"></div>
-
-					<div id="in-progress" class="pl-4 pt-2 flex items-center hidden">
-						<div class="typing">Typing</div>
-						<div class="spinner">
-							<div class="bounce1"></div>
-							<div class="bounce2"></div>
-							<div class="bounce3"></div>
-						</div>
-					</div>
-
-					<div id="chat-button-wrapper" class="w-full flex gap-4 justify-center items-center mt-2 hidden">
-            <button class="flex gap-2 justify-center items-center rounded-lg p-2 bg-gray-100 text-gray-700 hover:bg-gray-200" id="save-button">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 19V5C3 3.89543 3.89543 3 5 3H16.1716C16.702 3 17.2107 3.21071 17.5858 3.58579L20.4142 6.41421C20.7893 6.78929 21 7.29799 21 7.82843V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <path d="M8.6 9H15.4C15.7314 9 16 8.73137 16 8.4V3.6C16 3.26863 15.7314 3 15.4 3H8.6C8.26863 3 8 3.26863 8 3.6V8.4C8 8.73137 8.26863 9 8.6 9Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                <path d="M18 13.6V21H6V13.6C6 13.2686 6.26863 13 6.6 13H17.4C17.7314 13 18 13.2686 18 13.6Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-              </svg>          
-              Save
-            </button>
-						<button class="flex gap-2 justify-center items-center rounded-lg p-2" id="clear-button">
-							<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
-							Clear
-						</button>
-						<button class="flex gap-2 justify-center items-center rounded-lg p-2" id="export-button">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-							</svg>
-							Export
-						</button>
-					</div>
-
-					<div class="p-2 flex items-center pt-2">
-						<div class="flex-1 textarea-wrapper">
-						<textarea
-              type="text"
-              rows="1"
-              id="question-input"
-              placeholder="Ask a question..."
-              onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-						</div>
-            <div class="autocomplete">
-              <div id="commandAutocompleteList" class="autocomplete-items"></div>
-            </div>
-						<button title="Submit prompt" class="right-8 absolute ask-button rounded-lg p-0.5 ml-5" id="ask-button">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
-						</button>
-					</div>
-				</div>
-				<script src="${scriptUri}"></script>
-        <script>
-          hljs.highlightAll();
-        </script>
-			</body>
-			</html>`;
-}

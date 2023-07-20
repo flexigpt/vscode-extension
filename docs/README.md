@@ -33,3 +33,5 @@ Interact with GPT AI models as a power user.
   - Ask FlexiGPT via command palette control (ctrl/cmd + shift + p)
 
 - Search Stack Overflow from within the editor
+
+- Invoke pre-cooked custom CLI commands from within your editor

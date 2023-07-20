@@ -69,7 +69,15 @@ function registerCommands(
       await executeSearch(searchTerm!);
   });
 
-  context.subscriptions.push(commandAsk, commadFocus, commandGetCode, searchWithPrompt);
+  const commandRunCLI = vscode.commands.registerCommand(
+    "flexigpt.runcli",
+    async () => {
+      provider.importAllPromptFiles();
+      provider.runCLIOptions();
+    }
+  );
+
+  context.subscriptions.push(commandAsk, commadFocus, commandGetCode, searchWithPrompt, commandRunCLI);
 }
 
 function registerEvents(

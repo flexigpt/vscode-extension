@@ -24,7 +24,7 @@ function writeToChannel(prefix: string, message: string): void {
 
 const log = {
   log: (...args: unknown[]) => {
-    writeToChannel("Log", formatMessage(...args));
+    writeToChannel("", formatMessage(...args));
   },
   error: (...args: unknown[]) => {
     const message = formatMessage(...args);

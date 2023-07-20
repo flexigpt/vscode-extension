@@ -35,7 +35,8 @@
     "onView:fexigpt.chatView",
     "onCommand:fexigpt.ask",
     "onCommand:fexigpt.getcode",
-    "onCommand:fexigpt.stackoverflow-search"
+    "onCommand:fexigpt.stackoverflow-search",
+    "onCommand:fexigpt.runcli"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -51,6 +52,10 @@
       {
         "command": "flexigpt.stackoverflow-search",
         "title": "FlexiGPT: Stackoverflow Search"
+      },
+      {
+        "command": "flexigpt.runcli",
+        "title": "FlexiGPT: Run CLI Command"
       }
     ],
     "menus": {
@@ -69,6 +74,11 @@
           "command": "flexigpt.stackoverflow-search",
           "when": "editorTextFocus",
           "group": "flexigpt-menu-group@1"
+        },
+        {
+          "command": "flexigpt.runcli",
+          "when": "editorTextFocus",
+          "group": "flexigpt-menu-group@1"
         }
       ],
       "commandPalette": [
@@ -80,6 +90,9 @@
         },
         {
           "command": "flexigpt.stackoverflow-search"
+        },
+        {
+          "command": "flexigpt.runcli"
         }
       ]
     },
@@ -115,6 +128,11 @@
       {
         "key": "ctrl+alt+s",
         "command": "flexigpt.stackoverflow-search",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+alt+c",
+        "command": "flexigpt.runcli",
         "when": "editorTextFocus"
       }
     ],

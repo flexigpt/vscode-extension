@@ -22,7 +22,7 @@ Steps:
 
 Options:
 
-- flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [below](#prompt-file-format).
+- flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [here](/promptfiles).
 - flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js", "gobasic.js" and "gosql.js".
 - flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: "openai", "anthropic", "huggingface", "googlegl".
 
