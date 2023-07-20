@@ -612,10 +612,11 @@
     
     // Filter the list based on the input value
     let filteredList = preDefinedQuestions.filter(function (string) {
-      return (
-        string.substr(0, inputValue.length).toLowerCase() ===
-        inputValue.toLowerCase()
-      );
+      // return (
+      //   string.substr(0, inputValue.length).toLowerCase() ===
+      //   inputValue.toLowerCase()
+      // );
+      return string.toLowerCase().includes(inputValue.toLowerCase());
     });
 
     filteredList.sort((a, b) => {
