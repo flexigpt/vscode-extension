@@ -52,16 +52,16 @@ function initDocumentContext(commandRunnerContext: CommandRunnerContext) {
     new Variable(systemVariableNames.fileName, getActiveFileName)
   );
   commandRunnerContext.setSystemVariable(
-    new Variable(
-      systemVariableNames.fileExtension,
-      getActiveDocumentExtension
-    )
+    new Variable(systemVariableNames.fileExtension, getActiveDocumentExtension)
   );
   commandRunnerContext.setSystemVariable(
     new Variable(systemVariableNames.fileFolder, getActiveDocumentFileFolder)
   );
   commandRunnerContext.setSystemVariable(
-    new Variable(systemVariableNames.commitAndTagList, getCommitAndTagListString)
+    new Variable(
+      systemVariableNames.commitAndTagList,
+      getCommitAndTagListString
+    )
   );
 }
 
@@ -73,11 +73,16 @@ function initEvents(commandRunnerContext: CommandRunnerContext) {
   });
 
   vscode.window.onDidChangeTextEditorSelection(async (e) => {
-    if (!e) {
+    // Check if the editor where the event originated is a file editor
+    if (!e || e.textEditor.document.uri.scheme !== "file") {
+      return;
+    }
+    let selection = getSelectedText();
+    if (!selection) {
       return;
     }
     commandRunnerContext.setSystemVariable(
-      new Variable(systemVariableNames.selection, getSelectedText())
+      new Variable(systemVariableNames.selection, selection)
     );
   });
 }

@@ -648,9 +648,10 @@ commands: [
 ----------------------------------- | | system.selection | Selected text in
 editor | | system.question | OpenAI question | | system.answer | OpenAI answer |
 | system.language | Programming language of active file | | system.baseFolder |
-Project base path | | system.fileName | Name of active file | | system.filePath
-| Full path of active file | | system.fileExtension | Extension of active file |
-| system.commitAndTagList | Last 25 commits and associated tags |
+Project base path | | system.fileFolder | Parent folder path of active file | |
+system.fileName | Name of active file | | system.filePath | Full path of active
+file | | system.fileExtension | Extension of active file | |
+system.commitAndTagList | Last 25 commits and associated tags |
 
 Note that the `system.` prefix for a system variable is optional. Therefore, you
 can even use only `{selection}` to use the selected text, or `{language}`
@@ -665,12 +666,13 @@ instead of `{system.language}` for language of your file.
 ### Predefined System Functions
 
 | Function Name | Description | params(default) | | ------------- |
---------------------- | ------------------------------------------------- | |
-append | Append Text | textToAppend(system.answer),postion('end') | | replace |
-Replace selected text | textToReplace(system.answer) | | showWebView | Show
-Webview | question(system.question),question(system.answer) | | writeConsole |
-Write text to console | content(system.answer) | | writeFile | Write text to
-file | filePath(),content(system.answer) |
+------------------------------------------ |
+------------------------------------------------- | | append | Append Text |
+textToAppend(system.answer),postion('end') | | replace | Replace selected text |
+textToReplace(system.answer) | | showWebView | Show Webview |
+question(system.question),question(system.answer) | | writeConsole | Write text
+to console | content(system.answer) | | writeFile | Write text to file. Append
+if file exists. | filePath(),content(system.answer) |
 
 - Replace
 

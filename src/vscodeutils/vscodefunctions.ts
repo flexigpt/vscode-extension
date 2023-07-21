@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as cp from "child_process";
+import * as fs from "fs/promises";
 import log from "../logger/log";
 
 export function replace(newValue: string) {
@@ -14,10 +15,19 @@ export function replace(newValue: string) {
 }
 
 export function getSelectedText(): string {
-  const editor = vscode.window.activeTextEditor;
-  if (editor) {
-    const document = editor.document;
-    const selection = editor.selection;
+  let activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor && activeEditor.document.uri.scheme !== "file") {
+    const editors = vscode.window.visibleTextEditors;
+    for (const ed of editors) {
+      if (ed.document.uri.scheme === "file") {
+        activeEditor = ed;
+        break;
+      }
+    }
+  }
+  if (activeEditor) {
+    const document = activeEditor.document;
+    const selection = activeEditor.selection;
     const selectedText = document.getText(selection);
     return selectedText;
   }
@@ -33,33 +43,61 @@ export function getBaseFolder(): string {
 }
 
 export function getActiveDocument(): vscode.TextDocument | undefined {
-  return vscode.window.activeTextEditor?.document;
+  const activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor && activeEditor.document.uri.scheme === "file") {
+    return activeEditor.document;
+  }
+
+  const editors = vscode.window.visibleTextEditors;
+  for (const editor of editors) {
+    if (editor.document.uri.scheme === "file") {
+      return editor.document;
+    }
+  }
+
+  return undefined;
 }
 
 export function getActiveDocumentLanguageID(): string {
-  return getActiveDocument()?.languageId as string;
+  let doc = getActiveDocument();
+  if (doc) {
+    return doc.languageId;
+  }
+  return "";
 }
 
 export function getActiveDocumentFilePath(): string {
-  return getActiveDocument()?.fileName as string;
+  let doc = getActiveDocument();
+  if (doc) {
+    return doc.fileName;
+  }
+  return "";
 }
 
 export function getActiveDocumentExtension(): string {
-  let fname = getActiveDocument()?.fileName as string;
-  const pathInfo = path.parse(fname);
-  return pathInfo.ext;
+  let fname = getActiveDocument()?.fileName;
+  if (fname) {
+    const pathInfo = path.parse(fname);
+    return pathInfo.ext;
+  }
+  return "";
 }
 
 export function getActiveDocumentFileFolder(): string {
-  let fname = getActiveDocument()?.fileName as string;
-  const pathInfo = path.parse(fname);
-  return pathInfo.dir;
+  let fname = getActiveDocument()?.fileName;
+  if (fname) {
+    const pathInfo = path.parse(fname);
+    return pathInfo.dir;
+  }
+  return "";
 }
 
 export function getActiveFileName(): string | undefined {
-  let fname = getActiveDocument()?.fileName as string;
-  const pathInfo = path.parse(fname);
-  return pathInfo.name;
+  let fname = getActiveDocument()?.fileName;
+  if (fname) {
+    const pathInfo = path.parse(fname);
+    return pathInfo.name;
+  }
 }
 
 export function getWorkspaceRoot(): string | undefined {
@@ -95,6 +133,44 @@ export function append(newValue: string, position: string) {
       editBuilder.insert(insert, newValue);
     });
   }
+}
+
+export async function openFileOrUnsavedDocument(
+  filePath: string,
+  inputContent: string
+) {
+  const directoryPath = path.dirname(filePath);
+
+  try {
+    // Check if directory exists
+    await fs.access(directoryPath);
+  } catch (err) {
+    // If directory does not exist, create it
+    await fs.mkdir(directoryPath, { recursive: true });
+  }
+
+  try {
+    // Check if the file exists and you have permission to read it
+    await fs.access(filePath, fs.constants.F_OK);
+  } catch (err) {
+    const errorCode = (err as NodeJS.ErrnoException).code;
+    if (errorCode === "ENOENT") {
+      // If the file does not exist, create an empty file
+      await fs.writeFile(filePath, "");
+    } else {
+      // If the error is something other than "file not found", re-throw it.
+      throw err;
+    }
+  }
+
+  const doc = await vscode.workspace.openTextDocument(filePath);
+  const editor = await vscode.window.showTextDocument(doc);
+  const start = new vscode.Position(doc.lineCount + 1, 0);
+
+  // Append content at end
+  editor.edit((editBuilder) => {
+    editBuilder.insert(start, inputContent);
+  });
 }
 
 export function getActiveLine(): string | undefined {

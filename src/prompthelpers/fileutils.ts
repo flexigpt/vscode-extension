@@ -41,3 +41,25 @@ export function writeFile(
     );
   });
 }
+
+/**
+ * Asynchronously reads the entire contents of a file.
+ *
+ * @param path The string path of the file to read.
+ * @return A Promise that resolves with the file contents as a string.
+ * @throws Will throw an error if the file cannot be read (e.g., if it does not exist or there is a permissions issue).
+ */
+export async function readFile(path: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        // Attempt to read the file
+        fs.readFile(path, 'utf8', (error, data) => {
+            if (error) {
+                // If an error occurred, reject the Promise with a new Error object
+                reject(new Error(`Failed to read file at path "${path}": ${error.message}`));
+            } else {
+                // If successful, resolve the Promise with the file contents
+                resolve(data);
+            }
+        });
+    });
+}

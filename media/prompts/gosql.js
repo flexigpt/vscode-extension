@@ -121,8 +121,8 @@ module.exports = {
   variables: [
     {
       name: "dlFileName",
-      value: ({ baseFolder, fileName, fileExtension }) =>
-        `${baseFolder}\\${fileName}_dl${fileExtension}`,
+      value: ({ fileFolder, fileName, fileExtension }) =>
+        `${fileFolder}\\${fileName}_dl${fileExtension}`,
     },
   ],
 };

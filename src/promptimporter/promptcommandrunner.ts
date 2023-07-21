@@ -3,6 +3,7 @@ import { systemVariableNames } from "./predefinedvariables";
 import { FunctionWrapper, FunctionContext } from "../promptdef/promptfunctions";
 import { Variable, VariableContext } from "../promptdef/promptvariables";
 import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
+import log from "../logger/log";
 
 export const DEFAULT_COMMAND: string = "Ask";
 export const DEFAULT_NAMESPACE: string = "FlexiGPT";
@@ -41,7 +42,7 @@ export class CommandRunnerContext {
   runResponseHandler(
     command: Command,
     responseHandler: string | { func: string; args: any } | undefined
-  ): any {
+  ): { sanitizedAnswer: string; ret: any } {
     // log.info(`resolved sys vars: ${JSON.stringify(system)} resolved user vars: ${JSON.stringify(user)}`);
 
     let functionName: string;
@@ -62,6 +63,17 @@ export class CommandRunnerContext {
         }
       }
     }
+
+    if (
+      typeof responseHandler === "string" &&
+      responseHandler === DEFAULT_RESPONSE_HANDLER
+    ) {
+      return {
+        sanitizedAnswer: "",
+        ret: "",
+      };
+    }
+
     // add the answer arg as extra
     args["answer"] = this.fullVariableContext.getValue("system.answer");
     let fn = this.functionContext[command.namespace].get(
@@ -70,9 +82,15 @@ export class CommandRunnerContext {
     if (!fn) {
       fn = this.functionContext["system"].get(functionName) as FunctionWrapper;
     }
-    return fn?.run({
+    let ret = fn?.run({
       ...args,
     });
+    return {
+      sanitizedAnswer: `Ran response handler: ${
+        command.namespace
+      }:${functionName}\nOutput:\n${JSON.stringify(ret)}`,
+      ret: ret,
+    };
   }
 
   setSystemVariable(variable: Variable): void {
@@ -80,7 +98,7 @@ export class CommandRunnerContext {
   }
 
   getSystemVariable(key: string): any {
-    this.fullVariableContext.getNamespace("system")?.getValue(key);
+    return this.fullVariableContext.getValue(`system.${key}`);
   }
 
   setUserVariable(namespace: string, variable: Variable): void {
@@ -170,10 +188,14 @@ export class CommandRunnerContext {
     }
     // const updatedValueStr = prettier.format(updatedValue, { parser: 'json' });
     this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
+    let retval = this.runResponseHandler(command, command.responseHandler);
+    if (retval.sanitizedAnswer !== "") {
+      updatedValue = retval.sanitizedAnswer;
+    }
     this.setSystemVariable(
       new Variable(systemVariableNames.sanitizedAnswer, updatedValue)
     );
-    return this.runResponseHandler(command, command.responseHandler);
+    return retval.ret;
   }
 
   findCommand(text: string): Command {
