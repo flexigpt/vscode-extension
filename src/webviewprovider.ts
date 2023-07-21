@@ -26,8 +26,7 @@ import {
 } from "./strategy/conversation";
 import { ChatCompletionRoleEnum, IView } from "./strategy/conversationspec";
 import { COMMAND_TYPE_CLI, Command } from "./promptdef/promptcommand";
-import { getWebviewHtmlv2 } from "./webviewhtml";
-// import { getWebviewHtmlv2 } from "./webviewhtml";
+import { getWebviewHtml } from "./webviewhtml";
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flexigpt.chatView";
@@ -285,8 +284,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     };
 
     // set the HTML for the webview
-    // webviewView.webview.html = getHtmlForWebviewv1(webviewView.webview, this._extensionUri);
-    webviewView.webview.html = getWebviewHtmlv2(
+    webviewView.webview.html = getWebviewHtml(
       webviewView.webview,
       this._extensionUri
     );
