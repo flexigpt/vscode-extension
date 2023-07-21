@@ -10,7 +10,7 @@ export function convertSnakeToCamel(
 ): string {
   const renderedStr = render(snakeStr);
   if (typeof renderedStr !== "string") {
-    console.error("Error rendering string");
+    log.error("Error rendering string");
     return "";
   }
 
@@ -40,7 +40,7 @@ export function convertToUpperCase(text: string, render: Renderer): string {
   const renderedText = render(text);
 
   if (typeof renderedText !== "string") {
-    console.error("Error rendering text");
+    log.error("Error rendering text");
     return "";
   }
 
@@ -54,7 +54,7 @@ function changeFirstLetterCase(
 ): string {
   const renderedText = render(text);
   if (typeof renderedText !== "string" || renderedText.length === 0) {
-    console.error("Error rendering text");
+    log.error("Error rendering text");
     return "";
   }
 

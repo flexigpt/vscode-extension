@@ -70,8 +70,8 @@ export class GptAPI {
       this.axiosInstance.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
           // Caution: avoid logging sensitive information in production
-          console.log("Axios Request:", config);
-          console.log("cURL Command:", this.generateCurlCommand(config));
+          log.info("Axios Request:", config);
+          log.info("cURL Command:", this.generateCurlCommand(config));
           return config;
         },
         (error) => {

@@ -47,7 +47,7 @@ export class Variable {
         return (this.value as VariableGetter)(valueParams, functions);
       } catch (e) {
         // If there is an error during the function execution, logs it to the console and returns undefined
-        console.error(`Error getting value for variable ${this.name}: ${e}`);
+        log.error(`Error getting value for variable ${this.name}: ${e}`);
         return undefined;
       }
     }
