@@ -4,7 +4,7 @@
 - [**Features**](features.md)
 - [**Prompting**](prompts.md)
 - [**Prompt files format**](promptfiles.md)
+- [**Requirements and TODO**](prd.md)
 - [**License**](licence.md)
 - [**Contributions**](contributions.md)
 - [**Support**](support.md)
-- [**TODO**](todo.md)
