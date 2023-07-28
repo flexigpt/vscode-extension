@@ -56,7 +56,8 @@ def merge_files(input_file_path, destination_file_path):
                 marker_found = True
                 destination_content += line + '\n'
                 newout = process_input_file(input_file_path)
-                destination_content += mdformat.text(newout, options={"wrap": 80}) + '\n'
+                # destination_content += mdformat.text(newout, options={"wrap": 1024}) + '\n'
+                destination_content += newout + '\n'
             
             if marker_found:
                 break
