@@ -44,8 +44,8 @@ Options:
 // anthropic provider configuration
 "flexigpt.anthropic.apiKey": "sk-mkey",
 "flexigpt.anthropic.timeout": "120",
-"flexigpt.anthropic.defaultCompletionModel": "claude-1-instant",
-"flexigpt.anthropic.defaultChatCompletionModel": "claude-1-instant",
+"flexigpt.anthropic.defaultCompletionModel": "claude-2",
+"flexigpt.anthropic.defaultChatCompletionModel": "claude-2",
 
 // huggingface provider configuration
 "flexigpt.huggingface.apiKey": "hf-mkey",

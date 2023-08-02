@@ -14,8 +14,8 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
   
   constructor(apiKey: string, 
     timeout: BigInt,
-    defaultCompletionModel: string = "claude-1",
-    defaultChatCompletionModel: string = "claude-1",
+    defaultCompletionModel: string = "claude-2",
+    defaultChatCompletionModel: string = "claude-2",
     headers: Record<string, string> = {}) {
     
     const origin = "https://api.anthropic.com";

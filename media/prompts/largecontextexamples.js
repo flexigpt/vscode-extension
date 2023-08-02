@@ -14,7 +14,7 @@ module.exports = {
             },
             description: "Generate workflow tests for the selected swagger",
             requestparams: {
-                model: "claude-1-100k"
+                model: "claude-2"
             },
         },
         {
@@ -23,7 +23,7 @@ module.exports = {
             {system.selection}`,
             description: "Find bugs",
             requestparams: {
-                model: "claude-1-100k"
+                model: "claude-2"
             },
         },
         {

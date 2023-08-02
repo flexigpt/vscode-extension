@@ -40,10 +40,10 @@ export function getAnthropicProvider(
 ): CompletionProvider | null {
   const apiKey = (config.get("anthropic.apiKey") as string) || "";
   const defaultCompletionModel =
-    (config.get("anthropic.defaultCompletionModel") as string) || "claude-1";
+    (config.get("anthropic.defaultCompletionModel") as string) || "claude-2";
   const defaultChatCompletionModel =
     (config.get("anthropic.defaultChatCompletionModel") as string) ||
-    "claude-1";
+    "claude-2";
   const timeout = (config.get("anthropic.timeout") as BigInt) || 120;
   if (apiKey) {
     log.info("Anthropic API provider initialized");
