@@ -39,7 +39,6 @@ export function filterSensitiveInfoFromJsonString(jsonString: string): string {
 
 export class GptAPI {
   origin: string;
-  endpoint: string;
   apiKey: string;
   apiKeyHeaderKey: string;
   headers: Record<string, string>;
@@ -48,13 +47,11 @@ export class GptAPI {
 
   constructor(
     origin: string,
-    endpoint: string,
     apiKey: string,
     apiKeyHeaderKey: string,
     headers: Record<string, string> = {}
   ) {
     this.origin = origin;
-    this.endpoint = endpoint;
     this.apiKeyHeaderKey = apiKeyHeaderKey;
     if (apiKeyHeaderKey === "Authorization") {
       this.apiKey = "Bearer " + apiKey;
@@ -111,7 +108,7 @@ export class GptAPI {
 
     const config: AxiosRequestConfig = {
       ...requestConfig,
-      url: this.origin + this.endpoint + (requestConfig.url || ""),
+      url: this.origin + (requestConfig.url || ""),
       headers: mergedHeaders,
     };
 

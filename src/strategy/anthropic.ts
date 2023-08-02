@@ -19,7 +19,6 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     headers: Record<string, string> = {}) {
     
     const origin = "https://api.anthropic.com";
-    const endpoint = "/v1/complete";
     const apiKeyHeaderKey = "x-api-key";
     const defaultHeaders: Record<string, string> = {
       accept: "application/json",
@@ -30,7 +29,6 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     };
     super(
       origin,
-      endpoint,
       apiKey,
       apiKeyHeaderKey,
       {
@@ -107,6 +105,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       metadata: metadata,
     };
     const requestConfig: AxiosRequestConfig = {
+      url: "/v1/complete",
       method: "POST",
       data: request,
     };

@@ -27,13 +27,12 @@ export default class OpenAIAPIProvider
     headers: Record<string, string> = {}
   ) {
     const origin = "https://api.openai.com";
-    const endpoint = "/v1";
     const apiKeyHeaderKey = "Authorization";
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       "content-type": "application/json",
     };
-    super(origin, endpoint, apiKey, apiKeyHeaderKey, {
+    super(origin, apiKey, apiKeyHeaderKey, {
       ...defaultHeaders,
       ...headers,
     });
@@ -80,9 +79,9 @@ export default class OpenAIAPIProvider
       logit_bias: input.logitBias,
       user: input.user,
     };
-    let modelpath = "/completions";
+    let modelpath = "/v1/completions";
     if (chatModel) {
-      modelpath = "/chat/completions";
+      modelpath = "/v1/chat/completions";
       let filterTokens = 2048;
       if (input.maxTokens) {
         filterTokens = input.maxTokens;

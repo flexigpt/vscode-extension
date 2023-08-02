@@ -21,13 +21,12 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     headers: Record<string, string> = {}
   ) {
     const origin = "https://api-inference.huggingface.co";
-    const endpoint = "/models";
     const apiKeyHeaderKey = "Authorization";
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       "content-type": "application/json",
     };
-    super(origin, endpoint, apiKey, apiKeyHeaderKey, {
+    super(origin, apiKey, apiKeyHeaderKey, {
       ...defaultHeaders,
       ...headers,
     });
@@ -142,7 +141,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     }
 
     const requestConfig: AxiosRequestConfig = {
-      url: "/" + input.model,
+      url: "/models/" + input.model,
       method: "POST",
       data: request,
     };

@@ -25,13 +25,12 @@ export class GoogleGenerativeLanguageAPI
     headers: Record<string, string> = {}
   ) {
     const origin = "https://generativelanguage.googleapis.com";
-    const endpoint = "/v1beta2";
     const apiKeyHeaderKey = "";
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       "content-type": "application/json",
     };
-    super(origin, endpoint, apiKey, apiKeyHeaderKey, {
+    super(origin, apiKey, apiKeyHeaderKey, {
       ...defaultHeaders,
       ...headers,
     });
@@ -85,9 +84,9 @@ export class GoogleGenerativeLanguageAPI
       request.stopSequences = stoparg;
     }
 
-    let modelpath = `/models/${input.model}:generateText?key=${this.apiKey}`;
+    let modelpath = `/v1beta2/models/${input.model}:generateText?key=${this.apiKey}`;
     if (chatModel) {
-      modelpath = `/models/${input.model}:generateMessage?key=${this.apiKey}`;
+      modelpath = `/v1beta2/models/${input.model}:generateMessage?key=${this.apiKey}`;
     }
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
