@@ -17,14 +17,14 @@ suite("CheckParams Test Suite", () => {
   const apiKey = "MyKey";
   const defaultCompletionModel = "gpt-3.5-turbo";
   const defaultChatCompletionModel = "gpt-3.5-turbo";
-  const defaultEditModel = "code-davinci-edit-001";
   const timeout: BigInt = 60n;
+  const defaultOrigin = "https://api.openai.com";
   const chatCompletion: CompletionProvider = new OpenAIAPIProvider(
     apiKey,
     timeout,
     defaultCompletionModel,
     defaultChatCompletionModel,
-    defaultEditModel
+    defaultOrigin,
   );
   const prompt = "Hello, how can I assist you?";
   const messages: ChatCompletionRequestMessage[] = [

@@ -16,11 +16,11 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
   constructor(
     apiKey: string,
     timeout: BigInt,
-    defaultCompletionModel: string = "bigcode/starcoderbase",
-    defaultChatCompletionModel: string = "microsoft/DialoGPT-large",
+    defaultCompletionModel: string,
+    defaultChatCompletionModel: string,
+    origin: string,
     headers: Record<string, string> = {}
   ) {
-    const origin = "https://api-inference.huggingface.co";
     const apiKeyHeaderKey = "Authorization";
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,12 +37,11 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
 
   async getModelType(model: string) {
     const requestConfig: AxiosRequestConfig = {
-      url: "/" + model,
+      url: "/models/" + model,
       method: "GET",
     };
     try {
       const data = await this.request(requestConfig);
-      let fullResponse = data;
       if (typeof data !== "object" || data === null) {
         throw new Error("Invalid data response. Expected an object.");
       }

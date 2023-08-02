@@ -20,11 +20,11 @@ export class GoogleGenerativeLanguageAPI
   constructor(
     apiKey: string,
     timeout: BigInt,
-    defaultCompletionModel: string = "text-bison-001",
-    defaultChatCompletionModel: string = "chat-bison-001",
+    defaultCompletionModel: string,
+    defaultChatCompletionModel: string,
+    origin: string,
     headers: Record<string, string> = {}
   ) {
-    const origin = "https://generativelanguage.googleapis.com";
     const apiKeyHeaderKey = "";
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention

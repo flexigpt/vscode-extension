@@ -39,24 +39,27 @@ Options:
 "flexigpt.openai.timeout": "120",
 "flexigpt.openai.defaultCompletionModel": "gpt-3.5-turbo",
 "flexigpt.openai.defaultChatCompletionModel": "gpt-3.5-turbo",
-"flexigpt.openai.defaultEditModel": "code-davinci-edit-001",
+"flexigpt.openai.defaultOrigin": "https://api.openai.com",
 
 // anthropic provider configuration
 "flexigpt.anthropic.apiKey": "sk-mkey",
 "flexigpt.anthropic.timeout": "120",
 "flexigpt.anthropic.defaultCompletionModel": "claude-2",
 "flexigpt.anthropic.defaultChatCompletionModel": "claude-2",
+"flexigpt.anthropic.defaultOrigin": "https://api.anthropic.com",
 
 // huggingface provider configuration
 "flexigpt.huggingface.apiKey": "hf-mkey",
 "flexigpt.huggingface.timeout": "120",
 "flexigpt.huggingface.defaultCompletionModel": "bigcode/starcoderbase",
 "flexigpt.huggingface.defaultChatCompletionModel": "microsoft/DialoGPT-large",
+"flexigpt.huggingface.defaultOrigin": "https://api-inference.huggingface.co",
 
 // googlegl provider configuration
 "flexigpt.googlegl.apiKey": "gl-mkey",
 "flexigpt.googlegl.timeout": "120",
 "flexigpt.googlegl.defaultCompletionModel": "text-bison-001",
 "flexigpt.googlegl.defaultChatCompletionModel": "chat-bison-001",
+"flexigpt.googlegl.defaultOrigin": "https://generativelanguage.googleapis.com",
 
 ```

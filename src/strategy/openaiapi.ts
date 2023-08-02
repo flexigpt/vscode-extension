@@ -16,17 +16,15 @@ export default class OpenAIAPIProvider
   #timeout: BigInt;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
-  defaultEditModel: string;
 
   constructor(
     apiKey: string,
     timeout: BigInt,
-    defaultCompletionModel: string = "text-davinci-003",
-    defaultChatCompletionModel: string = "gpt-3.5-turbo",
-    defaultEditModel: string = "code-davinci-edit-001",
+    defaultCompletionModel: string,
+    defaultChatCompletionModel: string,
+    origin: string,
     headers: Record<string, string> = {}
   ) {
-    const origin = "https://api.openai.com";
     const apiKeyHeaderKey = "Authorization";
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,7 +37,6 @@ export default class OpenAIAPIProvider
     this.#timeout = timeout;
     this.defaultCompletionModel = defaultCompletionModel;
     this.defaultChatCompletionModel = defaultChatCompletionModel;
-    this.defaultEditModel = defaultEditModel;
   }
 
   async completion(input: CompletionRequest) {

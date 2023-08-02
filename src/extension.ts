@@ -99,7 +99,9 @@ function registerEvents(
         event.affectsConfiguration(
           "flexigpt.openai.defaultChatCompletionModel"
         ) ||
-        event.affectsConfiguration("flexigpt.openai.defaultEditModel") ||
+        event.affectsConfiguration(
+          "flexigpt.openai.defaultOrigin"
+        ) ||
         event.affectsConfiguration("flexigpt.anthropic.timeout") ||
         event.affectsConfiguration("flexigpt.anthropic.apiKey") ||
         event.affectsConfiguration(
@@ -107,6 +109,9 @@ function registerEvents(
         ) ||
         event.affectsConfiguration(
           "flexigpt.anthropic.defaultChatCompletionModel"
+        ) ||
+        event.affectsConfiguration(
+          "flexigpt.anthropic.defaultOrigin"
         ) ||
         event.affectsConfiguration("flexigpt.huggingface.timeout") ||
         event.affectsConfiguration("flexigpt.huggingface.apiKey") ||
@@ -116,6 +121,9 @@ function registerEvents(
         event.affectsConfiguration(
           "flexigpt.huggingface.defaultChatCompletionModel"
         ) ||
+        event.affectsConfiguration(
+          "flexigpt.huggingface.defaultOrigin"
+        ) ||
         event.affectsConfiguration("flexigpt.googlegl.timeout") ||
         event.affectsConfiguration("flexigpt.googlegl.apiKey") ||
         event.affectsConfiguration(
@@ -123,6 +131,9 @@ function registerEvents(
         ) ||
         event.affectsConfiguration(
           "flexigpt.googlegl.defaultChatCompletionModel"
+        ) ||
+        event.affectsConfiguration(
+          "flexigpt.googlegl.defaultOrigin"
         )
       ) {
         // add the new token to the provider

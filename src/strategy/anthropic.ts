@@ -11,14 +11,15 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
   #timeout: BigInt;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
-  
-  constructor(apiKey: string, 
+
+  constructor(
+    apiKey: string,
     timeout: BigInt,
-    defaultCompletionModel: string = "claude-2",
-    defaultChatCompletionModel: string = "claude-2",
-    headers: Record<string, string> = {}) {
-    
-    const origin = "https://api.anthropic.com";
+    defaultCompletionModel: string,
+    defaultChatCompletionModel: string,
+    origin: string,
+    headers: Record<string, string> = {}
+  ) {
     const apiKeyHeaderKey = "x-api-key";
     const defaultHeaders: Record<string, string> = {
       accept: "application/json",
@@ -27,15 +28,10 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       "content-type": "application/json",
     };
-    super(
-      origin,
-      apiKey,
-      apiKeyHeaderKey,
-      {
-        ...defaultHeaders,
-        ...headers,
-      }
-    );
+    super(origin, apiKey, apiKeyHeaderKey, {
+      ...defaultHeaders,
+      ...headers,
+    });
     this.#timeout = timeout;
     this.defaultCompletionModel = defaultCompletionModel;
     this.defaultChatCompletionModel = defaultChatCompletionModel;
@@ -140,9 +136,9 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     }
     if (!inputParams) {
       inputParams = {};
-    } 
+    }
     inputParams.stop = stoparg;
-    
+
     let completionRequest: CompletionRequest = {
       model: (inputParams?.model as string) || this.defaultCompletionModel,
       prompt: prompt,
@@ -171,7 +167,10 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       if (completionRequest.maxTokens) {
         filterTokens = completionRequest.maxTokens;
       }
-      let messages = filterMessagesByTokenCount(completionRequest.messages, filterTokens);
+      let messages = filterMessagesByTokenCount(
+        completionRequest.messages,
+        filterTokens
+      );
       completionRequest.prompt = this.generateMessageString(messages);
     }
     return completionRequest;

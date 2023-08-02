@@ -27,6 +27,8 @@
     - FlexiGPT basic prompts will use the default models set.
     - Default: `gpt-3.5-turbo`. Note that `gpt-3.5-turbo` usage is accounted in OpenAIs billing. Only free model that is in beta as of Feb 2023 is codex (`code-davinci-002`).
   - flexigpt.openai.defaultCompletionModel: Default model to use for completion requests.
+  - flexigpt.openai.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
+    - Default: `https://api.openai.com`.
 
 ## Anthropic (Claude)
 
@@ -39,7 +41,6 @@
 - Supported models - All models supported by above API
 
   - `claude-2`
-  - `claude-1`
   - `claude-instant-1`
 
 - FlexiGPT uses defaultChatCompletionModel: `claude-2`, unless the prompt overrides it.
@@ -53,6 +54,8 @@
     - FlexiGPT basic prompts will use the default models set.
     - Default: `claude-2`.
   - flexigpt.anthropic.defaultCompletionModel: Default model to use for completion requests.
+  - flexigpt.anthropic.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
+    - Default: `https://api.anthropic.com`.
 
 ## Huggingface
 
@@ -76,6 +79,8 @@
     - Default: `microsoft/DialoGPT-large`.
   - flexigpt.huggingface.defaultCompletionModel: Default model to use for completion requests.
     - Default: `bigcode/starcoderbase`.
+  - flexigpt.huggingface.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
+    - Default: `https://api-inference.huggingface.co`.
 
 ## Google generative language (PaLM API)
 
@@ -103,3 +108,5 @@
     - Default: `chat-bison-001`.
   - flexigpt.googlegl.defaultCompletionModel: Default model to use for completion requests.
     - Default: `text-bison-001`.
+  - flexigpt.googlegl.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
+    - Default: `https://generativelanguage.googleapis.com`.

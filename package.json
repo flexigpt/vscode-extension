@@ -181,10 +181,10 @@
           "description": "Default model to use for chat completion requests",
           "order": 4
         },
-        "flexigpt.openai.defaultEditModel": {
+        "flexigpt.openai.defaultOrigin": {
           "type": "string",
-          "default": "code-davinci-edit-001",
-          "description": "Default model to use for completion requests",
+          "default": "https://api.openai.com",
+          "description": "Default origin to use for requests. This can be used to talk to any server that serves a compatible API",
           "order": 4
         },
         "flexigpt.anthropic.apiKey": {
@@ -210,6 +210,12 @@
           "description": "Default model to use for chat completion requests",
           "order": 5
         },
+        "flexigpt.anthropic.defaultOrigin": {
+          "type": "string",
+          "default": "https://api.anthropic.com",
+          "description": "Default origin to use for requests. This can be used to talk to any server that serves a compatible API",
+          "order": 5
+        },
         "flexigpt.huggingface.apiKey": {
           "type": "string",
           "description": "Your huggingface API key.",
@@ -233,6 +239,12 @@
           "description": "Default model to use for chat completion requests",
           "order": 6
         },
+        "flexigpt.huggingface.defaultOrigin": {
+          "type": "string",
+          "default": "https://api-inference.huggingface.co",
+          "description": "Default origin to use for requests. This can be used to talk to any server that serves a compatible API",
+          "order": 6
+        },
         "flexigpt.googlegl.apiKey": {
           "type": "string",
           "description": "Your googlegl API key.",
@@ -254,6 +266,12 @@
           "type": "string",
           "default": "chat-bison-001",
           "description": "Default model to use for chat completion requests",
+          "order": 7
+        },
+        "flexigpt.googlegl.defaultOrigin": {
+          "type": "string",
+          "default": "https://generativelanguage.googleapis.com",
+          "description": "Default origin to use for requests. This can be used to talk to any server that serves a compatible API",
           "order": 7
         }
       }

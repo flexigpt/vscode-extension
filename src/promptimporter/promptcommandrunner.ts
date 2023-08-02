@@ -203,8 +203,8 @@ export class CommandRunnerContext {
     let returnitem = new Command(
       DEFAULT_COMMAND,
       text,
-      "explain",
-      "Get any explanation from FlexiGPT",
+      DEFAULT_RESPONSE_HANDLER,
+      "Ask from FlexiGPT",
       DEFAULT_NAMESPACE
     );
     const filteredCommands = commands.filter((command: { label: string }) =>
