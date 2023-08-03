@@ -1,7 +1,7 @@
 # FlexiGPT
 
-[Full Documentation site](https://pankajpipada.com/flexigpt/#/)
-[Download from - VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ppipada.flexigpt)
+- [Full Documentation site](https://pankajpipada.com/flexigpt/#/)
+- [Download from - VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ppipada.flexigpt)
 
 ---
 
