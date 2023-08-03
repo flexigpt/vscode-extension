@@ -127,7 +127,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     }
     let messages = filterMessagesByTokenCount(input.messages, filterTokens);
 
-    const inputmessages = this.getInputs(input.messages);
+    const inputmessages = this.getInputs(messages);
 
     let request: Record<string, any> = {
       parameters: parameters,

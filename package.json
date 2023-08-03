@@ -273,6 +273,24 @@
           "default": "https://generativelanguage.googleapis.com",
           "description": "Default origin to use for requests. This can be used to talk to any server that serves a compatible API",
           "order": 7
+        },
+        "flexigpt.llamacpp.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your llamacpp API key.",
+          "order": 8
+        },
+        "flexigpt.llamacpp.timeout": {
+          "type": "integer",
+          "default": 120,
+          "description": "Timeout for requests",
+          "order": 8
+        },
+        "flexigpt.llamacpp.defaultOrigin": {
+          "type": "string",
+          "default": "http://127.0.0.1:8080",
+          "description": "Default origin to use for requests. This can be used to talk to any server that serves a compatible API",
+          "order": 8
         }
       }
     }

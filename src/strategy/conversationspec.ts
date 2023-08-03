@@ -279,4 +279,10 @@ export interface CompletionRequest {
    * @memberof CompletionRequest
    */
   topK?: number | null;
+  /**
+   *  Map of additional parameters specific to the model.
+   *  @type {Record<string, any>}
+   *  Anything with non null/undefined value will be added to the request body
+   */
+  additionalParameters?: Record<string, any> | null;
 }

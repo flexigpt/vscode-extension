@@ -62,4 +62,9 @@ Options:
 "flexigpt.googlegl.defaultChatCompletionModel": "chat-bison-001",
 "flexigpt.googlegl.defaultOrigin": "https://generativelanguage.googleapis.com",
 
+// llamacpp provider configuration
+"flexigpt.llamacpp.apiKey": "",
+"flexigpt.llamacpp.timeout": "120",
+"flexigpt.llamacpp.defaultOrigin": "127.0.0.1:8080",
+
 ```

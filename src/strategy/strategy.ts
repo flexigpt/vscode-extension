@@ -92,6 +92,9 @@ export default class Providers {
       return this.providers.huggingface;
     }
 
+    if (this.defaultProvider && this.defaultProvider !== "") {
+      return this.providers[this.defaultProvider];
+    }
     throw new Error(
       "No default provider and No provider found for model " + model
     );

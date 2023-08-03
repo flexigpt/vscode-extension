@@ -5,6 +5,7 @@ import Providers, { CompletionProvider } from "./strategy";
 import { AnthropicAPI } from "./anthropic";
 import { HuggingFaceAPI } from "./huggingface";
 import { GoogleGenerativeLanguageAPI } from "./googleapis";
+import { LlamaCPPAPIProvider } from "./llamacpp";
 import log from "../logger/log";
 
 export function getOpenAIProvider(
@@ -121,6 +122,29 @@ export function getGoogleGenerativeLanguageProvider(
   return null;
 }
 
+export function getLlamaCPPAPIProvider(
+  config: vscode.WorkspaceConfiguration
+): CompletionProvider | null {
+  const apiKey = (config.get("llamacpp.apiKey") as string) || "";
+  const timeout = (config.get("llamacpp.timeout") as BigInt) || 120;
+  // const defaultCompletionModel =
+  //   (config.get("llamacpp.defaultCompletionModel") as string) || "llama2";
+  // const defaultChatCompletionModel =
+  //   (config.get("llamacpp.defaultChatCompletionModel") as string) ||
+  //   "llama2";
+  const defaultOrigin =
+    (config.get("llamacpp.defaultOrigin") as string) || "http://127.0.0.1:8080";
+
+  log.info("LlamaCPP API provider initialized");
+  return new LlamaCPPAPIProvider(
+    apiKey,
+    timeout,
+    "llama2",
+    "llama2",
+    defaultOrigin
+  );
+}
+
 export function getAllProviders(): Providers {
   const config = vscode.workspace.getConfiguration("flexigpt");
   const defaultProvider = config.get("defaultProvider") as string;
@@ -140,6 +164,10 @@ export function getAllProviders(): Providers {
   let gp = getGoogleGenerativeLanguageProvider(config);
   if (gp) {
     providers.addProvider("googlegl", gp);
+  }
+  let lp = getLlamaCPPAPIProvider(config);
+  if (lp) {
+    providers.addProvider("llamacpp", lp);
   }
   return providers;
 }

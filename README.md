@@ -111,6 +111,11 @@ Options:
 "flexigpt.googlegl.defaultChatCompletionModel": "chat-bison-001",
 "flexigpt.googlegl.defaultOrigin": "https://generativelanguage.googleapis.com",
 
+// llamacpp provider configuration
+"flexigpt.llamacpp.apiKey": "",
+"flexigpt.llamacpp.timeout": "120",
+"flexigpt.llamacpp.defaultOrigin": "127.0.0.1:8080",
+
 ```
 
 
@@ -228,6 +233,25 @@ Options:
     - Default: `text-bison-001`.
   - flexigpt.googlegl.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://generativelanguage.googleapis.com`.
+
+## LLaMA.cpp
+
+- Setup a llama.cpp server as noted [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server)
+  - If you are running a python openai compatible server as described [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-like-oai), you can use the openai provider with modified default origin for talking to llama.cpp too.
+  - This provider directly talkes to the default llama server built.
+
+- Supported [APIs](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-endpoints)
+
+  - https://<your host:port of the llama server>/completion
+
+- Supported models - All models supported by the above APIs. Note that the model in llama.cpp needs to be given when running the server itself and cannot be given at each request level.
+
+- Configuration Options:
+
+  - flexigpt.llamacpp.apiKey: Your API key.
+  - flexigpt.llamacpp.timeout: The timeout for requests, in seconds. Default: 120.
+  - flexigpt.llamacpp.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
+    - Default: `http://127.0.0.1:8080`.
 
 
 # Features

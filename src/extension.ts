@@ -134,6 +134,11 @@ function registerEvents(
         ) ||
         event.affectsConfiguration(
           "flexigpt.googlegl.defaultOrigin"
+        ) ||
+        event.affectsConfiguration("flexigpt.llamacpp.timeout") ||
+        event.affectsConfiguration("flexigpt.llamacpp.apiKey") ||
+        event.affectsConfiguration(
+          "flexigpt.llamacpp.defaultOrigin"
         )
       ) {
         // add the new token to the provider
