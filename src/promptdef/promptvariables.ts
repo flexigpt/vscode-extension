@@ -16,7 +16,7 @@ export class Variable {
     }
 
     // Assigns the given name and value/function to the instance properties
-    this.name = name;
+    this.name = name.toLowerCase();
     this.value = value;
   }
 
@@ -72,6 +72,7 @@ export class VariableContext {
       log.error("Key must be a non-empty string");
       return undefined;
     }
+    key = key.toLowerCase();
     // try to see if variable is present
     let value = this.variables.get(key);
     return value instanceof Variable
@@ -79,6 +80,7 @@ export class VariableContext {
       : undefined;
   }
 }
+
 // The VariableNamespaces class handles the namespaces and manages the VariableContext objects
 export class VariableNamespaces {
   private readonly namespaces: Map<string, VariableContext>;
@@ -103,14 +105,15 @@ export class VariableNamespaces {
     if (typeof namespace !== "string" || !namespace) {
       throw new Error("Namespace name must be a non-empty string");
     }
-    if (this.namespaces.has(namespace)) {
+    let name = namespace.toLowerCase();
+    if (this.namespaces.has(name)) {
       throw new Error(`Namespace "${namespace}" already exists`);
     }
-    this.namespaces.set(namespace, new VariableContext());
+    this.namespaces.set(name, new VariableContext());
   }
 
   getNamespace(namespace: string): VariableContext | undefined {
-    const ns = this.namespaces.get(namespace);
+    const ns = this.namespaces.get(namespace.toLowerCase());
     return ns instanceof VariableContext ? ns : undefined;
   }
 

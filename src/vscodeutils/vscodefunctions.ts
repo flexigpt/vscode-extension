@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as cp from "child_process";
 import * as fs from 'fs';
+import * as os from 'os';
 import * as fsPromises from "fs/promises";
 import log from "../logger/log";
 
@@ -232,7 +233,7 @@ export async function runCommandInShell(
   });
 }
 
-export function readOpenFileOrPath(filePath?: string): string {
+export function readOpenFileOrPath(varcontext?: any, filePath?: string): string {
   try {
     let content: string;
     
@@ -242,7 +243,10 @@ export function readOpenFileOrPath(filePath?: string): string {
         throw new Error("No file is currently open, and no file path was provided.");
       }
     }
-    log.info(`Reading file "${filePath}"...`);
+    if (filePath.startsWith('~')) {
+      filePath = filePath.replace('~', os.homedir());
+    }    
+    log.info(`Reading file ${filePath}`);
     // Use fsPromises.readFileSync to read the file synchronously
     content = fs.readFileSync(filePath, 'utf-8');
 

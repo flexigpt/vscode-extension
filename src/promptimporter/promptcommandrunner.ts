@@ -242,7 +242,7 @@ export class CommandRunnerContext {
     let k = this.getUserReplaced(key, command.namespace);
     let value = this.fullVariableNamespaces.getValue(k);
     if (value === undefined) {
-      value = "";
+      value = key;
     }
     return value;
   }
