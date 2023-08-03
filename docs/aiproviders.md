@@ -119,7 +119,7 @@
 
 - Supported [APIs](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-endpoints)
 
-  - https://<your host:port of the llama server>/completion
+  - https://`your host:port of the llama server`/completion
 
 - Supported models - All models supported by the above APIs. Note that the model in llama.cpp needs to be given when running the server itself and cannot be given at each request level.
 
