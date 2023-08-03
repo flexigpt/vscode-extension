@@ -1,4 +1,4 @@
-import { append, readFile, replace, writeFile } from "../vscodeutils/fileutils";
+import { append, readFile, replace, writeFile } from "../vscodeutils/responseHandlerFunctions";
 import { FunctionWrapper } from "../promptdef/promptfunctions";
 
 export const preDefinedFunctions = [

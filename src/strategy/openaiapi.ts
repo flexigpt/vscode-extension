@@ -40,6 +40,10 @@ export default class OpenAIAPIProvider
   }
 
   async completion(input: CompletionRequest) {
+    // return {
+    //   fullResponse: "full",
+    //   data: "data",
+    // };
     return this.chatCompletion(input);
   }
 

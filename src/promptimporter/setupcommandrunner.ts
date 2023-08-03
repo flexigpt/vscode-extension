@@ -11,6 +11,7 @@ import {
   getActiveDocumentFilePath,
   getActiveDocumentLanguageID,
   getActiveFileName,
+  readOpenFileOrPath,
 } from "../vscodeutils/vscodefunctions";
 
 import { Variable } from "../promptdef/promptvariables";
@@ -61,6 +62,12 @@ function initDocumentContext(commandRunnerContext: CommandRunnerContext) {
     new Variable(
       systemVariableNames.commitAndTagList,
       getCommitAndTagListString
+    )
+  );
+  commandRunnerContext.setSystemVariable(
+    new Variable(
+      systemVariableNames.readFile,
+      readOpenFileOrPath,
     )
   );
 }

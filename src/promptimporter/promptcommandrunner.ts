@@ -1,23 +1,24 @@
 import { systemVariableNames } from "./predefinedvariables";
 
 import { FunctionWrapper, FunctionContext } from "../promptdef/promptfunctions";
-import { Variable, VariableContext } from "../promptdef/promptvariables";
+import { Variable, VariableNamespaces } from "../promptdef/promptvariables";
 import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
 import log from "../logger/log";
+import { get } from "http";
 
 export const DEFAULT_COMMAND: string = "Ask";
 export const DEFAULT_NAMESPACE: string = "FlexiGPT";
 export const DEFAULT_RESPONSE_HANDLER: string = "noop";
 
 export class CommandRunnerContext {
-  fullVariableContext: VariableContext;
+  fullVariableNamespaces: VariableNamespaces;
   functionContext: { [namespace: string]: FunctionContext };
   commands: { [namespace: string]: { [key: string]: Command } };
 
   constructor() {
-    this.fullVariableContext = new VariableContext();
-    this.fullVariableContext.addNamespace("system");
-    this.fullVariableContext.setDefaultNamespace("system");
+    this.fullVariableNamespaces = new VariableNamespaces();
+    this.fullVariableNamespaces.addNamespace("system");
+    this.fullVariableNamespaces.setDefaultNamespace("system");
     this.functionContext = { system: new FunctionContext() };
     this.commands = {};
     this.addCommand(
@@ -59,7 +60,11 @@ export class CommandRunnerContext {
         for (const [key, value] of Object.entries(responseHandler.args)) {
           let v = value as string;
           v = this.getUserReplaced(v, command.namespace);
-          args[key] = this.fullVariableContext.getValue(v);
+          let val = this.fullVariableNamespaces.getValue(v);
+          if (val === undefined) {
+            val = v;
+          }
+          args[key] = val;
         }
       }
     }
@@ -75,7 +80,7 @@ export class CommandRunnerContext {
     }
 
     // add the answer arg as extra
-    args["answer"] = this.fullVariableContext.getValue("system.answer");
+    args["answer"] = this.fullVariableNamespaces.getValue("system.answer");
     let fn = this.functionContext[command.namespace].get(
       functionName
     ) as FunctionWrapper;
@@ -85,6 +90,14 @@ export class CommandRunnerContext {
     let ret = fn?.run({
       ...args,
     });
+    if (ret === undefined || ret === null) {
+      return {
+        sanitizedAnswer: `Ran response handler: ${
+          command.namespace
+        }:${functionName}`,
+        ret: ret,
+      };
+    }
     return {
       sanitizedAnswer: `Ran response handler: ${
         command.namespace
@@ -94,18 +107,18 @@ export class CommandRunnerContext {
   }
 
   setSystemVariable(variable: Variable): void {
-    this.fullVariableContext.getNamespace("system")?.addVariable(variable);
+    this.fullVariableNamespaces.getNamespace("system")?.addVariable(variable);
   }
 
   getSystemVariable(key: string): any {
-    return this.fullVariableContext.getValue(`system.${key}`);
+    return this.fullVariableNamespaces.getValue(`system.${key}`);
   }
 
   setUserVariable(namespace: string, variable: Variable): void {
-    if (!this.fullVariableContext.getNamespace(namespace)) {
-      this.fullVariableContext.addNamespace(namespace);
+    if (!this.fullVariableNamespaces.getNamespace(namespace)) {
+      this.fullVariableNamespaces.addNamespace(namespace);
     }
-    this.fullVariableContext.getNamespace(namespace)?.addVariable(variable);
+    this.fullVariableNamespaces.getNamespace(namespace)?.addVariable(variable);
   }
 
   setSystemFunction(fn: FunctionWrapper): void {
@@ -216,6 +229,24 @@ export class CommandRunnerContext {
     return returnitem;
   }
 
+  createInputKeyAndArgs(input: string): [string, string[]] {
+    const parts = input.split(' ');
+    const key = parts.shift() || ''; // Take the first item as key, or use an empty string if undefined
+    return [key, parts]; // Return the tuple
+  }  
+
+  getVarForKey(key: string, command: Command): string {
+    if (key === "") {
+      return "";
+    }
+    let k = this.getUserReplaced(key, command.namespace);
+    let value = this.fullVariableNamespaces.getValue(k);
+    if (value === undefined) {
+      value = "";
+    }
+    return value;
+  }
+
   prepare(command: Command): string {
     // log.info(`question template input: ${this.questionTemplate}`);
     // let matches = this.questionTemplate.match(/\{([^}]+)\}/g);
@@ -223,8 +254,16 @@ export class CommandRunnerContext {
     const question = command.questionTemplate.replace(
       /\{([^}]+)\}/g,
       (match, key) => {
-        key = this.getUserReplaced(key, command.namespace);
-        let v = this.fullVariableContext.getValue(key);
+        let inObj = this.createInputKeyAndArgs(key);
+        if (inObj[0] === "") {
+          return "";
+        }
+        let args: string[] = [];
+        inObj[1].forEach((value, index) => {
+          args[index] = this.getVarForKey(value, command);
+        });
+        let varKey = this.getUserReplaced(inObj[0], command.namespace);
+        let v = this.fullVariableNamespaces.getValue(varKey, ...args);
         return v;
       }
     );

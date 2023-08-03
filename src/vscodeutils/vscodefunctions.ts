@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as cp from "child_process";
-import * as fs from "fs/promises";
+import * as fs from 'fs';
+import * as fsPromises from "fs/promises";
 import log from "../logger/log";
 
 export function replace(newValue: string) {
@@ -143,20 +144,20 @@ export async function openFileOrUnsavedDocument(
 
   try {
     // Check if directory exists
-    await fs.access(directoryPath);
+    await fsPromises.access(directoryPath);
   } catch (err) {
     // If directory does not exist, create it
-    await fs.mkdir(directoryPath, { recursive: true });
+    await fsPromises.mkdir(directoryPath, { recursive: true });
   }
 
   try {
     // Check if the file exists and you have permission to read it
-    await fs.access(filePath, fs.constants.F_OK);
+    await fsPromises.access(filePath, fsPromises.constants.F_OK);
   } catch (err) {
     const errorCode = (err as NodeJS.ErrnoException).code;
     if (errorCode === "ENOENT") {
       // If the file does not exist, create an empty file
-      await fs.writeFile(filePath, "");
+      await fsPromises.writeFile(filePath, "");
     } else {
       // If the error is something other than "file not found", re-throw it.
       throw err;
@@ -230,3 +231,27 @@ export async function runCommandInShell(
     });
   });
 }
+
+export function readOpenFileOrPath(filePath?: string): string {
+  try {
+    let content: string;
+    
+    if (!filePath) {
+      filePath = getActiveDocumentFilePath();
+      if (!filePath) {
+        throw new Error("No file is currently open, and no file path was provided.");
+      }
+    }
+    log.info(`Reading file "${filePath}"...`);
+    // Use fsPromises.readFileSync to read the file synchronously
+    content = fs.readFileSync(filePath, 'utf-8');
+
+    // log.info(`File "${filePath}" has been read successfully.`);
+    return content;
+  } catch (error) {
+    log.error(`An error occurred while reading the file: ${JSON.stringify(error)}`);
+    // Re-throw the error to allow calling functions to handle it as well
+    throw error;
+  }
+}
+

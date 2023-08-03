@@ -200,8 +200,6 @@ Note that the `system.` prefix for a system variable is optional. Therefore, you
 | ------------- | ------------------------------------------ | ------------------------------------------------- |
 | append        | Append Text                                | textToAppend(system.answer),postion('end')        |
 | replace       | Replace selected text                      | textToReplace(system.answer)                      |
-| showWebView   | Show Webview                               | question(system.question),question(system.answer) |
-| writeConsole  | Write text to console                      | content(system.answer)                            |
 | writeFile     | Write text to file. Append if file exists. | filePath(),content(system.answer)                 |
 
 - Replace

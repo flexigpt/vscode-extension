@@ -10,15 +10,17 @@ module.exports = {
     },
     {
       name: "Generate unit tests",
-      template: `Generate unit tests for following function. Give code only, and nothing else.
-            
-            Constraints:
-            - Write table driven tests using {system.language} standard testing packages.
-            - Add testcases for: few happy path, 0 values, min values, max values, non-zero values.
+      template: `Generate unit tests for the following function according to the constraints provided below. The response must consist of code only, with no additional explanations or context outside of the code itself. Any necessary comments should be included within the code.
 
-            Language: {system.language}
-            code:
-            {system.selection}`,
+      Constraints:
+      - Write table-driven tests using {system.language} standard testing packages.
+      - Add test cases for: few happy path scenarios, 0 values, min values, max values, non-zero values.
+      
+      Language: {system.language}
+      code:
+      {system.selection}
+      // Dont even add it in triple quotes. Please respond with the code only, following the constraints above.
+      `,
       description: "Generate unit tests for the selected code",
       responseHandler: {
         func: "writeFile",
