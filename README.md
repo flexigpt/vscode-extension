@@ -14,6 +14,20 @@ Interact with GPT AI models as a power user.
   - [Anthropic Claude 1/2](https://docs.anthropic.com/claude/reference/complete_post)
   - [HuggingFace Inference API](https://huggingface.co/docs/api-inference/detailed_parameters)
   - Google Generative Language API i.e [PaLM API](https://developers.generativeai.google/api/rest/generativelanguage)
+  - All models supported by [LLaMA.cpp](https://github.com/ggerganov/llama.cpp/tree/master). Current list:
+    - LLaMA 🦙
+    - LLaMA 2 🦙🦙
+    - Alpaca
+    - GPT4All
+    - Chinese LLaMA / Alpaca and Chinese LLaMA-2 / Alpaca-2
+    - Vigogne (French)
+    - Vicuna
+    - Koala
+    - OpenBuddy 🐶 (Multilingual)
+    - Pygmalion 7B / Metharme 7B
+    - WizardLM
+    - Baichuan-7B and its derivations (such as baichuan-7b-sft)
+    - Aquila-7B / AquilaChat-7B
 
 - Rich prompt engineering support
 
@@ -242,7 +256,7 @@ Options:
 
 - Supported [APIs](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-endpoints)
 
-  - https://<your host:port of the llama server>/completion
+  - https://`your host:port of the llama server`/completion
 
 - Supported models - All models supported by the above APIs. Note that the model in llama.cpp needs to be given when running the server itself and cannot be given at each request level.
 

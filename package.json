@@ -1,7 +1,7 @@
 {
   "name": "flexigpt",
   "displayName": "FlexiGPT",
-  "description": "Interact with GPT AI models (GPT 3.5/4, Anthropic Claude, HuggingFace Inference API, GoogleGL i.e PaLM API, etc) as a power user",
+  "description": "Interact with GPT AI models (GPT 3.5/4, Anthropic Claude, All models of HuggingFace Inference API, Bison/Gecko by GoogleGL i.e PaLM API, etc, All models from llama.cpp like LLaMA1/2, Vicuna, GPT4All, etc) as a power user",
   "version": "0.13.0",
   "publisher": "ppipada",
   "pricing": "Free",
@@ -15,20 +15,21 @@
     "vscode-insiders": "^1.74.0"
   },
   "categories": [
-    "Other"
+    "Machine Learning",
+    "Other",
+    "Programming Languages"
   ],
   "keywords": [
+    "copilot",
     "openai",
     "prompt engineering",
     "gpt-4",
     "chatgpt",
     "ai",
-    "explain",
-    "find bugs",
-    "explain ",
-    "refactor",
-    "test generate",
-    "scripts"
+    "llama",
+    "vicuna",
+    "huggingface",
+    "palm"
   ],
   "activationEvents": [
     "onStartup",
