@@ -49,6 +49,8 @@ Optimize the selected code
 ### UI behavior
 
 - Chat activity bar interface for request/response interaction
+- Use inbuilt prompts from autocomplete box or adhoc chat with AI.
+- You can use inbuilt system vars like `{selection}` or `{readfile}` to enhance your chat with AI. (Same capability as available for prompt files)
 - Load/save conversations from history
 - Export conversations to a file
 - Copy/Insert/Create new files out of GPT response.
@@ -67,6 +69,7 @@ The chat activity bar can be opened in following ways:
 ### Prompts behavior
 
 - Click the input text box to load default and configured inbuilt/custom prompts.
+- Or use system vars to enhance adhoc chat.
 - Full behavior and documentation can be found [here](/prompts).
 
 ## Search Stack Overflow

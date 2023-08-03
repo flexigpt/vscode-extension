@@ -372,6 +372,8 @@ Optimize the selected code
 ### UI behavior
 
 - Chat activity bar interface for request/response interaction
+- Use inbuilt prompts from autocomplete box or adhoc chat with AI.
+- You can use inbuilt system vars like `{selection}` or `{readfile}` to enhance your chat with AI. (Same capability as available for prompt files)
 - Load/save conversations from history
 - Export conversations to a file
 - Copy/Insert/Create new files out of GPT response.
@@ -390,6 +392,7 @@ The chat activity bar can be opened in following ways:
 ### Prompts behavior
 
 - Click the input text box to load default and configured inbuilt/custom prompts.
+- Or use system vars to enhance adhoc chat.
 - Full behavior and documentation can be found [here](/prompts).
 
 ## Search Stack Overflow
@@ -428,7 +431,10 @@ Search for stack overflow questions from your editor.
 - Supports request parameter modifications for GPT APIs
 
 - [Predefined system variables](/promptfiles#predefined-system-variables) can be used to enhance your question.
-  - E.g: you can use `{system.selection}` to pass on the selected text in the editor (code or otherwise).
+  - Examples:
+    - Use `{system.selection}` or just `{selection}` to pass on the selected text in the editor (code or otherwise).
+    - Use `{system.readfile}` or just `{readfile}` to pass on the open file
+    - Use `{system.readfile <your file path>}` to pass on the file at a given path
   - Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
 
 - Supports post-processing response via responseHandlers in prompts. Multiple inbuilt [predefined responseHandlers](/promptfiles#predefined-system-functions) available. Also supports custom responseHandlers. Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js).
@@ -442,6 +448,9 @@ Search for stack overflow questions from your editor.
 - If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
 
 - If you type a free floating question in the text box, the text itself will be used as prompt directly. You can use [predefined system variables](/promptfiles#predefined-system-variables) to enhance your free floating question too.
+  - Examples:
+    - Use `{selection}` to pass on the selected text in the editor
+    - Use `{readfile}` to pass on the open file
 
 ## Inbuilt prompts
 
@@ -569,7 +578,7 @@ module.exports = {
 - template: Required
 
   - prompt template to use for create GPT model requests (OpenAI, etc). You can use system or user defined variable in template. variables will replaced with proper value while preparing request
-  - To use system variable add `{system.*variableName*}`, variableName can be one of [Predefined System Variables](#predefined-system-variables)
+  - To use system variable add `{system.*variableName*}`, variableName can be one of [Predefined System Variables](#predefined-system-variables). You can also pass parameters to functions like readFile. E.g: `{readfile user.testFile}` is a valid template variable where input to readfile is the file pointed by the user defined variable testfile.
   - To use user variable add `{user.*variableName*}`, variableName must be in variables field in prompt file.
 
 - requestparams: optional
@@ -605,7 +614,7 @@ module.exports = {
 
 Any of the `variables` items can be used in a command template. User-defined values must have the "user" prefix. For example, if "testFileName" is defined in variables, it can be used as "user.TestFileName" in the template file or passed to a function.
 
-Variable values can be static or dynamic. For dynamic values, you should create a getter method. When calling the variable getter, system variables(see Predefined System Variables) and functions are passed as arguments, the first argument is a system variable and the second one is a function.
+Variable values can be static or dynamic. For dynamic values, you should create a getter method. When calling the variable getter, a single object with system variables (see Predefined System Variables) is passed as first argument, any other vars can be taken as next args..
 
 ```js
 module.exports = {
@@ -618,10 +627,13 @@ variables: [
     {
         //dynamic
         name: "typeNameInResponse",
-        value: ({ answer/*system variable*/ }, { extractTypeName/*user defined function*/ }) => extractTypeName({ code: answer })
+        value: ({ answer/*system variable*/ }, myTestFile/*user defined var*/ ) => {}
     },
 ]
-functions: [function extractTypeName({ code, system }) {/**/}],
+functions: [
+  function extractTypeName({ code, system }) {/**/},
+  function myOtherFunc() {},
+],
 commands: [
     {
         name: "Create DTO",
@@ -641,18 +653,21 @@ commands: [
 
 ### Predefined System Variables
 
-| Variable Name           | Description                         |
-| ----------------------- | ----------------------------------- |
-| system.selection        | Selected text in editor             |
-| system.question         | OpenAI question                     |
-| system.answer           | OpenAI answer                       |
-| system.language         | Programming language of active file |
-| system.baseFolder       | Project base path                   |
-| system.fileFolder       | Parent folder path of active file   |
-| system.fileName         | Name of active file                 |
-| system.filePath         | Full path of active file            |
-| system.fileExtension    | Extension of active file            |
-| system.commitAndTagList | Last 25 commits and associated tags |
+All vars are case-insensitive.
+
+| Variable Name           | Description                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| system.selection        | Selected text in editor                                                        |
+| system.question         | OpenAI question                                                                |
+| system.answer           | OpenAI answer                                                                  |
+| system.language         | Programming language of active file                                            |
+| system.baseFolder       | Project base path                                                              |
+| system.fileFolder       | Parent folder path of active file                                              |
+| system.fileName         | Name of active file                                                            |
+| system.filePath         | Full path of active file                                                       |
+| system.fileExtension    | Extension of active file                                                       |
+| system.commitAndTagList | Last 25 commits and associated tags                                            |
+| system.readFile         | Read the full open editor file. Optionaly pass a filepath as a second argument |
 
 Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
 
@@ -664,13 +679,11 @@ Note that the `system.` prefix for a system variable is optional. Therefore, you
 
 ### Predefined System Functions
 
-| Function Name | Description                                | params(default)                                   |
-| ------------- | ------------------------------------------ | ------------------------------------------------- |
-| append        | Append Text                                | textToAppend(system.answer),postion('end')        |
-| replace       | Replace selected text                      | textToReplace(system.answer)                      |
-| showWebView   | Show Webview                               | question(system.question),question(system.answer) |
-| writeConsole  | Write text to console                      | content(system.answer)                            |
-| writeFile     | Write text to file. Append if file exists. | filePath(),content(system.answer)                 |
+| Function Name | Description                                | params(default)                            |
+| ------------- | ------------------------------------------ | ------------------------------------------ |
+| append        | Append Text                                | textToAppend(system.answer),postion('end') |
+| replace       | Replace selected text                      | textToReplace(system.answer)               |
+| writeFile     | Write text to file. Append if file exists. | filePath(),content(system.answer)          |
 
 - Replace
 
@@ -754,9 +767,7 @@ Note that the `system.` prefix for a system variable is optional. Therefore, you
 
   - The cli string that you want to execute.
   - Note that the directory in which the command is executed is the root directory of your workspace.
-  - You can use system or user defined variable in the command. Variables will replaced with proper values while preparing request
-  - To use system variable add `{system.*variableName*}`, variableName can be one of [Predefined System Variables](#predefined-system-variables)
-  - To use user variable add `{user.*variableName*}`, variableName must be in variables field in prompt file.
+  - You can use system or user defined variable in the command as described in the features section. Variables will replaced with proper values while preparing request
 
 
 # Requirements and TODO
@@ -790,16 +801,16 @@ Note that the `system.` prefix for a system variable is optional. Therefore, you
     <td>Done</td>
   </tr>
   <tr>
-    <td>Provide common predefined functions that can be used to enhance the prompts</td>
+    <td>Provide common predefined variables that can be used to enhance the prompts</td>
     <td>Done</td>
   </tr>
   <tr>
-    <td>Provide extra prompt enhancements using custom functions. This should allow function definitions in the prompt structure and integrate the results into prompts.</td>
-    <td>Short term</td>
+    <td>Provide extra prompt enhancements using custom variables that can be static or function getters. This should allow function definitions in the prompt structure and integrate the results into prompts. Also allow passing system vars or user vars or static strings as inputs</td>
+    <td>Done</td>
   </tr>
   <tr>
     <td>Provide capability to evaluate different prompts, assign ELO ratings, choose and save the strongest</td>
-    <td>Medium term</td>
+    <td>Long term</td>
   </tr>
   <tr>
     <td rowspan="3"><strong>Seamless UI integration</strong></td>

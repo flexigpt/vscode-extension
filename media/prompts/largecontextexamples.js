@@ -19,9 +19,9 @@ module.exports = {
     },
     {
       name: "Anthropic: Find bugs and races",
-      template: `Find bugs or race conditions in the below code. List them in priority order. give your reasons for choosing priority. give code after rectifying the top priority item:
-            {system.selection}`,
-      description: "Find bugs",
+      template: `Find bugs or race conditions in the below file. List them in priority order. give your reasons for choosing priority. give code after rectifying the top priority item:
+            {system.readFile}`,
+      description: "Find bugs and races in the open file",
       requestparams: {
         model: "claude-2",
       },

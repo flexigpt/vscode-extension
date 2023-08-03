@@ -7,7 +7,10 @@
 - Supports request parameter modifications for GPT APIs
 
 - [Predefined system variables](/promptfiles#predefined-system-variables) can be used to enhance your question.
-  - E.g: you can use `{system.selection}` to pass on the selected text in the editor (code or otherwise).
+  - Examples:
+    - Use `{system.selection}` or just `{selection}` to pass on the selected text in the editor (code or otherwise).
+    - Use `{system.readfile}` or just `{readfile}` to pass on the open file
+    - Use `{system.readfile <your file path>}` to pass on the file at a given path
   - Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
 
 - Supports post-processing response via responseHandlers in prompts. Multiple inbuilt [predefined responseHandlers](/promptfiles#predefined-system-functions) available. Also supports custom responseHandlers. Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js).
@@ -21,6 +24,9 @@
 - If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
 
 - If you type a free floating question in the text box, the text itself will be used as prompt directly. You can use [predefined system variables](/promptfiles#predefined-system-variables) to enhance your free floating question too.
+  - Examples:
+    - Use `{selection}` to pass on the selected text in the editor
+    - Use `{readfile}` to pass on the open file
 
 ## Inbuilt prompts
 

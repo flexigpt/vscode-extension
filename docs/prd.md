@@ -27,16 +27,16 @@
     <td>Done</td>
   </tr>
   <tr>
-    <td>Provide common predefined functions that can be used to enhance the prompts</td>
+    <td>Provide common predefined variables that can be used to enhance the prompts</td>
     <td>Done</td>
   </tr>
   <tr>
-    <td>Provide extra prompt enhancements using custom functions. This should allow function definitions in the prompt structure and integrate the results into prompts.</td>
-    <td>Short term</td>
+    <td>Provide extra prompt enhancements using custom variables that can be static or function getters. This should allow function definitions in the prompt structure and integrate the results into prompts. Also allow passing system vars or user vars or static strings as inputs</td>
+    <td>Done</td>
   </tr>
   <tr>
     <td>Provide capability to evaluate different prompts, assign ELO ratings, choose and save the strongest</td>
-    <td>Medium term</td>
+    <td>Long term</td>
   </tr>
   <tr>
     <td rowspan="3"><strong>Seamless UI integration</strong></td>
