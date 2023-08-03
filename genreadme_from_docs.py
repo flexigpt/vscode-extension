@@ -34,7 +34,7 @@ def generate_github_toc(md_text, max_priority=3, toc_title='# Table of Contents'
     highest_priority = min(header_priority_pairs, key=lambda pair: pair[1])[1]
     for header, priority in header_priority_pairs:
         md_anchor = create_github_header_anchor(header)
-        bullet_list.append('\t' * (priority - highest_priority) + '* ' + md_anchor)
+        bullet_list.append('\t' * (priority - highest_priority) + '- ' + md_anchor)
 
     return '\n'.join(bullet_list)
 
