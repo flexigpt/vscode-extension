@@ -1,7 +1,42 @@
 import sys
 import os
-import mdformat
+import re
 
+def sequentialize_header_priorities(header_priority_pairs):
+    for i in range(len(header_priority_pairs) - 1):
+        header, priority = header_priority_pairs[i]
+        next_header, next_priority = header_priority_pairs[i + 1]
+        if (next_priority - priority > 1):
+            header_priority_pairs[i + 1] = (next_header, priority + 1)
+    return header_priority_pairs
+
+def create_github_header_anchor(header_title):
+    return '[{}](#{})'.format(header_title, header_title.strip().replace(' ', '-'))
+
+def generate_github_toc(md_text, max_priority=3, toc_title='# Table of Contents'):
+    lines_iter = iter(md_text.splitlines())
+    header_priority_pairs = []
+    in_code_block = False
+    for line in lines_iter:
+        if line.startswith('```'):
+            in_code_block = not in_code_block
+        elif not in_code_block and line.startswith('#') and ' ' in line:
+            md_header, header_title = line.split(' ', 1)
+            if md_header != md_header[0] * len(md_header) or len(md_header) > max_priority:
+                continue
+            if header_title.lower() != 'table of contents' and len(header_title) > 1:
+                header_priority_pairs.append((header_title, len(md_header)))
+
+    header_priority_pairs = sequentialize_header_priorities(header_priority_pairs)
+    if len(header_priority_pairs) == 0:
+        return None
+    bullet_list = [toc_title, '']  # Added a blank line after toc_title
+    highest_priority = min(header_priority_pairs, key=lambda pair: pair[1])[1]
+    for header, priority in header_priority_pairs:
+        md_anchor = create_github_header_anchor(header)
+        bullet_list.append('\t' * (priority - highest_priority) + '* ' + md_anchor)
+
+    return '\n'.join(bullet_list)
 
 def read_file(file_path):
     with open(file_path, 'r') as file:
@@ -56,8 +91,9 @@ def merge_files(input_file_path, destination_file_path):
                 marker_found = True
                 destination_content += line + '\n'
                 newout = process_input_file(input_file_path)
-                # destination_content += mdformat.text(newout, options={"wrap": 1024}) + '\n'
-                destination_content += newout + '\n'
+                
+                toc = generate_github_toc(newout)
+                destination_content += toc + '\n\n' + newout + '\n'
             
             if marker_found:
                 break
@@ -70,6 +106,7 @@ def merge_files(input_file_path, destination_file_path):
 if __name__ == '__main__':
     # Example usage
     if len(sys.argv) < 3:
+        # python3 ./genreadme_from_docs.py ./docs/_sidebar.md ./README.md   
         print("Usage: python script.py <input_file_path> <destination_file_path>")
     else:
         input_path = sys.argv[1]
