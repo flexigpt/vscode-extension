@@ -4,7 +4,7 @@
 - [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
 - [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
 
-## Simple javascript (.js) prompt file
+## Simple javascript prompt file
 
 ```js
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
 };
 ```
 
-## Complex javascript (.js) prompt file
+## Complex javascript prompt file
 
 ```js
 module.exports = {

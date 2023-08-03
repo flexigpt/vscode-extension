@@ -7,53 +7,53 @@
 
 # Table of Contents
 
-- [Introduction](#Introduction)
-- [Getting started](#Getting-started)
-	- [Installation](#Installation)
-	- [Configuration](#Configuration)
-		- [FlexiGPT level configuration](#FlexiGPT-level-configuration)
-		- [Sample Full configuration](#Sample-Full-configuration)
-- [AI Providers](#AI-Providers)
-	- [OpenAI](#OpenAI)
-	- [Anthropic (Claude)](#Anthropic-(Claude))
-	- [Huggingface](#Huggingface)
-	- [Google generative language (PaLM API)](#Google-generative-language-(PaLM-API))
-	- [LLaMA.cpp](#LLaMA.cpp)
-- [Features](#Features)
-	- [Get Code](#Get-Code)
-	- [Inbuilt Prompts](#Inbuilt-Prompts)
-		- [Refactor selection](#Refactor-selection)
-		- [Generate unit test](#Generate-unit-test)
-		- [Complete](#Complete)
-		- [Explain code](#Explain-code)
-		- [Generate Documentation](#Generate-Documentation)
-		- [Find problems](#Find-problems)
-		- [Optimize selection](#Optimize-selection)
-	- [Chat](#Chat)
-		- [UI behavior](#UI-behavior)
-		- [Invocation](#Invocation)
-		- [Prompts behavior](#Prompts-behavior)
-	- [Search Stack Overflow](#Search-Stack-Overflow)
-	- [Run Custom CLIs from within editor](#Run-Custom-CLIs-from-within-editor)
-- [Prompting](#Prompting)
-	- [Prompting](#Prompting)
-		- [Features](#Features)
-		- [UI behavior](#UI-behavior)
-	- [Inbuilt prompts](#Inbuilt-prompts)
-- [Prompt files format](#Prompt-files-format)
-	- [Sample prompt files in repo](#Sample-prompt-files-in-repo)
-	- [Simple javascript (.js) prompt file](#Simple-javascript-(.js)-prompt-file)
-	- [Complex javascript (.js) prompt file](#Complex-javascript-(.js)-prompt-file)
-	- [Creating Command](#Creating-Command)
-	- [Creating Variables](#Creating-Variables)
-		- [Predefined System Variables](#Predefined-System-Variables)
-	- [Creating Functions](#Creating-Functions)
-		- [Predefined System Functions](#Predefined-System-Functions)
-	- [Creating CLI Commands](#Creating-CLI-Commands)
-- [Requirements and TODO](#Requirements-and-TODO)
-- [License](#License)
-- [Contributions](#Contributions)
-- [Support](#Support)
+- [Introduction](#introduction)
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+    - [FlexiGPT level configuration](#flexigpt-level-configuration)
+    - [Sample Full configuration](#sample-full-configuration)
+- [AI Providers](#ai-providers)
+  - [OpenAI](#openai)
+  - [Anthropic Claude](#anthropic-claude)
+  - [Huggingface](#huggingface)
+  - [Google generative language - PaLM API](#google-generative-language---palm-api)
+  - [LLaMA cpp](#llama-cpp)
+- [Features](#features)
+  - [Get Code](#get-code)
+  - [Inbuilt Prompts](#inbuilt-prompts)
+    - [Refactor selection](#refactor-selection)
+    - [Generate unit test](#generate-unit-test)
+    - [Complete](#complete)
+    - [Explain code](#explain-code)
+    - [Generate Documentation](#generate-documentation)
+    - [Find problems](#find-problems)
+    - [Optimize selection](#optimize-selection)
+  - [Chat](#chat)
+    - [UI behavior](#ui-behavior)
+    - [Invocation](#invocation)
+    - [Prompts behavior](#prompts-behavior)
+  - [Search Stack Overflow](#search-stack-overflow)
+  - [Run Custom CLIs from within editor](#run-custom-clis-from-within-editor)
+- [Prompting](#prompting)
+  - [Prompting](#prompting)
+    - [Features](#features)
+    - [UI behavior](#ui-behavior)
+  - [Inbuilt prompts](#inbuilt-prompts)
+- [Prompt files format](#prompt-files-format)
+  - [Sample prompt files in repo](#sample-prompt-files-in-repo)
+  - [Simple javascript prompt file](#simple-javascript-prompt-file)
+  - [Complex javascript prompt file](#complex-javascript-prompt-file)
+  - [Creating Command](#creating-command)
+  - [Creating Variables](#creating-variables)
+    - [Predefined System Variables](#predefined-system-variables)
+  - [Creating Functions](#creating-functions)
+    - [Predefined System Functions](#predefined-system-functions)
+  - [Creating CLI Commands](#creating-cli-commands)
+- [Requirements and TODO](#requirements-and-todo)
+- [License](#license)
+- [Contributions](#contributions)
+- [Support](#support)
 
 # Introduction
 
@@ -218,7 +218,7 @@ Options:
   - flexigpt.openai.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://api.openai.com`.
 
-## Anthropic (Claude)
+## Anthropic Claude
 
 - Anthropic provider requires an API key to function. You can obtain one from the Anthropic website [here](https://docs.anthropic.com/claude/docs/getting-access-to-claude).
 
@@ -270,7 +270,7 @@ Options:
   - flexigpt.huggingface.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://api-inference.huggingface.co`.
 
-## Google generative language (PaLM API)
+## Google generative language - PaLM API
 
 - Googlegl provider requires an API key to function. You can obtain one from the website [here](https://developers.generativeai.google/tutorials/setup).
 
@@ -299,7 +299,7 @@ Options:
   - flexigpt.googlegl.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://generativelanguage.googleapis.com`.
 
-## LLaMA.cpp
+## LLaMA cpp
 
 - Setup a llama.cpp server as noted [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server)
   - If you are running a python openai compatible server as described [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-like-oai), you can use the openai provider with modified default origin for talking to llama.cpp too.
@@ -472,7 +472,7 @@ Search for stack overflow questions from your editor.
 - [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
 - [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
 
-## Simple javascript (.js) prompt file
+## Simple javascript prompt file
 
 ```js
 module.exports = {
@@ -488,7 +488,7 @@ module.exports = {
 };
 ```
 
-## Complex javascript (.js) prompt file
+## Complex javascript prompt file
 
 ```js
 module.exports = {

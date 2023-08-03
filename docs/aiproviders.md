@@ -30,7 +30,7 @@
   - flexigpt.openai.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://api.openai.com`.
 
-## Anthropic (Claude)
+## Anthropic Claude
 
 - Anthropic provider requires an API key to function. You can obtain one from the Anthropic website [here](https://docs.anthropic.com/claude/docs/getting-access-to-claude).
 
@@ -82,7 +82,7 @@
   - flexigpt.huggingface.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://api-inference.huggingface.co`.
 
-## Google generative language (PaLM API)
+## Google generative language - PaLM API
 
 - Googlegl provider requires an API key to function. You can obtain one from the website [here](https://developers.generativeai.google/tutorials/setup).
 
@@ -111,7 +111,7 @@
   - flexigpt.googlegl.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://generativelanguage.googleapis.com`.
 
-## LLaMA.cpp
+## LLaMA cpp
 
 - Setup a llama.cpp server as noted [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server)
   - If you are running a python openai compatible server as described [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-like-oai), you can use the openai provider with modified default origin for talking to llama.cpp too.
