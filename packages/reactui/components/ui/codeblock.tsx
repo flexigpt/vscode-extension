@@ -1,25 +1,28 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 
-
 import { FC, memo } from 'react';
 import * as React from 'react';
 
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { coldarkDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coldarkDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
-import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard'
-import { IconCheck, IconCopy, IconDownload } from '@/reactui/components/ui/icons'
+import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard';
+import {
+  IconCheck,
+  IconCopy,
+  IconDownload
+} from '@/reactui/components/ui/icons';
 
-import { Button } from '@/reactui/components/ui/button'
+import { Button } from '@nextui-org/react';
 
 interface Props {
-  language: string
-  value: string
+  language: string;
+  value: string;
 }
 
 interface languageMap {
-  [key: string]: string | undefined
+  [key: string]: string | undefined;
 }
 
 export const programmingLanguages: languageMap = {
@@ -47,52 +50,52 @@ export const programmingLanguages: languageMap = {
   html: '.html',
   css: '.css'
   // add more file extensions here, make sure the key is same as language prop in CodeBlock.tsx component
-}
+};
 
 export const generateRandomString = (length: number, lowercase = false) => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXY3456789' // excluding similar looking characters like Z, 2, I, 1, O, 0
-  let result = ''
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXY3456789'; // excluding similar looking characters like Z, 2, I, 1, O, 0
+  let result = '';
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return lowercase ? result.toLowerCase() : result
-}
+  return lowercase ? result.toLowerCase() : result;
+};
 
 const CodeBlock: FC<Props> = memo(({ language, value }) => {
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 });
 
   const downloadAsFile = () => {
     if (typeof window === 'undefined') {
-      return
+      return;
     }
-    const fileExtension = programmingLanguages[language] || '.file'
+    const fileExtension = programmingLanguages[language] || '.file';
     const suggestedFileName = `file-${generateRandomString(
       3,
       true
-    )}${fileExtension}`
-    const fileName = window.prompt('Enter file name' || '', suggestedFileName)
+    )}${fileExtension}`;
+    const fileName = window.prompt('Enter file name' || '', suggestedFileName);
 
     if (!fileName) {
       // User pressed cancel on prompt.
-      return
+      return;
     }
 
-    const blob = new Blob([value], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.download = fileName
-    link.href = url
-    link.style.display = 'none'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }
+    const blob = new Blob([value], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = url;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const onCopy = () => {
-    if (isCopied) return
-    copyToClipboard(value)
-  }
+    if (isCopied) return;
+    copyToClipboard(value);
+  };
 
   return (
     <div className="relative w-full font-sans codeblock bg-zinc-950">
@@ -103,14 +106,14 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
             variant="ghost"
             className="hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
             onClick={downloadAsFile}
-            size="icon"
+            size="sm"
           >
             <IconDownload />
             <span className="sr-only">Download</span>
           </Button>
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             className="text-xs hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
             onClick={onCopy}
           >
@@ -140,8 +143,8 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
         {value}
       </SyntaxHighlighter>
     </div>
-  )
-})
-CodeBlock.displayName = 'CodeBlock'
+  );
+});
+CodeBlock.displayName = 'CodeBlock';
 
-export { CodeBlock }
+export { CodeBlock };

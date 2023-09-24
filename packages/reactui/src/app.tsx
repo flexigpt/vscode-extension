@@ -1,27 +1,20 @@
-// App.tsx
 import React from 'react';
-import { Toaster } from 'react-hot-toast';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { nanoid } from 'nanoid';
-import { Chat } from '@/reactui/components/chat';
-import { Providers } from '@/reactui/components/providers';
-import { Header } from '@/reactui/components/header';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const App = () => {
+import { Toaster } from 'react-hot-toast';
+import { FlexiNavbar } from '@/reactui/components/navbar';
+import { Chat } from '@/reactui/components/chat';
+import { TailwindIndicator } from '@/reactui/components/tailwind-indicator';
+import { nanoid } from '@/reactui/lib/utils';
+
+function App() {
   return (
-    <>
+    <div className="app">
       <Toaster />
-      <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex flex-col min-h-screen">
-            <main className="flex flex-col flex-1 bg-muted/50">
-                <Chat id={nanoid()} />
-              {/* Add more Routes here as needed */}
-            </main>
-          </div>
-      </Providers>
-    </>
+      <FlexiNavbar />
+      {/* <Chat id={nanoid()} /> */}
+      <TailwindIndicator />
+    </div>
   );
-};
+}
 
 export default App;

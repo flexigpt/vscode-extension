@@ -1,5 +1,14 @@
 {
     "root": true,
+    "env": {
+        "browser": false,
+        "es6": true,
+        "node": true
+    },
+    "globals": {
+        "require": true,
+        "process": true
+    },
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended"
@@ -24,5 +33,14 @@
         "out",
         "dist",
         "**/*.d.ts"
-    ]
+    ],
+    "overrides": [
+        {
+            "files": ["*.js"],
+            "parser": "espree", // default ESLint parser for JavaScript
+            "rules": {
+                "@typescript-eslint/no-var-requires": "off"
+            }
+        }
+    ]    
 }

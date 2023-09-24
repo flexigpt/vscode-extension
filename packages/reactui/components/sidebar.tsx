@@ -1,36 +1,91 @@
+import React from 'react';
 
-
-import * as React from 'react'
-
-import { Button } from '@/reactui/components/ui/button'
+import { Accordion, AccordionItem } from '@nextui-org/accordion';
+import { Button } from '@nextui-org/button';
+import { IconMenu, IconFlexiGPT } from '@/reactui/components/ui/icons';
+import { ChatList } from '@/reactui/components/chat-list';
 import {
   Sheet,
+  SheetBody,
   SheetContent,
+  SheetFooter,
   SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from '@/reactui/components/ui/sheet'
-import { IconSidebar } from '@/reactui/components/ui/icons'
+  useDisclosure
+} from '@/reactui/components/ui/sheet';
 
-export interface SidebarProps {
-  children?: React.ReactNode
-}
+export function Sidebar() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-export function Sidebar({ children }: SidebarProps) {
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" className="-ml-2 h-9 w-9 p-0">
-          <IconSidebar className="h-6 w-6" />
-          <span className="sr-only">Toggle Sidebar</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="inset-y-0 flex h-auto w-[300px] flex-col p-0">
-        <SheetHeader className="p-4">
-          <SheetTitle className="text-sm">Chat History</SheetTitle>
-        </SheetHeader>
-        {children}
-      </SheetContent>
-    </Sheet>
-  )
+    <>
+      <Button isIconOnly onPress={onOpen} variant="light">
+        <IconMenu />
+      </Button>
+      <Sheet
+        backdrop="opaque"
+        placement="left"
+        size="sm"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
+        <SheetContent>
+          {onClose => (
+            <>
+              <SheetHeader className="justify-center">
+                <IconFlexiGPT className="w-8 h-8 mt-3 mr-2" />
+                <p className="mt-1 font-bold">FlexiGPT</p>
+              </SheetHeader>
+              <SheetBody>
+                <Accordion variant="light">
+                  <AccordionItem
+                    key="1"
+                    aria-label="Conversations"
+                    title="Conversations"
+                  >
+                    <ChatList messages={[]} />
+                  </AccordionItem>
+                </Accordion>
+                <Accordion variant="light">
+                  <AccordionItem
+                    key="2"
+                    aria-label="Prompts"
+                    title="Prompts"
+                  ></AccordionItem>
+                </Accordion>
+                <Accordion variant="light">
+                  <AccordionItem
+                    key="3"
+                    aria-label="CLIs"
+                    title="CLIs"
+                  ></AccordionItem>
+                </Accordion>
+                <Accordion variant="light">
+                  <AccordionItem
+                    key="3"
+                    aria-label="Variables"
+                    title="Variables"
+                  ></AccordionItem>
+                </Accordion>
+                <Accordion variant="light">
+                  <AccordionItem
+                    key="4"
+                    aria-label="Settings"
+                    title="Settings"
+                  ></AccordionItem>
+                </Accordion>
+              </SheetBody>
+              <SheetFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Action
+                </Button>
+              </SheetFooter>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+    </>
+  );
 }

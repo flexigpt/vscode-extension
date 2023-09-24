@@ -1,16 +1,14 @@
-
-
-import {IMessage as Message} from "@/spec/chat"
+import { IMessage as Message } from '@/spec/chat';
 
 import * as React from 'react';
 
-import { Button } from '@/reactui/components/ui/button'
-import { IconCheck, IconCopy } from '@/reactui/components/ui/icons'
-import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard'
-import { cn } from '@/reactui/lib/utils'
+import { Button } from '@nextui-org/button';
+import { IconCheck, IconCopy } from '@/reactui/components/ui/icons';
+import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard';
+import { cn } from '@/reactui/lib/utils';
 
 interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
-  message: Message
+  message: Message;
 }
 
 export function ChatMessageActions({
@@ -18,12 +16,12 @@ export function ChatMessageActions({
   className,
   ...props
 }: ChatMessageActionsProps) {
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 });
 
   const onCopy = () => {
-    if (isCopied) return
-    copyToClipboard(message.content)
-  }
+    if (isCopied) return;
+    copyToClipboard(message.content);
+  };
 
   return (
     <div
@@ -33,10 +31,10 @@ export function ChatMessageActions({
       )}
       {...props}
     >
-      <Button variant="ghost" size="icon" onClick={onCopy}>
+      <Button variant="ghost" size="sm" onClick={onCopy}>
         {isCopied ? <IconCheck /> : <IconCopy />}
         <span className="sr-only">Copy message</span>
       </Button>
     </div>
-  )
+  );
 }

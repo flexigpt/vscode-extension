@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { type UseChatHelpers } from 'ai/react'
+import { type UseChatHelpers } from 'ai/react';
 
-import { Button } from '@/reactui/components/ui/button'
-import { PromptForm } from '@/reactui/components/prompt-form'
-import { ButtonScrollToBottom } from '@/reactui/components/button-scroll-to-bottom'
-import { IconRefresh, IconStop } from '@/reactui/components/ui/icons'
-import { FooterText } from '@/reactui/components/footer'
+import { Button } from '@nextui-org/button';
+// import { PromptForm } from '@/reactui/components/prompt-form';
+import { ButtonScrollToBottom } from '@/reactui/components/button-scroll-to-bottom';
+import { IconRefresh, IconStop } from '@/reactui/components/ui/icons';
+import { FooterText } from '@/reactui/components/footer';
 
 export interface ChatPanelProps
   extends Pick<
@@ -18,7 +18,7 @@ export interface ChatPanelProps
     | 'input'
     | 'setInput'
   > {
-  id?: string
+  id?: string;
 }
 
 export function ChatPanel({
@@ -38,7 +38,7 @@ export function ChatPanel({
         <div className="flex h-10 items-center justify-center">
           {isLoading ? (
             <Button
-              variant="outline"
+              variant="bordered"
               onClick={() => stop()}
               className="bg-background"
             >
@@ -48,7 +48,7 @@ export function ChatPanel({
           ) : (
             messages?.length > 0 && (
               <Button
-                variant="outline"
+                variant="bordered"
                 onClick={() => reload()}
                 className="bg-background"
               >
@@ -59,21 +59,21 @@ export function ChatPanel({
           )}
         </div>
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <PromptForm
+          {/* <PromptForm
             onSubmit={async value => {
               await append({
                 id,
                 content: value,
                 role: 'user'
-              })
+              });
             }}
             input={input}
             setInput={setInput}
             isLoading={isLoading}
-          />
+          /> */}
           <FooterText className="hidden sm:block" />
         </div>
       </div>
     </div>
-  )
+  );
 }

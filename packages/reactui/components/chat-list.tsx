@@ -1,30 +1,54 @@
 import * as React from 'react';
+import { Listbox, ListboxItem } from '@nextui-org/listbox';
 
+import { IMessage as Message } from '@/spec/chat';
 
-import {IMessage as Message} from "@/spec/chat"
+import { ChatMessage } from '@/reactui/components/chat-message';
 
-import { Separator } from '@/reactui/components/ui/separator'
-import { ChatMessage } from '@/reactui/components/chat-message'
-
-export interface ChatList {
-  messages: Message[]
+export interface ChatListItems {
+  messages: Message[];
 }
 
-export function ChatList({ messages }: ChatList) {
-  if (!messages.length) {
-    return null
+export function ChatList({ messages }: ChatListItems) {
+  type DropdownItemType = {
+    key: string;
+    label: string;
+    index: number;
+  };
+  const items: DropdownItemType[] = [
+    {
+      key: 'new',
+      label: 'New file',
+      index: 0
+    },
+    {
+      key: 'copy',
+      label: 'Copy link',
+      index: 1
+    },
+    {
+      key: 'edit',
+      label: 'Edit file',
+      index: 2
+    },
+    {
+      key: 'delete',
+      label: 'Delete file',
+      index: 3
+    }
+  ];
+
+  if (!items.length) {
+    return null;
   }
 
   return (
-    <div className="relative mx-auto max-w-2xl px-4">
-      {messages.map((message, index) => (
-        <div key={index}>
-          <ChatMessage message={message} />
-          {index < messages.length - 1 && (
-            <Separator className="my-4 md:my-8" />
-          )}
-        </div>
-      ))}
-    </div>
-  )
+    <Listbox
+      items={items}
+      aria-label="Conversation selector"
+      onAction={key => alert(key)}
+    >
+      {item => <ListboxItem key={item.key}>{item.label}</ListboxItem>}
+    </Listbox>
+  );
 }

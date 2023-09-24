@@ -1,10 +1,17 @@
-// index.tsx
+// src/main.jsx
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
+import { NextUIProvider } from '@nextui-org/react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import App from './app';
-import '@/reactui/globals/globals.css'; // You'll have to manually import the global CSS 
+import '@/reactui/globals/globals.css';
 
-ReactDOM.render(
-    <App />,
-  document.getElementById('root')
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <NextUIProvider>
+      <NextThemesProvider attribute="class" enableSystem>
+        <App />
+      </NextThemesProvider>
+    </NextUIProvider>
+  </React.StrictMode>
 );

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { UseChatHelpers } from 'ai/react'
+import { UseChatHelpers } from 'ai/react';
 
-import { Button } from '@/reactui/components/ui/button'
-import { ExternalLink } from '@/reactui/components/external-link'
-import { IconArrowRight } from '@/reactui/components/ui/icons'
+import { Button } from '@nextui-org/button';
+import { Link } from '@nextui-org/link';
+import { IconArrowRight } from '@/reactui/components/ui/icons';
 
 const exampleMessages = [
   {
@@ -18,7 +18,7 @@ const exampleMessages = [
     heading: 'Draft an email',
     message: `Draft an email to my boss about the following: \n`
   }
-]
+];
 
 export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
   return (
@@ -29,11 +29,8 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
           This is an open source AI chatbot app template built with{' '}
-          <ExternalLink href="https://nextjs.org">Next.js</ExternalLink> and{' '}
-          <ExternalLink href="https://vercel.com/storage/kv">
-            Vercel KV
-          </ExternalLink>
-          .
+          <Link href="https://nextjs.org">Next.js</Link> and{' '}
+          <Link href="https://vercel.com/storage/kv">Vercel KV</Link>.
         </p>
         <p className="leading-normal text-muted-foreground">
           You can start a conversation here or try the following examples:
@@ -42,7 +39,7 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
           {exampleMessages.map((message, index) => (
             <Button
               key={index}
-              variant="link"
+              variant="light"
               className="h-auto p-0 text-base"
               onClick={() => setInput(message.message)}
             >
@@ -53,5 +50,5 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
         </div>
       </div>
     </div>
-  )
+  );
 }

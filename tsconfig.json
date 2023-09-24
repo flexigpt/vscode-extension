@@ -3,10 +3,10 @@
   "compilerOptions": {
     "rootDirs": ["src", "packages/*"],
     "sourceMap": true,
-    "target": "ES2020",
+    "target": "ES2021",
     "module": "commonjs",
     "lib": [
-      "ES2020",
+      "ES2021",
       "DOM"
     ],
     "paths": {
