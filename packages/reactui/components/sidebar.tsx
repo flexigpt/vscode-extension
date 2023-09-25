@@ -32,7 +32,7 @@ export function Sidebar() {
           {onClose => (
             <>
               <SheetHeader className="justify-center">
-                <IconFlexiGPT className="w-8 h-8 mt-3 mr-2" />
+                <IconFlexiGPT className="w-8 h-8 mr-2" />
                 <p className="mt-1 font-bold">FlexiGPT</p>
               </SheetHeader>
               <SheetBody>

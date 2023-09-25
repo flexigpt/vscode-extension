@@ -458,10 +458,11 @@ function IconChevronUpDown({
 }
 
 function IconFlexiGPT({ className, ...props }: React.ComponentProps<'img'>) {
+  const iconPath = (window as any).__ICON_PATHS__.icon36x36;
   return (
     <div>
       <img
-        src="/icons/favicon-color-36x36.png"
+        src={iconPath}
         alt="FlexiGPT"
         className={cn('h-9 w-9', className)}
         {...props}
@@ -469,6 +470,7 @@ function IconFlexiGPT({ className, ...props }: React.ComponentProps<'img'>) {
     </div>
   );
 }
+
 
 // eslint-disable-next-line no-unused-vars
 function IconMenu({ className, ...props }: React.ComponentProps<'svg'>) {

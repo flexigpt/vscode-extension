@@ -287,15 +287,15 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     };
 
     // set the HTML for the webview
-    // webviewView.webview.html = getWebviewHtmlReact(
-    //   webviewView.webview,
-    //   this._extensionUri
-    // );
-
-    webviewView.webview.html = getWebviewHtml(
+    webviewView.webview.html = getWebviewHtmlReact(
       webviewView.webview,
       this._extensionUri
     );
+
+    // webviewView.webview.html = getWebviewHtml(
+    //   webviewView.webview,
+    //   this._extensionUri
+    // );
 
     webviewView.webview.onDidReceiveMessage(async data => {
       switch (data.type) {
