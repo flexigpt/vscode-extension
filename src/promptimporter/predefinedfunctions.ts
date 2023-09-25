@@ -6,5 +6,6 @@ export const preDefinedFunctions = [
     new FunctionWrapper("replace", replace),
     new FunctionWrapper("writeFile", writeFile),
     new FunctionWrapper("readFile", readFile),
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     new FunctionWrapper("noop", function noop() {}),
   ];

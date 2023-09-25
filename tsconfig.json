@@ -1,22 +1,35 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDirs": ["src", "packages/*"],
+    "rootDirs": ["src"],
     "sourceMap": true,
-    "target": "ES2021",
+    "target": "ES2020",
     "module": "commonjs",
     "lib": [
-      "ES2021",
+      "ES2020",
       "DOM"
     ],
     "paths": {
       "@/*": ["packages/*"]
     },
     "baseUrl": "./",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "outDir": "out",
+    "declaration": true,
+    "strict": true
   },
   "exclude": [
     "node_modules",
-    ".vscode-test"
+    ".vscode-test",
+    "**/node_modules",
+    "**/dist",
+    "**/out"
   ],
-  "strict": true
+  "include": [
+    "./**/*.ts", // Include your source files
+    "./**/*.js",
+    "./**/*.tsx",
+    "./test/**/*.ts" // Include your test files
+  ]
 }

@@ -9,13 +9,13 @@ import {
 import { AxiosRequestConfig } from "axios";
 
 export class AnthropicAPI extends GptAPI implements CompletionProvider {
-  #timeout: BigInt;
+  #timeout: number;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
 
   constructor(
     apiKey: string,
-    timeout: BigInt,
+    timeout: number,
     defaultCompletionModel: string,
     defaultChatCompletionModel: string,
     origin: string,
@@ -101,14 +101,13 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       stop_sequences: stoparg,
       metadata: metadata,
     };
-    const requestConfig: AxiosRequestConfig = {
+    // eslint-disable-next-line prefer-const
+    let requestConfig: AxiosRequestConfig = {
       url: "/v1/complete",
       method: "POST",
       data: request,
     };
-    try {
       const data = await this.request(requestConfig);
-      let fullResponse = data;
       if (typeof data !== "object" || data === null) {
         throw new Error("Invalid data response. Expected an object.");
       }
@@ -116,10 +115,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       if ("completion" in data) {
         respText = data.completion as string;
       }
-      return { fullResponse: fullResponse, data: respText };
-    } catch (error) {
-      throw error;
-    }
+      return { fullResponse: data, data: respText };
   }
 
   public checkAndPopulateCompletionParams(
@@ -140,7 +136,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     }
     inputParams.stop = stoparg;
 
-    let completionRequest: CompletionRequest = {
+    const completionRequest: CompletionRequest = {
       model: (inputParams?.model as string) || this.defaultCompletionModel,
       prompt: prompt,
       messages: messages,
@@ -153,7 +149,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     };
 
     if (completionRequest.prompt) {
-      let message: ChatCompletionRequestMessage = {
+      const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
         content: completionRequest.prompt,
       };
@@ -168,7 +164,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       if (completionRequest.maxTokens) {
         filterTokens = completionRequest.maxTokens;
       }
-      let messages = filterMessagesByTokenCount(
+      const messages = filterMessagesByTokenCount(
         completionRequest.messages,
         filterTokens
       );

@@ -12,8 +12,7 @@
     "build": "webpack --config webpack.config.js --mode=production",
     "start": "rollup -c -w",
     "prepare": "npm run build",
-    "clean": "rimraf dist",
-    "test": "jest"
+    "clean": "rimraf dist"
   },
   "keywords": [],
   "author": "Pankaj Pipada",
@@ -28,7 +27,9 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.5.2",
+    "react-markdown": "^8.0.7",
     "react-syntax-highlighter": "^15.5.0",
+    "react-textarea-autosize": "^8.5.3",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "tailwind-merge": "^1.14.0",
@@ -36,6 +37,8 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/react-dom": "^18.2.7",
+    "@types/react-syntax-highlighter": "^15.5.7",
     "autoprefixer": "^10.4.16",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
@@ -43,6 +46,7 @@
     "mini-css-extract-plugin": "^2.7.6",
     "postcss": "^8.4.30",
     "postcss-loader": "^7.3.3",
+    "style-loader": "^3.3.3",
     "tailwindcss": "^3.3.3",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",

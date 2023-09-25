@@ -1,16 +1,16 @@
-import * as vscode from "vscode";
-import * as path from "path";
-import * as cp from "child_process";
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
-import * as fsPromises from "fs/promises";
-import log from "../logger/log";
+import * as fsPromises from 'fs/promises';
+import log from '../logger/log';
 
 export function replace(newValue: string) {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     const selection = editor.selection;
-    editor.edit((editBuilder) => {
+    editor.edit(editBuilder => {
       editBuilder.replace(selection, newValue);
     });
   }
@@ -18,10 +18,10 @@ export function replace(newValue: string) {
 
 export function getSelectedText(): string {
   let activeEditor = vscode.window.activeTextEditor;
-  if (activeEditor && activeEditor.document.uri.scheme !== "file") {
+  if (activeEditor && activeEditor.document.uri.scheme !== 'file') {
     const editors = vscode.window.visibleTextEditors;
     for (const ed of editors) {
-      if (ed.document.uri.scheme === "file") {
+      if (ed.document.uri.scheme === 'file') {
         activeEditor = ed;
         break;
       }
@@ -33,26 +33,26 @@ export function getSelectedText(): string {
     const selectedText = document.getText(selection);
     return selectedText;
   }
-  return "";
+  return '';
 }
 
 export function getBaseFolder(): string {
   if (vscode.workspace.workspaceFolders !== undefined) {
     const workspaceFolder = vscode.workspace.workspaceFolders[0]?.uri.fsPath;
-    return workspaceFolder || "";
+    return workspaceFolder || '';
   }
-  return "";
+  return '';
 }
 
 export function getActiveDocument(): vscode.TextDocument | undefined {
   const activeEditor = vscode.window.activeTextEditor;
-  if (activeEditor && activeEditor.document.uri.scheme === "file") {
+  if (activeEditor && activeEditor.document.uri.scheme === 'file') {
     return activeEditor.document;
   }
 
   const editors = vscode.window.visibleTextEditors;
   for (const editor of editors) {
-    if (editor.document.uri.scheme === "file") {
+    if (editor.document.uri.scheme === 'file') {
       return editor.document;
     }
   }
@@ -61,41 +61,41 @@ export function getActiveDocument(): vscode.TextDocument | undefined {
 }
 
 export function getActiveDocumentLanguageID(): string {
-  let doc = getActiveDocument();
+  const doc = getActiveDocument();
   if (doc) {
     return doc.languageId;
   }
-  return "";
+  return '';
 }
 
 export function getActiveDocumentFilePath(): string {
-  let doc = getActiveDocument();
+  const doc = getActiveDocument();
   if (doc) {
     return doc.fileName;
   }
-  return "";
+  return '';
 }
 
 export function getActiveDocumentExtension(): string {
-  let fname = getActiveDocument()?.fileName;
+  const fname = getActiveDocument()?.fileName;
   if (fname) {
     const pathInfo = path.parse(fname);
     return pathInfo.ext;
   }
-  return "";
+  return '';
 }
 
 export function getActiveDocumentFileFolder(): string {
-  let fname = getActiveDocument()?.fileName;
+  const fname = getActiveDocument()?.fileName;
   if (fname) {
     const pathInfo = path.parse(fname);
     return pathInfo.dir;
   }
-  return "";
+  return '';
 }
 
 export function getActiveFileName(): string | undefined {
-  let fname = getActiveDocument()?.fileName;
+  const fname = getActiveDocument()?.fileName;
   if (fname) {
     const pathInfo = path.parse(fname);
     return pathInfo.name;
@@ -105,14 +105,14 @@ export function getActiveFileName(): string | undefined {
 export function getWorkspaceRoot(): string | undefined {
   const activeEditor = vscode.window.activeTextEditor;
   if (!activeEditor) {
-    throw new Error("No open editors.");
+    throw new Error('No open editors.');
   }
 
   const rootPath = vscode.workspace.getWorkspaceFolder(
     activeEditor.document.uri
   )?.uri.fsPath;
   if (!rootPath) {
-    throw new Error("No workspace folder open.");
+    throw new Error('No workspace folder open.');
   }
   // log.info(`Got rootpath: ${rootPath}`);
   // const gitPath = path.join(rootPath, ".git");
@@ -129,9 +129,9 @@ export function append(newValue: string, position: string) {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     const insert =
-      position === "end" ? editor.selection.end : editor.selection.start;
+      position === 'end' ? editor.selection.end : editor.selection.start;
 
-    editor.edit((editBuilder) => {
+    editor.edit(editBuilder => {
       editBuilder.insert(insert, newValue);
     });
   }
@@ -155,10 +155,11 @@ export async function openFileOrUnsavedDocument(
     // Check if the file exists and you have permission to read it
     await fsPromises.access(filePath, fsPromises.constants.F_OK);
   } catch (err) {
+    // eslint-disable-next-line no-undef
     const errorCode = (err as NodeJS.ErrnoException).code;
-    if (errorCode === "ENOENT") {
+    if (errorCode === 'ENOENT') {
       // If the file does not exist, create an empty file
-      await fsPromises.writeFile(filePath, "");
+      await fsPromises.writeFile(filePath, '');
     } else {
       // If the error is something other than "file not found", re-throw it.
       throw err;
@@ -170,7 +171,7 @@ export async function openFileOrUnsavedDocument(
   const start = new vscode.Position(doc.lineCount + 1, 0);
 
   // Append content at end
-  editor.edit((editBuilder) => {
+  editor.edit(editBuilder => {
     editBuilder.insert(start, inputContent);
   });
 }
@@ -179,7 +180,7 @@ export function getActiveLine(): string | undefined {
   const editor = vscode.window.activeTextEditor;
 
   if (!editor) {
-    vscode.window.showInformationMessage("No editor is active");
+    vscode.window.showInformationMessage('No editor is active');
     return;
   }
 
@@ -195,67 +196,71 @@ export async function runCommandInShell(
 ): Promise<[string, string, number]> {
   return new Promise((resolve, reject) => {
     // Get the workspace directory
-    let workspaceDir = getWorkspaceRoot() as string;
+    const workspaceDir = getWorkspaceRoot() as string;
 
     // Spawn a child process to run the command
     const commandProcess = cp.spawn(cliCommand, {
       shell: true,
-      cwd: workspaceDir,
+      cwd: workspaceDir
     });
 
-    let stdoutChunks: Buffer[] = [];
+    const stdoutChunks: Buffer[] = [];
 
     // Register handler for command output (stdout)
     // log.info(` CWD: ${workspaceDir}; Command: ${cliCommand}\n`);
 
-    commandProcess.stdout.on("data", (chunk: Buffer) => {
+    commandProcess.stdout.on('data', (chunk: Buffer) => {
       stdoutChunks.push(chunk);
       // log.log(`${chunk.toString()}`);
     });
 
     // Register handler for command errors (stderr)
-    commandProcess.stderr.on("data", (chunk: Buffer) => {
+    commandProcess.stderr.on('data', (chunk: Buffer) => {
       stdoutChunks.push(chunk); // Redirect stderr to stdout
       // log.log(`${chunk.toString()}`);
     });
 
     // Register handler for command completion
-    commandProcess.on("close", (code: number) => {
-      let outstring = Buffer.concat(stdoutChunks).toString();
+    commandProcess.on('close', (code: number) => {
+      const outstring = Buffer.concat(stdoutChunks).toString();
       // Always resolve, regardless of exit code
       resolve([workspaceDir, outstring, code]);
     });
 
     // Register handler for any errors thrown by the child process
-    commandProcess.on("error", (error: Error) => {
+    commandProcess.on('error', (error: Error) => {
       reject(error); // Reject promise if an error is thrown in the extension code
     });
   });
 }
 
-export function readOpenFileOrPath(varcontext?: any, filePath?: string): string {
+export function readOpenFileOrPath(
+  varcontext?: any,
+  filePath?: string
+): string {
   try {
-    let content: string;
-    
     if (!filePath) {
       filePath = getActiveDocumentFilePath();
       if (!filePath) {
-        throw new Error("No file is currently open, and no file path was provided.");
+        throw new Error(
+          'No file is currently open, and no file path was provided.'
+        );
       }
     }
     if (filePath.startsWith('~')) {
       filePath = filePath.replace('~', os.homedir());
-    }    
+    }
     log.info(`Reading file ${filePath}`);
     // Use fsPromises.readFileSync to read the file synchronously
-    content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8');
 
     // log.info(`File "${filePath}" has been read successfully.`);
     return content;
   } catch (error) {
-    log.error(`An error occurred while reading the file: ${JSON.stringify(error)}`);
+    log.error(
+      `An error occurred while reading the file: ${JSON.stringify(error)}`
+    );
     // Re-throw the error to allow calling functions to handle it as well
     throw error;
   }
 }
-

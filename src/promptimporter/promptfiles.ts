@@ -81,8 +81,8 @@ export class FilesImporter {
           description: any;
           requestparams: any;
         }) => {
-          let intmpl = command.template as string;
-          let addc = new Command(
+          const intmpl = command.template as string;
+          const addc = new Command(
             command.name,
             intmpl,
             command.responseHandler,
@@ -132,8 +132,8 @@ export class FilesImporter {
         command: any;
         description: any;
       }) => {
-        let intmpl = cliCommand.command as string;
-        let addc = new Command(
+        const intmpl = cliCommand.command as string;
+        const addc = new Command(
           cliCommand.name,
           intmpl,
           undefined,
@@ -155,8 +155,8 @@ export class FilesImporter {
   importJsPromptFile(promptFile: string) {
     this.read(promptFile)
       .then((data) => {
-        let c = data as string;
-        let userDefinitions = eval(c);
+        const c = data as string;
+        const userDefinitions = eval(c);
         this.processFileContents(promptFile, userDefinitions);
       })
       .then(undefined, (err) => {
@@ -170,8 +170,8 @@ export class FilesImporter {
   importJsonPromptFile(promptFile: string) {
     this.read(promptFile)
       .then((data) => {
-        let c = data as string;
-        let userDefinitions = JSON.parse(c);
+        const c = data as string;
+        const userDefinitions = JSON.parse(c);
         this.processFileContents(promptFile, userDefinitions);
         // log.info(data);
       })

@@ -38,7 +38,7 @@ export default class Providers {
 
   public getProvider(
     model: string,
-    providerName: string = ""
+    providerName = ""
   ): CompletionProvider {
     if (providerName && providerName !== "" && this.providers[providerName]) {
       return this.providers[providerName];
@@ -50,7 +50,7 @@ export default class Providers {
       throw new Error("No default provider and No model as input");
     }
 
-    let openAIModels = [
+    const openAIModels = [
       "text-davinci-003, text-davinci-002, davinci, curie, babbage, ada",
       "gpt-4",
       "gpt-3.5-turbo",
@@ -61,21 +61,21 @@ export default class Providers {
     ) {
       return this.providers.openai;
     }
-    let anthropicModels = ["claude"];
+    const anthropicModels = ["claude"];
     if (
       anthropicModels.some((search) => model.startsWith(search)) &&
       this.providers.anthropic
     ) {
       return this.providers.anthropic;
     }
-    let googleglModels = ["bison", "gecko"];
+    const googleglModels = ["bison", "gecko"];
     if (
       googleglModels.some((search) => model.includes(search)) &&
       this.providers.googlegl
     ) {
       return this.providers.googlegl;
     }
-    let huggingfaceModels = [
+    const huggingfaceModels = [
       "microsoft/",
       "replit/",
       "Salesforce/",
@@ -111,6 +111,7 @@ export function unescapeChars(text: string) {
 function countTokensInContent(content: string): number {
   // Regular expression to split the content into tokens based on common delimiters.
   // This includes whitespaces, brackets, arithmetic operators, and punctuation.
+  // eslint-disable-next-line no-useless-escape
   const tokenRegex = /[\s{}\[\]()+-=*/<>,;:.!&|\\]+/;
 
   // Split the content into tokens based on the regex and filter out empty strings.
@@ -125,12 +126,12 @@ export function filterMessagesByTokenCount(
   maxTokenCount: number
 ): ChatCompletionRequestMessage[] {
   let totalTokens = 0;
-  let filteredMessages: ChatCompletionRequestMessage[] = [];
+  const filteredMessages: ChatCompletionRequestMessage[] = [];
 
   // Loop through the messages in reverse order (prioritizing the last element)
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
-    let c = message.content || "";
+    const c = message.content || "";
     const tokensInMessage = countTokensInContent(c);
 
     // Check if adding this message will not exceed maxTokenCount

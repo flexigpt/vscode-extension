@@ -1,6 +1,8 @@
 import * as assert from "assert";
 import { expect } from "chai";
 import { describe, it } from "mocha";
+import yaml from "js-yaml";
+import fs from "fs";
 
 import {
   ChatCompletionRoleEnum,
@@ -72,8 +74,6 @@ describe("Conversation", () => {
       conversation.exportConversation(filePath);
 
       // Verify that the file exists and contains the expected YAML
-      const yaml = require("js-yaml");
-      const fs = require("fs");
 
       const messages = conversation.getMessageStream().map((message) => ({
         name: message.name,

@@ -20,7 +20,8 @@ export async function executeSearch(searchTerm: string): Promise<void> {
     { title: `🌐 🔎 Search Stackoverflow: ${searchTerm}`, url: apiSearchUrl },
   ];
 
-  const requestConfig: AxiosRequestConfig = {
+  // eslint-disable-next-line prefer-const
+  let requestConfig: AxiosRequestConfig = {
     url: apiSearchUrl,
     method: "GET",
     headers: {
@@ -32,7 +33,7 @@ export async function executeSearch(searchTerm: string): Promise<void> {
   };
   try {
     const response: AxiosResponse = await axios.request(requestConfig);
-    let searchResponse = response.data;
+    const searchResponse = response.data;
     if (searchResponse.items && searchResponse.items.length > 0) {
       searchResponse.items.forEach((q: any, i: any) => {
         questionsMeta.push({
@@ -49,7 +50,7 @@ export async function executeSearch(searchTerm: string): Promise<void> {
     if (axios.isAxiosError(error)) {
       // Handle Axios error
       const axiosError = error as AxiosError;
-      let errorData = JSON.stringify(axiosError, null, 2) + "\n";
+      const errorData = JSON.stringify(axiosError, null, 2) + "\n";
       error.message = errorData + "\n" + error.message;
     }
     throw error;

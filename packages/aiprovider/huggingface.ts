@@ -8,15 +8,14 @@ import {
 } from "@/spec/chat";
 import { AxiosRequestConfig } from "axios";
 
-
 export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
-  #timeout: BigInt;
+  #timeout: number;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
 
   constructor(
     apiKey: string,
-    timeout: BigInt,
+    timeout: number,
     defaultCompletionModel: string,
     defaultChatCompletionModel: string,
     origin: string,
@@ -41,21 +40,17 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       url: "/models/" + model,
       method: "GET",
     };
-    try {
-      const data = await this.request(requestConfig);
-      if (typeof data !== "object" || data === null) {
-        throw new Error("Invalid data response. Expected an object.");
-      }
-      if ("tags" in data) {
-        let tags = data.tags as string[];
-        if ("conversational" in tags) {
-          return "chat";
-        }
-      }
-      return "completion";
-    } catch (error) {
-      throw error;
+    const data = await this.request(requestConfig);
+    if (typeof data !== "object" || data === null) {
+      throw new Error("Invalid data response. Expected an object.");
     }
+    if ("tags" in data) {
+      const tags = data.tags as string[];
+      if ("conversational" in tags) {
+        return "chat";
+      }
+    }
+    return "completion";
   }
   async completion(input: CompletionRequest): Promise<any> {
     return this.chatCompletion(input);
@@ -70,13 +65,13 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     past_user_inputs: string[];
   } {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let generated_responses: string[] = [];
+    const generated_responses: string[] = [];
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let past_user_inputs: string[] = [];
-    let text: string = "";
+    const past_user_inputs: string[] = [];
+    let text = "";
 
     for (let i = 0; i < messages.length; i++) {
-      let icontent: string = messages[i].content || "";
+      const icontent: string = messages[i].content || "";
       if (messages[i].role === ChatCompletionRoleEnum.assistant) {
         generated_responses.push(icontent);
       } else if (
@@ -99,9 +94,9 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     if (!input.messages) {
       throw Error("No input messages found");
     }
-    let model = input.model;
-    let modeltype = await this.getModelType(model);
-    let parameters: Record<string, any> = {
+    const model = input.model;
+    const modeltype = await this.getModelType(model);
+    const parameters: Record<string, any> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       max_length: input.maxTokens,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -126,11 +121,11 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     if (parameters.max_length) {
       filterTokens = parameters.max_length;
     }
-    let messages = filterMessagesByTokenCount(input.messages, filterTokens);
+    const messages = filterMessagesByTokenCount(input.messages, filterTokens);
 
     const inputmessages = this.getInputs(messages);
 
-    let request: Record<string, any> = {
+    const request: Record<string, any> = {
       parameters: parameters,
     };
 
@@ -145,23 +140,19 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       method: "POST",
       data: request,
     };
-    try {
-      const data = await this.request(requestConfig);
-      let fullResponse = data;
-      if (typeof data !== "object" || data === null) {
-        throw new Error("Invalid data response. Expected an object." + data);
-      }
-      let respText = "";
-      if ("generated_text" in data) {
-        respText = data.generated_text as string;
-      } else if (Array.isArray(data) && data.length > 0) {
-        // Get 'generated_text' from the first element of the array, if the array is not empty
-        respText = data[0].generated_text as string;
-      }
-      return { fullResponse: fullResponse, data: respText };
-    } catch (error) {
-      throw error;
+    const data = await this.request(requestConfig);
+    const fullResponse = data;
+    if (typeof data !== "object" || data === null) {
+      throw new Error("Invalid data response. Expected an object." + data);
     }
+    let respText = "";
+    if ("generated_text" in data) {
+      respText = data.generated_text as string;
+    } else if (Array.isArray(data) && data.length > 0) {
+      // Get 'generated_text' from the first element of the array, if the array is not empty
+      respText = data[0].generated_text as string;
+    }
+    return { fullResponse: fullResponse, data: respText };
   }
 
   public checkAndPopulateCompletionParams(
@@ -169,7 +160,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let completionRequest: CompletionRequest = {
+    const completionRequest: CompletionRequest = {
       model: (inputParams?.model as string) || this.defaultCompletionModel,
       prompt: prompt,
       messages: messages,
@@ -184,7 +175,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     };
 
     if (completionRequest.prompt) {
-      let message: ChatCompletionRequestMessage = {
+      const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
         content: completionRequest.prompt,
       };

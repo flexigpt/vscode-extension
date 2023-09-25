@@ -6,7 +6,7 @@ import { describe, it, before, after } from "mocha";
 import log from "../../logger/log";
 
 describe("getCommitAndTagList function", () => {
-  let rootPath = path.join(__dirname, "..", "..", "..");
+  const rootPath = path.join(__dirname, "..", "..", "..");
   //   let editor: vscode.TextEditor;
 
   //   before(async function () {

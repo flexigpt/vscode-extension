@@ -13,13 +13,13 @@ export default class OpenAIAPIProvider
   extends GptAPI
   implements CompletionProvider
 {
-  #timeout: BigInt;
+  #timeout: number;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
 
   constructor(
     apiKey: string,
-    timeout: BigInt,
+    timeout: number,
     defaultCompletionModel: string,
     defaultChatCompletionModel: string,
     origin: string,
@@ -53,7 +53,7 @@ export default class OpenAIAPIProvider
     if (!input.messages) {
       throw Error("No input messages found");
     }
-    let chatModel: boolean = false;
+    let chatModel = false;
     if (input.model.startsWith("gpt-3.5") || input.model.startsWith("gpt-4")) {
       chatModel = true;
     }
@@ -62,7 +62,7 @@ export default class OpenAIAPIProvider
       stoparg = input.stop;
     }
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let request: Record<string, any> = {
+    const request: Record<string, any> = {
       model: input.model,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       max_tokens: input.maxTokens,
@@ -107,7 +107,7 @@ export default class OpenAIAPIProvider
     };
     try {
       const data = await this.request(requestConfig);
-      let fullResponse = data;
+      const fullResponse = data;
       if (typeof data !== "object" || data === null) {
         throw new Error("Invalid data response. Expected an object." + data);
       }
@@ -120,7 +120,7 @@ export default class OpenAIAPIProvider
         data.choices.length > 0
       ) {
         if (chatModel) {
-          let responseMessage = data.choices[0].message;
+          const responseMessage = data.choices[0].message;
           respText = responseMessage?.content
             ? (responseMessage?.content as string)
             : "";
@@ -167,13 +167,13 @@ export default class OpenAIAPIProvider
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let model =
+    const model =
       (inputParams?.model as string) || this.defaultChatCompletionModel;
-    let chatModel: boolean = false;
+    let chatModel = false;
     if (model.startsWith("gpt-3.5") || model.startsWith("gpt-4")) {
       chatModel = true;
     }
-    let completionRequest: CompletionRequest = {
+    const completionRequest: CompletionRequest = {
       model: model,
       prompt: prompt,
       messages: messages,
@@ -205,7 +205,7 @@ export default class OpenAIAPIProvider
       completionRequest.functionCall = inputParams?.functionCall || undefined;
     }
     if (completionRequest.prompt) {
-      let message: ChatCompletionRequestMessage = {
+      const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
         content: completionRequest.prompt,
       };

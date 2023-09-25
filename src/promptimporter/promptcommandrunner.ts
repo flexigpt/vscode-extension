@@ -6,9 +6,9 @@ import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
 import log from "../logger/log";
 import { get } from "http";
 
-export const DEFAULT_COMMAND: string = "Ask";
-export const DEFAULT_NAMESPACE: string = "FlexiGPT";
-export const DEFAULT_RESPONSE_HANDLER: string = "noop";
+export const DEFAULT_COMMAND = "Ask";
+export const DEFAULT_NAMESPACE = "FlexiGPT";
+export const DEFAULT_RESPONSE_HANDLER = "noop";
 
 export class CommandRunnerContext {
   fullVariableNamespaces: VariableNamespaces;
@@ -47,7 +47,7 @@ export class CommandRunnerContext {
     // log.info(`resolved sys vars: ${JSON.stringify(system)} resolved user vars: ${JSON.stringify(user)}`);
 
     let functionName: string;
-    let args: { [key: string]: any } = {};
+    const args: { [key: string]: any } = {};
     responseHandler = responseHandler ?? DEFAULT_RESPONSE_HANDLER;
     if (responseHandler === "") {
       responseHandler = DEFAULT_RESPONSE_HANDLER;
@@ -87,7 +87,7 @@ export class CommandRunnerContext {
     if (!fn) {
       fn = this.functionContext["system"].get(functionName) as FunctionWrapper;
     }
-    let ret = fn?.run({
+    const ret = fn?.run({
       ...args,
     });
     if (ret === undefined || ret === null) {
@@ -143,7 +143,7 @@ export class CommandRunnerContext {
     return this.commands;
   }
 
-  getAllCommandsAsLabels(commandtype: string = "all"): {
+  getAllCommandsAsLabels(commandtype = "all"): {
     label: string;
     description: string;
     command: Command;
@@ -191,7 +191,7 @@ export class CommandRunnerContext {
       // log.info(`Got value ${JSON.stringify(updatedValue)}`);
       // There is no code block marked in the answer as of now. Check if we need to mark it.
       const codePattern =
-        /\b(function|def|func|public\ static|FUNCTION|const|var|\{[^}]*\})\b/gi;
+        /\b(function|def|func|public static|FUNCTION|const|var|\{[^}]*\})\b/gi;
       const containsCode = codePattern.test(updatedValue);
       if (containsCode) {
         // log.info(`Got contains code`);
@@ -201,7 +201,7 @@ export class CommandRunnerContext {
     }
     // const updatedValueStr = prettier.format(updatedValue, { parser: 'json' });
     this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
-    let retval = this.runResponseHandler(command, command.responseHandler);
+    const retval = this.runResponseHandler(command, command.responseHandler);
     if (retval.sanitizedAnswer !== "") {
       updatedValue = retval.sanitizedAnswer;
     }
@@ -212,7 +212,7 @@ export class CommandRunnerContext {
   }
 
   findCommand(text: string): Command {
-    let commands = this.getAllCommandsAsLabels();
+    const commands = this.getAllCommandsAsLabels();
     let returnitem = new Command(
       DEFAULT_COMMAND,
       text,
@@ -239,7 +239,7 @@ export class CommandRunnerContext {
     if (key === "") {
       return "";
     }
-    let k = this.getUserReplaced(key, command.namespace);
+    const k = this.getUserReplaced(key, command.namespace);
     let value = this.fullVariableNamespaces.getValue(k);
     if (value === undefined) {
       value = key;
@@ -254,16 +254,16 @@ export class CommandRunnerContext {
     const question = command.questionTemplate.replace(
       /\{([^}]+)\}/g,
       (match, key) => {
-        let inObj = this.createInputKeyAndArgs(key);
+        const inObj = this.createInputKeyAndArgs(key);
         if (inObj[0] === "") {
           return "";
         }
-        let args: string[] = [];
+        const args: string[] = [];
         inObj[1].forEach((value, index) => {
           args[index] = this.getVarForKey(value, command);
         });
-        let varKey = this.getUserReplaced(inObj[0], command.namespace);
-        let v = this.fullVariableNamespaces.getValue(varKey, ...args);
+        const varKey = this.getUserReplaced(inObj[0], command.namespace);
+        const v = this.fullVariableNamespaces.getValue(varKey, ...args);
         return v;
       }
     );
@@ -299,7 +299,7 @@ export class CommandRunnerContext {
     suffix?: string,
     setSystemVariable = true
   ): { question: string; command: Command } {
-    let command = this.findCommand(text);
+    const command = this.findCommand(text);
     let question = this.prepare(command);
     if (suffix) {
       question += suffix;

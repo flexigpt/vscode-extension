@@ -1,6 +1,6 @@
-import * as assert from "assert";
+
 import { expect } from "chai";
-import { describe, it } from "mocha";
+import { suite, test } from "mocha";
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
@@ -17,7 +17,7 @@ suite("CheckParams Test Suite", () => {
   const apiKey = "MyKey";
   const defaultCompletionModel = "gpt-3.5-turbo";
   const defaultChatCompletionModel = "gpt-3.5-turbo";
-  const timeout: BigInt = 60n;
+  const timeout = 60;
   const defaultOrigin = "https://api.openai.com";
   const chatCompletion: CompletionProvider = new OpenAIAPIProvider(
     apiKey,

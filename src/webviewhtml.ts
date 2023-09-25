@@ -57,3 +57,13 @@ export function getWebviewHtml(
   // Return the resulting HTML
   return html;
 }
+
+export function getWebviewHtmlReact(
+  webview: vscode.Webview,
+  extensionUri: vscode.Uri
+) {
+  // Read HTML file from disk
+  // packages/reactui/dist/index.html
+  const htmlPath = path.join(extensionUri.fsPath, "packages", "reactui", "dist", "index.html");
+  return fs.readFileSync(htmlPath, "utf-8");
+}

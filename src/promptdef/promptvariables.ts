@@ -74,7 +74,7 @@ export class VariableContext {
     }
     key = key.toLowerCase();
     // try to see if variable is present
-    let value = this.variables.get(key);
+    const value = this.variables.get(key);
     return value instanceof Variable
       ? value.getVarValue(allVarsContext, ...userArgs)
       : undefined;
@@ -105,7 +105,7 @@ export class VariableNamespaces {
     if (typeof namespace !== "string" || !namespace) {
       throw new Error("Namespace name must be a non-empty string");
     }
-    let name = namespace.toLowerCase();
+    const name = namespace.toLowerCase();
     if (this.namespaces.has(name)) {
       throw new Error(`Namespace "${namespace}" already exists`);
     }

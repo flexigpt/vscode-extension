@@ -17,13 +17,13 @@ export class LlamaCPPAPIProvider
   extends GptAPI
   implements CompletionProvider
 {
-  #timeout: BigInt;
+  #timeout: number;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
 
   constructor(
     apiKey: string,
-    timeout: BigInt,
+    timeout: number,
     defaultCompletionModel: string,
     defaultChatCompletionModel: string,
     origin: string,
@@ -48,11 +48,11 @@ export class LlamaCPPAPIProvider
 
   convertChat(
     messages: ChatCompletionRequestMessage[],
-    chatPrompt: string = "A chat between a curious user and an artificial intelligence assistant",
-    systemName: string = "\\nASSISTANT's RULE: ",
-    userName: string = "\\nUSER: ",
-    aiName: string = "\\nASSISTANT: ",
-    stop: string = "</s>"
+    chatPrompt = "A chat between a curious user and an artificial intelligence assistant",
+    systemName = "\\nASSISTANT's RULE: ",
+    userName = "\\nUSER: ",
+    aiName = "\\nASSISTANT: ",
+    stop = "</s>"
   ): string {
     let prompt = "" + chatPrompt.replace("\\n", "\n");
 
@@ -87,7 +87,7 @@ export class LlamaCPPAPIProvider
     if (!input.messages) {
       throw Error("No input messages found");
     }
-    let chatModel: boolean = true;
+    const chatModel = true;
     // if (input.model.startsWith("gpt-3.5") || input.model.startsWith("gpt-4")) {
     //   chatModel = true;
     // }
@@ -101,7 +101,7 @@ export class LlamaCPPAPIProvider
     }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let request: Record<string, any> = {
+    const request: Record<string, any> = {
       prompt: this.convertChat(input.messages),
       // eslint-disable-next-line @typescript-eslint/naming-convention
       n_predict: input.maxTokens,
@@ -110,12 +110,13 @@ export class LlamaCPPAPIProvider
     };
     if (input.additionalParameters) {
       for (const key in input.additionalParameters) {
+        // eslint-disable-next-line no-prototype-builtins
         if (!request.hasOwnProperty(key)) {
           request[key] = input.additionalParameters[key];
         }
       }
     }
-    let modelpath = "/completion";
+    const modelpath = "/completion";
     let filterTokens = 2048;
     if (input.maxTokens) {
       filterTokens = input.maxTokens;
@@ -129,11 +130,11 @@ export class LlamaCPPAPIProvider
     };
     try {
       const data = await this.request(requestConfig);
-      let fullResponse = data;
+      const fullResponse = data;
       if (typeof data !== "object" || data === null) {
         throw new Error("Invalid data response. Expected an object." + data);
       }
-      let respText = "content" in data ? (data?.content as string) : "";
+      const respText = "content" in data ? (data?.content as string) : "";
       return {
         fullResponse: fullResponse,
         data: respText,
@@ -149,9 +150,9 @@ export class LlamaCPPAPIProvider
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let model =
+    const model =
       (inputParams?.model as string) || this.defaultChatCompletionModel;
-    let completionRequest: CompletionRequest = {
+    const completionRequest: CompletionRequest = {
       model: model,
       prompt: prompt,
       messages: messages,
@@ -165,6 +166,7 @@ export class LlamaCPPAPIProvider
       for (const key in inputParams) {
         completionRequest.additionalParameters =
           completionRequest.additionalParameters || {};
+        // eslint-disable-next-line no-prototype-builtins
         if (!completionRequest.hasOwnProperty(key) && key !== "provider") {
           completionRequest.additionalParameters[key] = inputParams[key];
         }
@@ -172,7 +174,7 @@ export class LlamaCPPAPIProvider
     }
 
     if (completionRequest.prompt) {
-      let message: ChatCompletionRequestMessage = {
+      const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
         content: completionRequest.prompt,
       };

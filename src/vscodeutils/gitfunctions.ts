@@ -5,7 +5,7 @@ export function getCommitAndTagListString(
   commitOrTag1?: string,
   commitOrTag2?: string,
   rootPath?: string,
-  maxCommits: number = 25
+  maxCommits = 25
 ): string {
   if (!rootPath) {
     rootPath = getWorkspaceRoot();

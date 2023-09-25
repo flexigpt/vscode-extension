@@ -93,7 +93,9 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   };
 
   const onCopy = () => {
-    if (isCopied) return;
+    if (isCopied) {
+      return;
+    }
     copyToClipboard(value);
   };
 

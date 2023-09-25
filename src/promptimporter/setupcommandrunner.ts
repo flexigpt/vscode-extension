@@ -21,7 +21,7 @@ import { getCommitAndTagListString } from "../vscodeutils/gitfunctions";
 export function setupCommandRunnerContext(
   context: vscode.ExtensionContext
 ): CommandRunnerContext {
-  let commandRunnerContext = new CommandRunnerContext();
+  const commandRunnerContext = new CommandRunnerContext();
   initPreDefinedFunctions(commandRunnerContext);
   initDocumentContext(commandRunnerContext);
   initEvents(commandRunnerContext);
@@ -84,7 +84,7 @@ function initEvents(commandRunnerContext: CommandRunnerContext) {
     if (!e || e.textEditor.document.uri.scheme !== "file") {
       return;
     }
-    let selection = getSelectedText();
+    const selection = getSelectedText();
     if (!selection) {
       return;
     }

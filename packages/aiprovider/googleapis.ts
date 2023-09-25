@@ -13,13 +13,13 @@ export class GoogleGenerativeLanguageAPI
   extends GptAPI
   implements CompletionProvider
 {
-  #timeout: BigInt;
+  #timeout: number;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
 
   constructor(
     apiKey: string,
-    timeout: BigInt,
+    timeout: number,
     defaultCompletionModel: string,
     defaultChatCompletionModel: string,
     origin: string,
@@ -49,12 +49,12 @@ export class GoogleGenerativeLanguageAPI
     if (!input.messages) {
       throw Error("No input messages found");
     }
-    let chatModel: boolean = false;
+    let chatModel = false;
     if (input.model.startsWith("chat")) {
       chatModel = true;
     }
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let request: Record<string, any> = {
+    const request: Record<string, any> = {
       temperature: input.temperature,
       topP: input.topP,
       topK: input.topK,
@@ -93,28 +93,23 @@ export class GoogleGenerativeLanguageAPI
       method: "POST",
       data: request,
     };
-    try {
-      const data = await this.request(requestConfig);
-      let fullResponse = data;
-      if (typeof data !== "object" || data === null) {
-        throw new Error("Invalid data response. Expected an object." + data);
-      }
-      let respText = "";
-      if (
-        "candidates" in data &&
-        Array.isArray(data.candidates) &&
-        data.candidates.length > 0
-      ) {
-        if (chatModel) {
-          respText = data.candidates[0].content as string;
-        } else {
-          respText = data.candidates[0].output as string;
-        }
-      }
-      return { fullResponse: fullResponse, data: respText };
-    } catch (error) {
-      throw error;
+    const data = await this.request(requestConfig);
+    if (typeof data !== "object" || data === null) {
+      throw new Error("Invalid data response. Expected an object." + data);
     }
+    let respText = "";
+    if (
+      "candidates" in data &&
+      Array.isArray(data.candidates) &&
+      data.candidates.length > 0
+    ) {
+      if (chatModel) {
+        respText = data.candidates[0].content as string;
+      } else {
+        respText = data.candidates[0].output as string;
+      }
+    }
+    return { fullResponse: data, data: respText };
   }
 
   public checkAndPopulateCompletionParams(
@@ -122,12 +117,12 @@ export class GoogleGenerativeLanguageAPI
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let model = (inputParams?.model as string) || this.defaultCompletionModel;
-    let chatModel: boolean = false;
+    const model = (inputParams?.model as string) || this.defaultCompletionModel;
+    let chatModel = false;
     if (model.startsWith("chat")) {
       chatModel = true;
     }
-    let completionRequest: CompletionRequest = {
+    const completionRequest: CompletionRequest = {
       model: model,
       prompt: prompt,
       messages: messages,
@@ -140,7 +135,7 @@ export class GoogleGenerativeLanguageAPI
     };
 
     if (completionRequest.prompt) {
-      let message: ChatCompletionRequestMessage = {
+      const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
         content: completionRequest.prompt,
       };

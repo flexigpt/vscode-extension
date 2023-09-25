@@ -1,7 +1,7 @@
 {
     "root": true,
     "env": {
-        "browser": false,
+        "browser": true,
         "es6": true,
         "node": true
     },
@@ -27,7 +27,11 @@
         "curly": "warn",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
-        "semi": "off"
+        "semi": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/ban-types": "off"
     },
     "ignorePatterns": [
         "out",

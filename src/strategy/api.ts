@@ -22,7 +22,7 @@ export function filterSensitiveInfo(obj: any): any {
   }
 
   // Recursive case: if obj is an object, filter each key.
-  let filteredObj: any = {};
+  const filteredObj: any = {};
   for (const key in obj) {
     if (!sensitiveKeys.some(sensitiveKey => key.toLowerCase().includes(sensitiveKey))) {
       filteredObj[key] = filterSensitiveInfo(obj[key]);
@@ -42,7 +42,7 @@ export class GptAPI {
   apiKey: string;
   apiKeyHeaderKey: string;
   headers: Record<string, string>;
-  logRequests: boolean = false;
+  logRequests = false;
   private axiosInstance: AxiosInstance;
 
   constructor(
@@ -123,7 +123,7 @@ export class GptAPI {
         const axiosError = error as AxiosError;
         let errorData: string;
         if (axiosError.response) {
-          let headers = filterSensitiveInfo(
+          const headers = filterSensitiveInfo(
             axiosError.response.headers
           );
           errorData =

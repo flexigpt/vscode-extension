@@ -109,7 +109,11 @@ describe("VariableNamespaces", () => {
       const namespace = "test";
       context.addNamespace(namespace);
       context.setDefaultNamespace(namespace);
-      context.getNamespace(namespace)!.addVariable(new Variable("x", 20));
+      const ns = context.getNamespace(namespace);
+      if (!ns) {
+        return;
+      }
+      ns.addVariable(new Variable("x", 20));
       expect(context.getValue("x")).to.equal(20);
     });
 
@@ -235,7 +239,7 @@ describe("VariableContextSystemUsage", () => {
   });
 
   it("should retrieve variable with getter function", () => {
-    let bf = getBaseFolder();
+    const bf = getBaseFolder();
     console.info("test base folder: " + bf);
     expect(variablesCollection.getValue("system.basefolder")).to.equal(bf);
   });
@@ -250,7 +254,7 @@ describe("VariableContextSystemUsage", () => {
   });
 
   it("should return dependent variable", () => {
-    let bf = `${getBaseFolder()}/filenametest.ts`;
+    const bf = `${getBaseFolder()}/filenametest.ts`;
     log.info("test file: " + bf);
     expect(variablesCollection.getValue("user.testfile")).to.equal(bf);
   });

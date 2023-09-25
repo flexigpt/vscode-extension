@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as yaml from "js-yaml";
+import { nanoid } from "nanoid";
 
 import {
   ChatCompletionRoleEnum,
@@ -9,7 +10,7 @@ import {
   IView
 } from "@/spec/chat";
 
-import { log } from "@/logger/log";
+// import { log } from "@/logger/log";
 
 export class Conversation {
   private messages: IMessage[];
@@ -45,7 +46,8 @@ export class Conversation {
     const timestamp = new Date(Date.now()).toISOString();
     const role = message.role;
     const content: string = message.content ? message.content : "" ;
-    const newMessage: IMessage = { role, content, timestamp, name };
+    const id = nanoid();
+    const newMessage: IMessage = { id, role, content, timestamp, name };
     this.messages.push(newMessage);
   }
 
@@ -58,10 +60,13 @@ export class Conversation {
   }
 
   public getMessagesAsRequests(): ChatCompletionRequestMessage[] {
-    let messages: ChatCompletionRequestMessage[] = [];
-    let sortedMessages = this.messages.slice().sort((a, b) => {
-      let t1 = new Date(a.timestamp);
-      let t2 = new Date(b.timestamp);
+    const messages: ChatCompletionRequestMessage[] = [];
+    const sortedMessages = this.messages.slice().sort((a, b) => {
+      if (!a.timestamp || !b.timestamp) {
+        return 0;
+      }
+      const t1 = new Date(a.timestamp);
+      const t2 = new Date(b.timestamp);
       if (t1 < t2) {
         return -1;
       } else if (t1 > t2) {
@@ -79,7 +84,7 @@ export class Conversation {
     return messages;
   }
 
-  public getConversationYML(getViews: boolean = false): string {
+  public getConversationYML(getViews = false): string {
     if (this.messages.length === 0) {
       return "";
     }
@@ -115,7 +120,7 @@ export class Conversation {
     ]);
   }
 
-  public exportConversation(filePath: string, setViews: boolean = false): void {
+  public exportConversation(filePath: string, setViews = false): void {
     const conversationYaml = this.getConversationYML(setViews);
     if (!conversationYaml) {
       return;

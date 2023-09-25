@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import { suite, test } from "mocha";
 
 
 // You can import and use all API from the 'vscode' module
@@ -8,8 +9,7 @@ import { setOutputChannel } from "../../logger/log";
 
 suite("Extension Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests.");
-  let outputChannel: vscode.OutputChannel;
-  outputChannel = vscode.window.createOutputChannel('My Test Output Channel');
+  const outputChannel = vscode.window.createOutputChannel('My Test Output Channel');
   outputChannel.show(true);
   setOutputChannel(outputChannel);
 

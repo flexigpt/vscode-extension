@@ -9,8 +9,8 @@ export function importAllPrompts(
   commandRunnerContext: CommandRunnerContext
 ) {
   const config = vscode.workspace.getConfiguration("flexigpt");
-  let promptFiles = config.get("promptFiles") as string | "";
-  let inBuiltPrompts = config.get("inBuiltPrompts") as string | "";
+  const promptFiles = config.get("promptFiles") as string | "";
+  const inBuiltPrompts = config.get("inBuiltPrompts") as string | "";
 
   let inBuiltPromptNames = "flexigptbasic.js";
   if (inBuiltPrompts) {
@@ -26,11 +26,11 @@ export function importAllPrompts(
     fullPrompts = fullPrompts + ";" + promptFiles;
   }
   if (fullPrompts) {
-    let fi = new FilesImporter(commandRunnerContext);
+    const fi = new FilesImporter(commandRunnerContext);
     fi.importPromptFiles(fullPrompts);
   }
 
-  let allc = commandRunnerContext.getAllCommandsAsLabels();
+  const allc = commandRunnerContext.getAllCommandsAsLabels();
   log.info(`Loaded all commands`);
   // log.info(`Commands: ${JSON.stringify(allc, null, 2)}`);
 }

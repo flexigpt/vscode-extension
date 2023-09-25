@@ -66,7 +66,11 @@ function registerCommands(
           valueSelection: [0, inline.length + 1],
       });
 
-      await executeSearch(searchTerm!);
+      if (!searchTerm) {
+          return;
+      } else {
+        await executeSearch(searchTerm);
+      }
   });
 
   const commandRunCLI = vscode.commands.registerCommand(
@@ -157,7 +161,7 @@ export function activate(context: vscode.ExtensionContext) {
   const apiProviders = getAllProviders();
   const provider = new ChatViewProvider(context.extensionUri, context);
   provider.setAPIProviders(apiProviders);
-  let commandRunnerContext = setupCommandRunnerContext(context);
+  const commandRunnerContext = setupCommandRunnerContext(context);
   commandRunnerContext.setSystemVariable(
     new Variable(systemVariableNames.extensionUri, context.extensionUri)
   );
@@ -171,7 +175,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+// export function deactivate() {}
 
 // INTERNAL TODOS:
 // - Args in command prompts as input
