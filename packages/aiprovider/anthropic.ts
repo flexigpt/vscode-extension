@@ -1,6 +1,6 @@
 import { log } from "@/logger/log";
-import { GptAPI } from "./api";
-import { CompletionProvider, filterMessagesByTokenCount } from "./strategy";
+import { GptAPI } from "@/aiprovider/api";
+import { CompletionProvider, filterMessagesByTokenCount } from "@/aiprovider/strategy";
 import {
   CompletionRequest,
   ChatCompletionRequestMessage,

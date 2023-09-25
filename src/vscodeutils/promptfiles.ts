@@ -3,15 +3,15 @@ import * as vscode from "vscode";
 import axios from "axios";
 import { promises as fs } from "fs";
 
-import { FunctionWrapper } from "../promptdef/promptfunctions";
-import { Variable } from "../promptdef/promptvariables";
-import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
+import { FunctionWrapper } from "@/prompts/promptdef/promptfunctions";
+import { Variable } from "@/prompts/promptdef/promptvariables";
+import { COMMAND_TYPE_CLI, Command } from "@/prompts/promptdef/promptcommand";
 
 import {
   CommandRunnerContext,
   DEFAULT_RESPONSE_HANDLER,
-} from "./promptcommandrunner";
-import { getFileNameAndExtension } from "../prompthelpers/fileutils";
+} from "@/prompts/promptimporter/promptcommandrunner";
+import { getFileNameAndExtension } from "@/prompts/prompthelpers/fileutils";
 
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -80,8 +80,8 @@ export class FilesImporter {
           description: any;
           requestparams: any;
         }) => {
-          let intmpl = command.template as string;
-          let addc = new Command(
+          const intmpl = command.template as string;
+          const addc = new Command(
             command.name,
             intmpl,
             command.responseHandler,
@@ -131,8 +131,8 @@ export class FilesImporter {
         command: any;
         description: any;
       }) => {
-        let intmpl = cliCommand.command as string;
-        let addc = new Command(
+        const intmpl = cliCommand.command as string;
+        const addc = new Command(
           cliCommand.name,
           intmpl,
           undefined,
@@ -154,8 +154,8 @@ export class FilesImporter {
   importJsPromptFile(promptFile: string) {
     this.read(promptFile)
       .then((data) => {
-        let c = data as string;
-        let userDefinitions = eval(c);
+        const c = data as string;
+        const userDefinitions = eval(c);
         this.processFileContents(promptFile, userDefinitions);
       })
       .then(undefined, (err) => {
@@ -169,8 +169,8 @@ export class FilesImporter {
   importJsonPromptFile(promptFile: string) {
     this.read(promptFile)
       .then((data) => {
-        let c = data as string;
-        let userDefinitions = JSON.parse(c);
+        const c = data as string;
+        const userDefinitions = JSON.parse(c);
         this.processFileContents(promptFile, userDefinitions);
         // log.info(data);
       })

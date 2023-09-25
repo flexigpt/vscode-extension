@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 import log, { setOutputChannel } from "./logger/log";
 
-import { systemVariableNames } from "./promptimporter/predefinedvariables";
+import { systemVariableNames } from "@/prompts/promptimporter/predefinedvariables";
 import ChatViewProvider from "./webviewprovider";
 
-import { Variable } from "./promptdef/promptvariables";
-import { getAllProviders } from "./strategy/setupstrategy";
-import { setupCommandRunnerContext } from "./promptimporter/setupcommandrunner";
+import { Variable } from "@/prompts/promptdef/promptvariables";
+import { getAllProviders } from "./setupaiproviders";
+import { setupCommandRunnerContext } from "./setupcommandrunner";
 import { getActiveLine } from "./vscodeutils/vscodefunctions";
 import { executeSearch } from "./stackoverflow/search";
 

@@ -1,6 +1,6 @@
 import { log } from "@/logger/log";
-import { GptAPI } from "./api";
-import { CompletionProvider } from "./strategy";
+import { GptAPI } from "@/aiprovider/api";
+import { CompletionProvider } from "@/aiprovider/strategy";
 import { AxiosRequestConfig } from "axios";
 
 import {

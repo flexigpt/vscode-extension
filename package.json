@@ -319,7 +319,6 @@
     "@types/glob": "^8.0.0",
     "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^10.0.1",
-    "@types/mustache": "^4.2.2",
     "@types/node": "^18.14.2",
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
@@ -328,7 +327,9 @@
     "chai": "^4.3.7",
     "esbuild": "^0.17.5",
     "eslint": "^8.49.0",
+    "espree": "^9.6.1",
     "glob": "^8.0.3",
+    "js-yaml": "^4.1.0",
     "mocha": "^10.2.0",
     "npm-version": "^1.1.0",
     "rimraf": "^4.1.2",
@@ -336,12 +337,9 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@types/highlight.js": "^10.1.0",
     "@types/uuid": "^9.0.1",
     "@types/vscode": "^1.76.0",
     "axios": "^1.4.0",
-    "js-yaml": "^4.1.0",
-    "mustache": "^4.2.0",
     "prettier": "^2.8.8",
     "uuid": "^9.0.0"
   },

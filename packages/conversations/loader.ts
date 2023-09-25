@@ -30,7 +30,7 @@ export function loadConversations(
     if (!conversationsData) {
       return conversationCollection;
     }
-    let conversations = yaml.load(conversationsData) as {
+    const conversations = yaml.load(conversationsData) as {
       id: number;
       messages: IMessage[];
       views: IView[];

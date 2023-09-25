@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import { systemVariableNames } from "./predefinedvariables";
-import { preDefinedFunctions } from "./predefinedfunctions";
+import { systemVariableNames } from "@/prompts/promptimporter/predefinedvariables";
+import { preDefinedFunctions } from "./vscodeutils/predefinedfunctions";
 
 import {
   getBaseFolder,
@@ -12,11 +12,11 @@ import {
   getActiveDocumentLanguageID,
   getActiveFileName,
   readOpenFileOrPath,
-} from "../vscodeutils/vscodefunctions";
+} from "./vscodeutils/vscodefunctions";
 
-import { Variable } from "../promptdef/promptvariables";
-import { CommandRunnerContext } from "./promptcommandrunner";
-import { getCommitAndTagListString } from "../vscodeutils/gitfunctions";
+import { Variable } from "@/prompts/promptdef/promptvariables";
+import { CommandRunnerContext } from "@/prompts/promptimporter/promptcommandrunner";
+import { getCommitAndTagListString } from "./vscodeutils/gitfunctions";
 
 export function setupCommandRunnerContext(
   context: vscode.ExtensionContext

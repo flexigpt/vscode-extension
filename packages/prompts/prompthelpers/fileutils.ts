@@ -18,7 +18,7 @@ export function getFileNameAndExtension(filePath: string) {
 export function writeFile(
   filePath: string,
   fileContent: string,
-  isAppend: boolean = false
+  isAppend = false
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const dirname = path.dirname(filePath);

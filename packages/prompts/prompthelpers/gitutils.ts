@@ -38,7 +38,7 @@ function getGitLogs(
   rootPath: string,
   start: string,
   end: string,
-  maxCommits: number = 100
+  maxCommits = 100
 ): { sha: string; message: string; tags: string }[] {
   const gitLogCommand = `git log --pretty=oneline ${start}..${end} --decorate=full --decorate-refs-exclude=refs/tags/ --no-notes --date-order ${
     maxCommits ? `--max-count=${maxCommits}` : ""
@@ -59,7 +59,7 @@ export function getCommitAndTagList(
   commitOrTag1?: string,
   commitOrTag2?: string,
   rootPath?: string,
-  maxCommits: number = 25
+  maxCommits = 25
 ): { commits: Commit[]; tags: Tag[] } {
   if (!rootPath) {
     log.info(`Did not get a root directory`);
@@ -90,7 +90,7 @@ export function getCommitAndTagList(
     endSha = "HEAD";
   }
 
-  let commitList: { commits: Commit[]; tags: Tag[] } = {
+  const commitList: { commits: Commit[]; tags: Tag[] } = {
     commits: [],
     tags: [],
   };

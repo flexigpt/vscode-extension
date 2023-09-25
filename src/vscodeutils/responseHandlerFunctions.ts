@@ -3,7 +3,7 @@ import log from "../logger/log";
 import {
   formatPath,
   readFile as fsUtilReadFile,
-} from "../prompthelpers/fileutils";
+} from "@/prompts/prompthelpers/fileutils";
 
 import {
   openFileOrUnsavedDocument,

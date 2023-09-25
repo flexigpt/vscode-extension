@@ -8,7 +8,7 @@ import {
 } from "@/spec/chat";
 
 import { log } from "@/logger/log";
-import { Conversation } from "./conversation";
+import { Conversation } from "@/conversations/conversation";
 
 
 export class ConversationCollection {
@@ -17,7 +17,7 @@ export class ConversationCollection {
   private _idCounter: number;
   private _maxConversations: number;
 
-  constructor(maxConversations: number = 1000) {
+  constructor(maxConversations = 1000) {
     this._currentConversation = new Conversation(0);
     this._conversations = [this._currentConversation];
     this._idCounter = 1;
@@ -41,7 +41,7 @@ export class ConversationCollection {
     }
   }
 
-  public startNewConversation(exportFilePath?: string, setViews: boolean = false): void {
+  public startNewConversation(exportFilePath?: string, setViews = false): void {
     if (!this._currentConversation.isEmpty()) {
       if (this._conversations.length >= this._maxConversations) {
         // Remove the oldest conversation
@@ -56,7 +56,7 @@ export class ConversationCollection {
     }
   }
 
-  public saveAndStartNewConversation(exportFilePath?: string, setViews: boolean = false): void {
+  public saveAndStartNewConversation(exportFilePath?: string, setViews = false): void {
     if (!this._currentConversation.isEmpty()) {
       this.startNewConversation(exportFilePath, setViews);
     }
@@ -87,13 +87,13 @@ export class ConversationCollection {
     this._currentConversation.addIViews(views);
   }
 
-  public exportConversations(filePath: string, setViews: boolean = false): void {
+  public exportConversations(filePath: string, setViews = false): void {
     for (const conversation of this._conversations) {
       conversation.exportConversation(filePath, setViews);
     }
   }
 
-  public saveCurrentConversation(exportFilePath?: string, setViews: boolean = false): void {
+  public saveCurrentConversation(exportFilePath?: string, setViews = false): void {
     if (!exportFilePath) {
       return;
     }

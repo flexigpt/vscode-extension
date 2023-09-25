@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 export interface ILogger {
     log(...args: unknown[]): void;
     error(...args: unknown[]): void;

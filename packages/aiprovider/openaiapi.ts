@@ -1,6 +1,6 @@
 import { log } from "@/logger/log";
-import { GptAPI } from "./api";
-import { CompletionProvider, unescapeChars, filterMessagesByTokenCount } from "./strategy";
+import { GptAPI } from "@/aiprovider/api";
+import { CompletionProvider, unescapeChars, filterMessagesByTokenCount } from "@/aiprovider/strategy";
 import { AxiosRequestConfig } from "axios";
 
 import {

@@ -1,4 +1,4 @@
-import { getCommitAndTagList } from "../prompthelpers/gitutils";
+import { getCommitAndTagList } from "@/prompts/prompthelpers/gitutils";
 import { getWorkspaceRoot } from "./vscodefunctions";
 
 export function getCommitAndTagListString(
