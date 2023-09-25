@@ -336,13 +336,12 @@
   },
   "dependencies": {
     "@types/highlight.js": "^10.1.0",
-    "@types/prettier": "^2.7.2",
     "@types/uuid": "^9.0.1",
     "@types/vscode": "^1.76.0",
     "axios": "^1.4.0",
     "js-yaml": "^4.1.0",
     "mustache": "^4.2.0",
-    "prettier": "^3.0.3",
+    "prettier": "^2.8.8",
     "uuid": "^9.0.0"
   },
   "workspaces": [
