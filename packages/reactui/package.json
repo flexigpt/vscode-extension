@@ -11,7 +11,8 @@
     "dev": "webpack serve --config webpack.config.js --mode=development",
     "build": "webpack --config webpack.config.js --mode=production",
     "start": "rollup -c -w",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "format": "prettier --write \"**/*.{ts,tsx,jsx}\""
   },
   "keywords": [],
   "author": "Pankaj Pipada",

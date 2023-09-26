@@ -8,16 +8,20 @@
     "trailingComma": "none",
     "importOrder": [
       "^(react/(.*)$)|^(react$)|^(react(.*)$)",
+      "^(@/logger/(.*)$)|^(@/logger$)",
+      "^(@/spec/(.*)$)|^(@/spec$)",
+      "^(@/aiprovider/(.*)$)|^(@/aiprovider$)",
+      "^(@/prompts/(.*)$)|^(@/prompts$)",
+      "^(@/conversations/(.*)$)|^(@/conversations$)",
+      "^(@/reactui/lib/(.*)$)|^(@/reactui/lib$)",
       "^(@nextui-org/(.*)$)|^(@nextui-org$)",
-      "^(@/(.*)$)|^(@/$)",
+      "^(@/reactui/components/(.*)$)|^(@/reactui/components$)",
       "<THIRD_PARTY_MODULES>",
       "",
       "^[./]"
     ],
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true,
-    "importOrderBuiltinModulesToTop": true,
-    "importOrderParserPlugins": ["typescript", "tsx", "jsx", "decorators-legacy"],
-    "importOrderMergeDuplicateImports": true,
-    "importOrderCombineTypeAndValueImports": true
+    "importOrderGroupNamespaceSpecifiers": true,
+    "importOrderParserPlugins": ["typescript", "tsx", "jsx", "decorators-legacy"]
   }

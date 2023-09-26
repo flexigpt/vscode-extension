@@ -1,5 +1,6 @@
 import React from 'react';
 import { ElementRef, forwardRef } from 'react';
+
 import {
   Modal,
   ModalBody,
@@ -10,8 +11,9 @@ import {
   useDisclosure
 } from '@nextui-org/modal';
 import { ModalSlots, SlotsToClasses } from '@nextui-org/theme';
+
+import { type ClassValue, clsx } from 'clsx';
 import { HTMLMotionProps } from 'framer-motion';
-import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {

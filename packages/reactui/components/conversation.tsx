@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { IMessage } from '@/spec/chat';
 
 import { Divider } from '@nextui-org/divider';
+
 import { ChatMessage } from '@/reactui/components/chat-message';
 
 export interface MessageList {
@@ -18,9 +20,7 @@ export function Conversation({ messages }: MessageList) {
       {messages.map((message, index) => (
         <div key={index}>
           <ChatMessage message={message} />
-          {index < messages.length - 1 && (
-            <Divider className="my-4 md:my-8" />
-          )}
+          {index < messages.length - 1 && <Divider className="my-4 md:my-8" />}
         </div>
       ))}
     </div>

@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { UseChatHelpers } from 'ai/react';
 
-import { Card, CardHeader, CardBody } from '@nextui-org/card';
+import { Button } from '@nextui-org/button';
+import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import { Divider } from '@nextui-org/divider';
 import { Link } from '@nextui-org/link';
-import { Button } from '@nextui-org/button';
+
 import { IconArrowRight } from '@/reactui/components/ui/icons';
+
+import { UseChatHelpers } from 'ai/react';
 
 const exampleMessages = [
   {

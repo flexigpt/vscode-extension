@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Listbox, ListboxItem } from '@nextui-org/listbox';
 
 import { IMessage } from '@/spec/chat';
+
+import { Listbox, ListboxItem } from '@nextui-org/listbox';
 
 import { ChatMessage } from '@/reactui/components/chat-message';
 

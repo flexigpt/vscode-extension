@@ -471,7 +471,6 @@ function IconFlexiGPT({ className, ...props }: React.ComponentProps<'img'>) {
   );
 }
 
-
 // eslint-disable-next-line no-unused-vars
 function IconMenu({ className, ...props }: React.ComponentProps<'svg'>) {
   return (

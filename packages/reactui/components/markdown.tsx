@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { FC, memo } from 'react';
 import ReactMarkdown, { Options } from 'react-markdown';
 

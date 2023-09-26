@@ -1,16 +1,16 @@
 import React from 'react';
 
+import { Link } from '@nextui-org/link';
 import {
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem
 } from '@nextui-org/navbar';
-import { Link } from '@nextui-org/link';
-import { IconFlexiGPT } from '@/reactui/components/ui/icons';
-import { ThemeToggle } from '@/reactui/components/theme-switcher';
 
 import { Sidebar } from '@/reactui/components/sidebar';
+import { ThemeToggle } from '@/reactui/components/theme-switcher';
+import { IconFlexiGPT } from '@/reactui/components/ui/icons';
 
 export function FlexiNavbar() {
   return (

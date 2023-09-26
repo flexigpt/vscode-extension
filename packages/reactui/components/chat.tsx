@@ -1,27 +1,30 @@
 import * as React from 'react';
-import { useChat } from 'ai/react';
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 import { IMessage } from '@/spec/chat';
 
-import { cn } from '@/reactui/lib/utils';
-import { Conversation } from '@/reactui/components/conversation';
-import { ChatPanel } from '@/reactui/components/chat-panel';
-import { EmptyScreen } from '@/reactui/components/empty-screen';
-import { ChatScrollAnchor } from '@/reactui/components/chat-scroll-anchor';
 import { useLocalStorage } from '@/reactui/lib/hooks/use-local-storage';
+import { cn } from '@/reactui/lib/utils';
+
+import { Button } from '@nextui-org/button';
+import { Divider } from '@nextui-org/divider';
+import { Input } from '@nextui-org/input';
 import {
   Modal,
-  ModalContent,
   ModalBody,
+  ModalContent,
   ModalFooter,
   ModalHeader,
   useDisclosure
 } from '@nextui-org/modal';
-import { useState } from 'react';
-import { Button } from '@nextui-org/button';
-import { Input } from '@nextui-org/input';
-import { toast } from 'react-hot-toast';
-import { Divider } from '@nextui-org/divider';
+
+import { ChatPanel } from '@/reactui/components/chat-panel';
+import { ChatScrollAnchor } from '@/reactui/components/chat-scroll-anchor';
+import { Conversation } from '@/reactui/components/conversation';
+import { EmptyScreen } from '@/reactui/components/empty-screen';
+
+import { useChat } from 'ai/react';
 
 const IS_PREVIEW = false;
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -70,10 +73,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           <EmptyScreen />
         )}
       </div>
-      <ChatPanel
-        id={id}
-        messages={initialMessages}
-      />
+      <ChatPanel id={id} messages={initialMessages} />
 
       <Modal isOpen={previewTokenModal} onOpenChange={setPreviewTokenModal}>
         <ModalContent>

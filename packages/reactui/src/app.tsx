@@ -1,12 +1,13 @@
-import { FlexiNavbar } from '@/reactui/components/navbar';
-import { Chat } from '@/reactui/components/chat';
-import { TailwindIndicator } from '@/reactui/components/tailwind-indicator';
-import { Conversation } from '@/reactui/components/conversation';
-import messages from '@/reactui/components/messages';
-import { nanoid } from '@/reactui/lib/utils';
-
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
+
+import { nanoid } from '@/reactui/lib/utils';
+
+import { Chat } from '@/reactui/components/chat';
+import { Conversation } from '@/reactui/components/conversation';
+import messages from '@/reactui/components/messages';
+import { FlexiNavbar } from '@/reactui/components/navbar';
+import { TailwindIndicator } from '@/reactui/components/tailwind-indicator';
 
 function App() {
   return (

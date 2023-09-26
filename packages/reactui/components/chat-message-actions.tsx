@@ -1,11 +1,13 @@
-import { IMessage } from '@/spec/chat';
-
 import * as React from 'react';
 
-import { Button } from '@nextui-org/button';
-import { IconCheck, IconCopy } from '@/reactui/components/ui/icons';
+import { IMessage } from '@/spec/chat';
+
 import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard';
 import { cn } from '@/reactui/lib/utils';
+
+import { Button } from '@nextui-org/button';
+
+import { IconCheck, IconCopy } from '@/reactui/components/ui/icons';
 
 interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
   message: IMessage;

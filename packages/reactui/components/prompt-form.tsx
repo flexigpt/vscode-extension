@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useEnterSubmit } from '@/reactui/lib/hooks/use-enter-submit';
+
 import { Button } from '@nextui-org/button';
 import { Textarea } from '@nextui-org/input';
 import { Tooltip } from '@nextui-org/tooltip';
 
 import { IconArrowElbow, IconPlus } from '@/reactui/components/ui/icons';
-import { useEnterSubmit } from '@/reactui/lib/hooks/use-enter-submit';
 
 export function PromptForm() {
   const inputRef = React.useRef<HTMLInputElement>(null);

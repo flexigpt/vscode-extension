@@ -1,8 +1,10 @@
 import React from 'react';
-import { useTheme } from 'next-themes';
 
 import { Button } from '@nextui-org/button';
+
 import { IconMoon, IconSun } from '@/reactui/components/ui/icons';
+
+import { useTheme } from 'next-themes';
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();

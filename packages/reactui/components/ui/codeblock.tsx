@@ -1,20 +1,19 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
-
-import { FC, memo } from 'react';
 import * as React from 'react';
-
+import { FC, memo } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coldarkDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard';
+
+import { Button } from '@nextui-org/button';
+
 import {
   IconCheck,
   IconCopy,
   IconDownload
 } from '@/reactui/components/ui/icons';
-
-import { Button } from '@nextui-org/button';
 
 interface Props {
   language: string;

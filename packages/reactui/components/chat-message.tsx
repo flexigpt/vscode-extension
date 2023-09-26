@@ -1,17 +1,22 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
-
 import * as React from 'react';
+
 import { IMessage } from '@/spec/chat';
+
+import { cn } from '@/reactui/lib/utils';
+
+import { ChatMessageActions } from '@/reactui/components/chat-message-actions';
+import { MemoizedReactMarkdown } from '@/reactui/components/markdown';
+import { CodeBlock } from '@/reactui/components/ui/codeblock';
+import {
+  IconFlexiGPT,
+  IconOpenAI,
+  IconUser
+} from '@/reactui/components/ui/icons';
 
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-
-import { cn } from '@/reactui/lib/utils';
-import { CodeBlock } from '@/reactui/components/ui/codeblock';
-import { MemoizedReactMarkdown } from '@/reactui/components/markdown';
-import { IconFlexiGPT, IconOpenAI, IconUser } from '@/reactui/components/ui/icons';
-import { ChatMessageActions } from '@/reactui/components/chat-message-actions';
 
 export interface ChatMessageProps {
   message: IMessage;
@@ -29,7 +34,11 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
           'bg-background'
         )}
       >
-        {message.role === 'user' ? <IconUser /> : <IconFlexiGPT className='h-4 w-4'/>}
+        {message.role === 'user' ? (
+          <IconUser />
+        ) : (
+          <IconFlexiGPT className="h-4 w-4" />
+        )}
       </div>
       <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
         <MemoizedReactMarkdown

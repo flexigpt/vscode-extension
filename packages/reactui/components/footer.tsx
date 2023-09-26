@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { cn } from '@/reactui/lib/utils';
+
 import { Link } from '@nextui-org/link';
 
 export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {

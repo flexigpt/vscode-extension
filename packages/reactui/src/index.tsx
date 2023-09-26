@@ -1,12 +1,13 @@
 // src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { NextUIProvider } from '@nextui-org/react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { HashRouter } from 'react-router-dom';
+
+import { NextUIProvider } from '@nextui-org/react';
 
 import App from './app';
 import '@/reactui/globals/globals.css';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
