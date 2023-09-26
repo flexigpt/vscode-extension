@@ -6,7 +6,7 @@ import { Button } from '@nextui-org/button';
 
 // import { PromptForm } from '@/reactui/components/prompt-form';
 import { ButtonScrollToBottom } from '@/reactui/components/button-scroll-to-bottom';
-import { PromptForm } from '@/reactui/components/prompt-form';
+import { PromptForm } from '@/reactui/components/chat-panel-prompt-input';
 import { IconRefresh, IconStop } from '@/reactui/components/ui/icons';
 
 export interface ChatPanelProps {
@@ -26,7 +26,7 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
         <div className="flex h-10 items-center justify-center">
           {isLoading ? (
             <Button
-              variant="bordered"
+              variant="light"
               onClick={() => stop()}
               className="bg-background"
             >
@@ -36,7 +36,7 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
           ) : (
             messages?.length > 0 && (
               <Button
-                variant="bordered"
+                variant="light"
                 // onClick={() => reload()}
                 className="bg-background"
               >

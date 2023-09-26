@@ -123,7 +123,19 @@ const messages: IMessage[] = [
     id: '16',
     createdAt: new Date('2023-09-24T08:45:00Z'),
     role: ChatCompletionRoleEnum.assistant,
-    content: "You're welcome! Let us know if you need any further assistance.",
+    content: `
+    
+    def get_openapi_completion_for_integration_sequence_test(intxt, value_type):
+      response = openai.Completion.create(
+          model="text-davinci-003",
+          prompt=prompts.generate_prompt_integration_sequence_test(intxt, value_type),
+          temperature=0,
+          max_tokens=2560,
+          best_of=1,
+          stop=["##", "}}}}}}", "Generate workflow", "func Test"])
+      
+    return response
+    `,
     timestamp: '08:45 AM',
     name: 'Assistant'
   }

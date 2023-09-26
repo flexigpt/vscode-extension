@@ -2,8 +2,7 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 import * as React from 'react';
 import { FC, memo } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { coldarkDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard';
 
@@ -14,6 +13,7 @@ import {
   IconCopy,
   IconDownload
 } from '@/reactui/components/ui/icons';
+import { monokai } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 interface Props {
   language: string;
@@ -125,7 +125,7 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
       </div>
       <SyntaxHighlighter
         language={language}
-        style={coldarkDark}
+        style={monokai}
         PreTag="div"
         showLineNumbers
         customStyle={{
