@@ -1,4 +1,4 @@
-import { IMessage as Message } from '@/spec/chat';
+import { IMessage } from '@/spec/chat';
 
 import * as React from 'react';
 
@@ -8,7 +8,7 @@ import { useCopyToClipboard } from '@/reactui/lib/hooks/use-copy-to-clipboard';
 import { cn } from '@/reactui/lib/utils';
 
 interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
-  message: Message;
+  message: IMessage;
 }
 
 export function ChatMessageActions({

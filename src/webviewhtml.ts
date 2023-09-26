@@ -67,15 +67,15 @@ export function getWebviewHtmlReact(
   const htmlPath = path.join(extensionUri.fsPath, "packages", "reactui", "dist", "index.html");
   let htmlContent = fs.readFileSync(htmlPath, "utf-8");
 
-  const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "bundle.js"));
-  // Replace the "bundle.js" reference in your HTML
+  const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "webpack"));
+  // Replace the "webpack.*" reference
   htmlContent = htmlContent.replace(
-    /bundle\.js/g,
+    /webpack/g,
     reactBundleUri.toString()
   );
 
   const reactIconsBaseUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "icons"));
-  // Replace the icon references in your HTML
+  // Replace the icon references
   htmlContent = htmlContent.replace(
     /icons\/favicon-color-16x16\.png/g,
     reactIconsBaseUri.with({ path: reactIconsBaseUri.path + '/favicon-color-16x16.png' }).toString()

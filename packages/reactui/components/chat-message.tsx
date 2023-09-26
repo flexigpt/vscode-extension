@@ -2,7 +2,7 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 
 import * as React from 'react';
-import { IMessage as Message } from '@/spec/chat';
+import { IMessage } from '@/spec/chat';
 
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -10,11 +10,11 @@ import remarkMath from 'remark-math';
 import { cn } from '@/reactui/lib/utils';
 import { CodeBlock } from '@/reactui/components/ui/codeblock';
 import { MemoizedReactMarkdown } from '@/reactui/components/markdown';
-import { IconOpenAI, IconUser } from '@/reactui/components/ui/icons';
+import { IconFlexiGPT, IconOpenAI, IconUser } from '@/reactui/components/ui/icons';
 import { ChatMessageActions } from '@/reactui/components/chat-message-actions';
 
 export interface ChatMessageProps {
-  message: Message;
+  message: IMessage;
 }
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
@@ -26,12 +26,10 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
       <div
         className={cn(
           'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
-          message.role === 'user'
-            ? 'bg-background'
-            : 'bg-primary text-primary-foreground'
+          'bg-background'
         )}
       >
-        {message.role === 'user' ? <IconUser /> : <IconOpenAI />}
+        {message.role === 'user' ? <IconUser /> : <IconFlexiGPT className='h-4 w-4'/>}
       </div>
       <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
         <MemoizedReactMarkdown
@@ -43,7 +41,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             },
             code({ node, inline, className, children, ...props }) {
               if (children.length) {
-                if (children[0] == '▍') {
+                if (children[0] === '▍') {
                   return (
                     <span className="mt-1 cursor-default animate-pulse">▍</span>
                   );

@@ -3,7 +3,7 @@ import React from 'react';
 import { Accordion, AccordionItem } from '@nextui-org/accordion';
 import { Button } from '@nextui-org/button';
 import { IconMenu, IconFlexiGPT } from '@/reactui/components/ui/icons';
-import { ChatList } from '@/reactui/components/chat-list';
+import { ConversationList } from '@/reactui/components/conversation-list';
 import {
   Sheet,
   SheetBody,
@@ -42,7 +42,7 @@ export function Sidebar() {
                     aria-label="Conversations"
                     title="Conversations"
                   >
-                    <ChatList messages={[]} />
+                    <ConversationList messages={[]} />
                   </AccordionItem>
                 </Accordion>
                 <Accordion variant="light">

@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { Listbox, ListboxItem } from '@nextui-org/listbox';
 
-import { IMessage as Message } from '@/spec/chat';
+import { IMessage } from '@/spec/chat';
 
 import { ChatMessage } from '@/reactui/components/chat-message';
 
-export interface ChatListItems {
-  messages: Message[];
+export interface ConversationListItems {
+  messages: IMessage[];
 }
 
-export function ChatList({ messages }: ChatListItems) {
+export function ConversationList({ messages }: ConversationListItems) {
   type DropdownItemType = {
     key: string;
     label: string;

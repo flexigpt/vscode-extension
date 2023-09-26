@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { type UseChatHelpers } from 'ai/react';
+import { IMessage } from '@/spec/chat';
 
 import { Button } from '@nextui-org/button';
 // import { PromptForm } from '@/reactui/components/prompt-form';
@@ -7,30 +7,19 @@ import { ButtonScrollToBottom } from '@/reactui/components/button-scroll-to-bott
 import { IconRefresh, IconStop } from '@/reactui/components/ui/icons';
 import { FooterText } from '@/reactui/components/footer';
 
-export interface ChatPanelProps
-  extends Pick<
-    UseChatHelpers,
-    | 'append'
-    | 'isLoading'
-    | 'reload'
-    | 'messages'
-    | 'stop'
-    | 'input'
-    | 'setInput'
-  > {
+export interface ChatPanelProps {
   id?: string;
+  messages?: IMessage[];
 }
 
 export function ChatPanel({
   id,
-  isLoading,
-  stop,
-  append,
-  reload,
-  input,
-  setInput,
   messages
 }: ChatPanelProps) {
+  const isLoading = false;
+  if (!messages) {
+    messages =[];
+  }
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
       <ButtonScrollToBottom />
@@ -49,7 +38,7 @@ export function ChatPanel({
             messages?.length > 0 && (
               <Button
                 variant="bordered"
-                onClick={() => reload()}
+                // onClick={() => reload()}
                 className="bg-background"
               >
                 <IconRefresh className="mr-2" />
