@@ -12,9 +12,13 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
       )}
       {...props}
     >
-      Open source AI chatbot built with{' '}
-      <Link href="https://nextjs.org">Next.js</Link> and{' '}
-      <Link href="https://vercel.com/storage/kv">Vercel KV</Link>.
+      <Link
+        className="px-2 text-center text-xs leading-normal"
+        href="https://github.com/ppipada/vscode-flexigpt"
+      >
+        FlexiGPT
+      </Link>
+      {''}
     </p>
   );
 }

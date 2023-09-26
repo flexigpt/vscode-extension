@@ -21,9 +21,9 @@ import { useState } from 'react';
 import { Button } from '@nextui-org/button';
 import { Input } from '@nextui-org/input';
 import { toast } from 'react-hot-toast';
-import { Divider } from '@nextui-org/react';
+import { Divider } from '@nextui-org/divider';
 
-const IS_PREVIEW = process.env.VERCEL_ENV === 'preview';
+const IS_PREVIEW = false;
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages: IMessage[];
   id: string;
@@ -60,16 +60,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   //     });
   return (
     <>
-      {/* <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
-        {initialMessages.length ? (
-          <>
-            <ConversationList messages={initialMessages} />
-            <ChatScrollAnchor trackVisibility={isLoading} />
-          </>
-        ) : (
-          <EmptyScreen setInput={setInput} />
-        )}
-      </div> */}
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {initialMessages.length ? (
           <>
@@ -77,7 +67,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
-          <Divider />
+          <EmptyScreen />
         )}
       </div>
       <ChatPanel

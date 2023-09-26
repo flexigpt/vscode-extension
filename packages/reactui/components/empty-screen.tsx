@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { UseChatHelpers } from 'ai/react';
 
-import { Button } from '@nextui-org/button';
+import { Card, CardHeader, CardBody } from '@nextui-org/card';
+import { Divider } from '@nextui-org/divider';
 import { Link } from '@nextui-org/link';
+import { Button } from '@nextui-org/button';
 import { IconArrowRight } from '@/reactui/components/ui/icons';
 
 const exampleMessages = [
@@ -20,35 +22,43 @@ const exampleMessages = [
   }
 ];
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+// export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+export function EmptyScreen() {
   return (
-    <div className="mx-auto max-w-2xl px-4">
-      <div className="rounded-lg border bg-background p-8">
-        <h1 className="mb-2 text-lg font-semibold">
-          Welcome to Next.js AI Chatbot!
-        </h1>
-        <p className="mb-2 leading-normal text-muted-foreground">
-          This is an open source AI chatbot app template built with{' '}
-          <Link href="https://nextjs.org">Next.js</Link> and{' '}
-          <Link href="https://vercel.com/storage/kv">Vercel KV</Link>.
+    <Card className="relative mx-auto max-w-2xl px-4">
+      <CardHeader className="flex flex-col gap-3">
+        <p className="text-md text-center">Welcome to FlexiGPT !</p>
+        <p className="text-small text-default-500">
+          The fully open source AI Assistant.
         </p>
-        <p className="leading-normal text-muted-foreground">
-          You can start a conversation here or try the following examples:
-        </p>
+        <Link
+          isExternal
+          showAnchorIcon
+          className="text-xs text-default-500 text-muted-foreground"
+          href="https://github.com/ppipada/vscode-flexigpt"
+        >
+          Visit source code on GitHub.
+        </Link>
+      </CardHeader>
+      <Divider />
+      <CardBody>
         <div className="mt-4 flex flex-col items-start space-y-2">
+          <p className="leading-normal text-muted-foreground">
+            You can start a conversation here or try the following examples:
+          </p>
           {exampleMessages.map((message, index) => (
             <Button
               key={index}
               variant="light"
-              className="h-auto p-0 text-base"
-              onClick={() => setInput(message.message)}
+              className="h-auto p-2 text-base"
+              // onClick={() => setInput(message.message)}
             >
               <IconArrowRight className="mr-2 text-muted-foreground" />
               {message.heading}
             </Button>
           ))}
         </div>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }

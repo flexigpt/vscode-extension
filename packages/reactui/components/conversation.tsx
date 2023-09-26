@@ -4,11 +4,11 @@ import { IMessage } from '@/spec/chat';
 import { Divider } from '@nextui-org/divider';
 import { ChatMessage } from '@/reactui/components/chat-message';
 
-export interface ChatList {
+export interface MessageList {
   messages: IMessage[];
 }
 
-export function Conversation({ messages }: ChatList) {
+export function Conversation({ messages }: MessageList) {
   if (!messages.length) {
     return null;
   }

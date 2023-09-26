@@ -14,7 +14,7 @@ import {
   IconDownload
 } from '@/reactui/components/ui/icons';
 
-import { Button } from '@nextui-org/react';
+import { Button } from '@nextui-org/button';
 
 interface Props {
   language: string;

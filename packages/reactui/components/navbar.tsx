@@ -6,6 +6,7 @@ import {
   NavbarContent,
   NavbarItem
 } from '@nextui-org/navbar';
+import { Link } from '@nextui-org/link';
 import { IconFlexiGPT } from '@/reactui/components/ui/icons';
 import { ThemeToggle } from '@/reactui/components/theme-switcher';
 
@@ -19,8 +20,14 @@ export function FlexiNavbar() {
       </NavbarItem>
       <NavbarContent>
         <NavbarBrand className="flex-grow justify-center">
-          <IconFlexiGPT className="mr-2" />
-          <p className="font-bold text-inherit">FlexiGPT</p>
+          <Link
+            className="font-bold text-inherit"
+            href="https://github.com/ppipada/vscode-flexigpt"
+            isExternal
+          >
+            <IconFlexiGPT className="mr-2" />
+            FlexiGPT
+          </Link>
         </NavbarBrand>
         <NavbarItem className="justify-end">
           <ThemeToggle />

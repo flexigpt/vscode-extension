@@ -315,6 +315,7 @@
     "debug": "node --inspect-brk $(which vscode-inspect-brk) . --extensionDevelopmentPath=/Users/pankajpipada/github/vscode-flexigpt"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/chai": "^4.3.4",
     "@types/glob": "^8.0.0",
     "@types/js-yaml": "^4.0.5",
