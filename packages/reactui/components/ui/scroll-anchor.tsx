@@ -3,11 +3,11 @@ import { useInView } from 'react-intersection-observer';
 
 import { useAtBottom } from '@/reactui/lib/hooks/use-at-bottom';
 
-interface ChatScrollAnchorProps {
+interface ScrollAnchorProps {
   trackVisibility?: boolean;
 }
 
-export function ChatScrollAnchor({ trackVisibility }: ChatScrollAnchorProps) {
+export function ScrollAnchor({ trackVisibility }: ScrollAnchorProps) {
   const isAtBottom = useAtBottom();
   const { ref, entry, inView } = useInView({
     trackVisibility,

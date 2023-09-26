@@ -4,8 +4,8 @@ import { IMessage } from '@/spec/chat';
 
 import { cn } from '@/reactui/lib/utils';
 
-import { ChatMessageActions } from '@/reactui/components/chat-message-actions';
 import { ChatMessageContent } from '@/reactui/components/chat-message-content';
+import { CopyButton } from '@/reactui/components/ui/copy-button';
 import {
   IconFlexiGPT,
   IconOpenAI,
@@ -35,13 +35,17 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         )}
       </div>
       <ChatMessageContent content={message.content} />
-      <ChatMessageActions
-        className={cn(
-          'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
-          'bg-background'
-        )}
-        message={message}
-      />
+      <div
+        className="flex h-8 w-8 items-center justify-end transition-opacity group-hover:opacity-100 md:absolute md:-right-10 md:-top-2 md:opacity-0"
+        {...props}
+      >
+        <CopyButton
+          className="w-8 h-8 text-zinc-800 justify-center"
+          value={message.content}
+          variant="ghost"
+          size="sm"
+        />
+      </div>
     </div>
   );
 }

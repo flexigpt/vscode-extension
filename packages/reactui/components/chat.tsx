@@ -20,9 +20,9 @@ import {
 } from '@nextui-org/modal';
 
 import { ChatPanel } from '@/reactui/components/chat-panel';
-import { ChatScrollAnchor } from '@/reactui/components/chat-scroll-anchor';
 import { Conversation } from '@/reactui/components/conversation';
 import { EmptyScreen } from '@/reactui/components/empty-screen';
+import { ScrollAnchor } from '@/reactui/components/ui/scroll-anchor';
 
 import { useChat } from 'ai/react';
 
@@ -67,7 +67,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         {initialMessages.length ? (
           <>
             <Conversation messages={initialMessages} />
-            <ChatScrollAnchor trackVisibility={isLoading} />
+            <ScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
           <EmptyScreen />

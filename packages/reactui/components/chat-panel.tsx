@@ -4,9 +4,8 @@ import { IMessage } from '@/spec/chat';
 
 import { Button } from '@nextui-org/button';
 
-// import { PromptForm } from '@/reactui/components/prompt-form';
-import { ButtonScrollToBottom } from '@/reactui/components/button-scroll-to-bottom';
 import { PromptForm } from '@/reactui/components/chat-panel-prompt-input';
+import { ButtonScrollToBottom } from '@/reactui/components/ui/button-scroll-to-bottom';
 import { IconRefresh, IconStop } from '@/reactui/components/ui/icons';
 
 export interface ChatPanelProps {
@@ -48,18 +47,6 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
         </div>
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
           <PromptForm />
-          {/* <PromptForm
-            onSubmit={async value => {
-              await append({
-                id,
-                content: value,
-                role: 'user'
-              });
-            }}
-            input={input}
-            setInput={setInput}
-            isLoading={isLoading}
-          /> */}
         </div>
       </div>
     </div>
