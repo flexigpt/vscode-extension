@@ -25,7 +25,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     alias: {
       '@': path.resolve(__dirname, '../../packages/'),
-      'process': 'process/browser.js'
+      process: 'process/browser.js'
     }
   },
   module: {
@@ -43,35 +43,34 @@ module.exports = {
   },
   optimization: {
     splitChunks: {
-      // chunks: 'all',
+      chunks: 'all',
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all'
+          name: 'vendors'
         },
         styles: {
           name: 'styles',
           test: /\.css$/,
-          chunks: 'all',
           enforce: true
         }
       }
     }
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html'
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'webpack.[name].css',
-      chunkFilename: '[id].css'
-    }),
     new CopyWebpackPlugin({
       patterns: [{ from: 'public/icons', to: 'icons' }]
     }),
     new webpack.ProvidePlugin({
       process: 'process/browser.js'
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'webpack.[name].css',
+      chunkFilename: '[id].css'
+    }),
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      inject: 'head'
     })
   ]
 };
