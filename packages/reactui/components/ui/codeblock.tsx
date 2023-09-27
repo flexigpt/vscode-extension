@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { FC, memo } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { solarizedLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { CodeProps } from '@/reactui/components/ui/code-types';
 import { CopyButton } from '@/reactui/components/ui/copy-button';
@@ -30,7 +30,7 @@ const CodeBlock: FC<CodeProps> = memo(({ language, value }) => {
       </div>
       <SyntaxHighlighter
         language={language}
-        style={solarizedLight}
+        style={monokaiSublime}
         PreTag="div"
         showLineNumbers
         customStyle={{

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 
 import { Button, ButtonProps } from '@nextui-org/button';
-import { CheckLinearIcon, CopyLinearIcon } from '@nextui-org/shared-icons';
 import { useClipboard } from '@nextui-org/use-clipboard';
+import { IconCheck, IconCopy } from './icons';
 
 export interface CopyButtonProps extends ButtonProps {
   value?: string;
@@ -22,12 +22,12 @@ export const CopyButton: FC<CopyButtonProps> = ({ value, ...buttonProps }) => {
       onPress={handleCopy}
       {...buttonProps}
     >
-      <CheckLinearIcon
-        className="absolute opacity-0 scale-50 text-zinc-300 data-[visible=true]:opacity-100 data-[visible=true]:scale-100 transition-transform-opacity w-8 h-8"
+      <IconCheck
+        className="absolute opacity-0 data-[visible=true]:opacity-100 data-[visible=true]:scale-100 transition-transform-opacity"
         data-visible={copied}
       />
-      <CopyLinearIcon
-        className="absolute opacity-0 scale-50 text-zinc-300 data-[visible=true]:opacity-100 data-[visible=true]:scale-100 transition-transform-opacity w-8 h-8"
+      <IconCopy
+        className="absolute opacity-0 data-[visible=true]:opacity-100 data-[visible=true]:scale-100 transition-transform-opacity"
         data-visible={!copied}
       />
     </Button>
