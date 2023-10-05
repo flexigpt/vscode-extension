@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { useAtBottom } from '@/reactui/lib/hooks/use-at-bottom';
-import { cn } from '@/reactui/lib/utils';
+import { useAtBottom } from '@/lib/hooks/use-at-bottom';
+import { cn } from '@/lib/utils';
 
 import { Button, ButtonProps } from '@nextui-org/button';
 
-import { IconArrowDown } from '@/reactui/components/ui/icons';
+import { IconArrowDown } from '@/components/ui/icons';
 
 export function ButtonScrollToBottom({ className, ...props }: ButtonProps) {
   const isAtBottom = useAtBottom();

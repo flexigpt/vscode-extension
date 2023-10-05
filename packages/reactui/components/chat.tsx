@@ -2,10 +2,10 @@ import * as React from 'react';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { IMessage } from '@/spec/chat';
+import { IMessage } from 'spec/chat';
 
-import { useLocalStorage } from '@/reactui/lib/hooks/use-local-storage';
-import { cn } from '@/reactui/lib/utils';
+import { useLocalStorage } from '@/lib/hooks/use-local-storage';
+import { cn } from '@/lib/utils';
 
 import { Button } from '@nextui-org/button';
 import { Divider } from '@nextui-org/divider';
@@ -19,10 +19,10 @@ import {
   useDisclosure
 } from '@nextui-org/modal';
 
-import { ChatPanel } from '@/reactui/components/chat-panel';
-import { Conversation } from '@/reactui/components/conversation';
-import { EmptyScreen } from '@/reactui/components/empty-screen';
-import { ScrollAnchor } from '@/reactui/components/ui/scroll-anchor';
+import { ChatPanel } from '@/components/chat-panel';
+import { Conversation } from '@/components/conversation';
+import { EmptyScreen } from '@/components/empty-screen';
+import { ScrollAnchor } from '@/components/ui/scroll-anchor';
 
 import { useChat } from 'ai/react';
 

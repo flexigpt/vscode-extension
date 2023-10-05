@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { IMessage } from '@/spec/chat';
+import { IMessage } from 'spec/chat';
 
 import { Divider } from '@nextui-org/divider';
 
-import { ChatMessage } from '@/reactui/components/chat-message';
+import { ChatMessage } from '@/components/chat-message';
 
 export interface MessageList {
   messages: IMessage[];

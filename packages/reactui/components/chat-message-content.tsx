@@ -2,10 +2,10 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 import * as React from 'react';
 
-import { IMessage } from '@/spec/chat';
+import { IMessage } from 'spec/chat';
 
-import { CodeBlock } from '@/reactui/components/ui/codeblock';
-import { MemoizedReactMarkdown } from '@/reactui/components/ui/markdown';
+import { CodeBlock } from '@/components/ui/codeblock';
+import { MemoizedReactMarkdown } from '@/components/ui/markdown';
 
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';

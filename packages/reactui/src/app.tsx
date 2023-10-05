@@ -1,12 +1,12 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 
-import { nanoid } from '@/reactui/lib/utils';
+import { nanoid } from '@/lib/utils';
 
-import { Chat } from '@/reactui/components/chat';
-import { Conversation } from '@/reactui/components/conversation';
-import messages from '@/reactui/components/messages-sample';
-import { FlexiNavbar } from '@/reactui/components/navbar';
+import { Chat } from '@/components/chat';
+import { Conversation } from '@/components/conversation';
+import messages from '@/components/messages-sample';
+import { FlexiNavbar } from '@/components/navbar';
 
 function App() {
   return (

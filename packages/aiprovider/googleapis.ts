@@ -1,13 +1,12 @@
-import { log } from "@/logger/log";
-import { GptAPI } from "@/aiprovider/api";
-import { CompletionProvider } from "@/aiprovider/strategy";
-import { AxiosRequestConfig } from "axios";
-
+import { GptAPI } from '@/api';
+import { CompletionProvider } from '@/strategy';
+import { AxiosRequestConfig } from 'axios';
+import { log } from 'logger/log';
 import {
-  CompletionRequest,
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
+  CompletionRequest
+} from 'spec/chat';
 
 export class GoogleGenerativeLanguageAPI
   extends GptAPI
@@ -25,14 +24,14 @@ export class GoogleGenerativeLanguageAPI
     origin: string,
     headers: Record<string, string> = {}
   ) {
-    const apiKeyHeaderKey = "";
+    const apiKeyHeaderKey = '';
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      "content-type": "application/json",
+      'content-type': 'application/json'
     };
     super(origin, apiKey, apiKeyHeaderKey, {
       ...defaultHeaders,
-      ...headers,
+      ...headers
     });
     this.#timeout = timeout;
     this.defaultCompletionModel = defaultCompletionModel;
@@ -47,10 +46,10 @@ export class GoogleGenerativeLanguageAPI
     // return tempCodeString;
     // let messages: ChatCompletionRequestMessage[] = [{"role": "user", "content": "Hello!"}];
     if (!input.messages) {
-      throw Error("No input messages found");
+      throw Error('No input messages found');
     }
     let chatModel = false;
-    if (input.model.startsWith("chat")) {
+    if (input.model.startsWith('chat')) {
       chatModel = true;
     }
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -58,17 +57,17 @@ export class GoogleGenerativeLanguageAPI
       temperature: input.temperature,
       topP: input.topP,
       topK: input.topK,
-      candidateCount: input.n,
+      candidateCount: input.n
     };
 
     if (chatModel) {
       request.prompt = {
-        messages: input.messages.map((item) => {
+        messages: input.messages.map(item => {
           return {
             author: item.role,
-            content: item.content,
+            content: item.content
           };
-        }),
+        })
       };
     } else {
       request.prompt = { text: input.prompt };
@@ -90,16 +89,16 @@ export class GoogleGenerativeLanguageAPI
     }
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
-      method: "POST",
-      data: request,
+      method: 'POST',
+      data: request
     };
     const data = await this.request(requestConfig);
-    if (typeof data !== "object" || data === null) {
-      throw new Error("Invalid data response. Expected an object." + data);
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Invalid data response. Expected an object.' + data);
     }
-    let respText = "";
+    let respText = '';
     if (
-      "candidates" in data &&
+      'candidates' in data &&
       Array.isArray(data.candidates) &&
       data.candidates.length > 0
     ) {
@@ -119,7 +118,7 @@ export class GoogleGenerativeLanguageAPI
   ): CompletionRequest {
     const model = (inputParams?.model as string) || this.defaultCompletionModel;
     let chatModel = false;
-    if (model.startsWith("chat")) {
+    if (model.startsWith('chat')) {
       chatModel = true;
     }
     const completionRequest: CompletionRequest = {
@@ -131,13 +130,13 @@ export class GoogleGenerativeLanguageAPI
       topP: inputParams?.topP,
       topK: inputParams?.topK,
       n: inputParams?.n,
-      stop: inputParams?.stop,
+      stop: inputParams?.stop
     };
 
     if (completionRequest.prompt) {
       const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt,
+        content: completionRequest.prompt
       };
       if (!completionRequest.messages) {
         completionRequest.messages = [message];

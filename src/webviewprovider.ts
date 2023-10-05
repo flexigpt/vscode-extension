@@ -5,15 +5,15 @@ import * as path from 'path';
 import * as prettier from 'prettier';
 import { v4 as uuidv4 } from 'uuid';
 
-import Providers, { CompletionProvider } from '@/aiprovider/strategy';
-import { filterSensitiveInfoFromJsonString } from '@/aiprovider/api';
+import Providers, { CompletionProvider } from 'aiprovider/strategy';
+import { filterSensitiveInfoFromJsonString } from 'aiprovider/api';
 
 import log from './logger/log';
 
 import { importAllPrompts } from './setupprompts';
 import { getAllProviders } from './setupaiproviders';
-import { CommandRunnerContext } from '@/prompts/promptimporter/promptcommandrunner';
-import { systemVariableNames } from '@/prompts/promptimporter/predefinedvariables';
+import { CommandRunnerContext } from 'prompts/promptimporter/promptcommandrunner';
+import { systemVariableNames } from 'prompts/promptimporter/predefinedvariables';
 import {
   append,
   getActiveDocumentFilePath,
@@ -23,12 +23,12 @@ import {
 } from './vscodeutils/vscodefunctions';
 import {
   ConversationCollection
-} from '@/conversations/collection';
+} from 'conversations/collection';
 import {
   loadConversations
-} from '@/conversations/loader';
-import { ChatCompletionRoleEnum, IView } from '@/spec/chat';
-import { COMMAND_TYPE_CLI, Command } from '@/prompts/promptdef/promptcommand';
+} from 'conversations/loader';
+import { ChatCompletionRoleEnum, IView } from 'spec/chat';
+import { COMMAND_TYPE_CLI, Command } from 'prompts/promptdef/promptcommand';
 import { getWebviewHtml, getWebviewHtmlReact } from './webviewhtml';
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
@@ -98,8 +98,10 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     } else {
       this._conversationCollection = new ConversationCollection();
     }
-    this._conversationCollection.startNewConversation();
-    this.sendConversationListMessage();
+    if (this._conversationCollection) {
+      this._conversationCollection.startNewConversation();
+      this.sendConversationListMessage();
+    }
   }
 
   public setCommandRunnerContext(commandRunnerContext: CommandRunnerContext) {
@@ -285,7 +287,8 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.options = {
       // Allow scripts in the webview
       enableScripts: true,
-      localResourceRoots: [this._extensionUri]
+      // localResourceRoots: [this._extensionUri]
+      localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, "packages", "reactui", "dist")]
     };
 
     // set the HTML for the webview

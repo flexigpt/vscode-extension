@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "dev": "webpack serve --config webpack.config.js --mode=development",
-    "build": "webpack --config webpack.config.js --mode=production",
+    "build": "npm run clean ; webpack --config webpack.config.js --mode=production",
+    "build-vscode": "npm run clean ; vscode=true webpack --config webpack.config.js --mode=development",
     "start": "rollup -c -w",
     "clean": "rimraf dist",
     "format": "prettier --write \"**/*.{ts,tsx,jsx}\""
@@ -21,6 +22,7 @@
     "@nextui-org/react": "^2.1.13",
     "ai": "^2.2.13",
     "framer-motion": "^10.16.4",
+    "logger": "^1.0.0",
     "next-themes": "^0.2.1",
     "postcss-preset-env": "^9.1.4",
     "react": "^18.2.0",
@@ -32,6 +34,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
+    "spec": "^1.0.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "web-vitals": "^2.1.4"
@@ -44,9 +47,11 @@
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
-    "postcss": "^8.4.30",
+    "postcss": "^8.4.31",
+    "postcss-color-converter": "^1.1.0",
     "postcss-loader": "^7.3.3",
     "process": "^0.11.10",
+    "style-loader": "^3.3.3",
     "tailwindcss": "^3.3.3",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",

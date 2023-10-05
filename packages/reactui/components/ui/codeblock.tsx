@@ -5,9 +5,9 @@ import { FC, memo } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
-import { CodeProps } from '@/reactui/components/ui/code-types';
-import { CopyButton } from '@/reactui/components/ui/copy-button';
-import { DownloadButton } from '@/reactui/components/ui/download-button';
+import { CodeProps } from '@/components/ui/code-types';
+import { CopyButton } from '@/components/ui/copy-button';
+import { DownloadButton } from '@/components/ui/download-button';
 
 const CodeBlock: FC<CodeProps> = memo(({ language, value }) => {
   return (

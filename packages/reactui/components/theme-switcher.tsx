@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Button } from '@nextui-org/button';
 
-import { IconMoon, IconSun } from '@/reactui/components/ui/icons';
+import { IconMoon, IconSun } from '@/components/ui/icons';
 
 import { useTheme } from 'next-themes';
 
@@ -10,6 +10,10 @@ export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
   // eslint-disable-next-line no-unused-vars
   const [_, startTransition] = React.useTransition();
+  const enableVscodeOnly = (window as any).__VSCodeOnly__;
+  if (enableVscodeOnly) {
+    return <div />;
+  }
 
   return (
     <Button

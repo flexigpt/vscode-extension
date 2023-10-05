@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-import { IMessage } from '@/spec/chat';
+import { IMessage } from 'spec/chat';
 
-import { cn } from '@/reactui/lib/utils';
+import { cn } from '@/lib/utils';
 
-import { ChatMessageContent } from '@/reactui/components/chat-message-content';
-import { CopyButton } from '@/reactui/components/ui/copy-button';
+import { ChatMessageContent } from '@/components/chat-message-content';
+import { CopyButton } from '@/components/ui/copy-button';
 import {
   IconFlexiGPT,
   IconOpenAI,
   IconUser
-} from '@/reactui/components/ui/icons';
+} from '@/components/ui/icons';
 
 export interface ChatMessageProps {
   message: IMessage;
@@ -40,7 +40,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         {...props}
       >
         <CopyButton
-          className="w-8 h-8 text-zinc-800 justify-center"
+          className="w-8 h-8 justify-center"
           value={message.content}
           variant="ghost"
           size="sm"

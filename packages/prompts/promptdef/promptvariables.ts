@@ -1,4 +1,4 @@
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 
 // Defines a class called Variable
 export class Variable {

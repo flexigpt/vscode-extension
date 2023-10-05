@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import { IMessage } from '@/spec/chat';
+import { IMessage } from 'spec/chat';
 
 import { Button } from '@nextui-org/button';
 
-import { PromptForm } from '@/reactui/components/chat-panel-prompt-input';
-import { ButtonScrollToBottom } from '@/reactui/components/ui/button-scroll-to-bottom';
-import { IconRefresh, IconStop } from '@/reactui/components/ui/icons';
+import { PromptForm } from '@/components/chat-panel-prompt-input';
+import { ButtonScrollToBottom } from '@/components/ui/button-scroll-to-bottom';
+import { IconRefresh, IconStop } from '@/components/ui/icons';
 
 export interface ChatPanelProps {
   id?: string;

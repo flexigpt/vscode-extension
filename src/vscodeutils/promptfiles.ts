@@ -1,17 +1,17 @@
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 import * as vscode from "vscode";
 import axios from "axios";
 import { promises as fs } from "fs";
 
-import { FunctionWrapper } from "@/prompts/promptdef/promptfunctions";
-import { Variable } from "@/prompts/promptdef/promptvariables";
-import { COMMAND_TYPE_CLI, Command } from "@/prompts/promptdef/promptcommand";
+import { FunctionWrapper } from "prompts/promptdef/promptfunctions";
+import { Variable } from "prompts/promptdef/promptvariables";
+import { COMMAND_TYPE_CLI, Command } from "prompts/promptdef/promptcommand";
 
 import {
   CommandRunnerContext,
   DEFAULT_RESPONSE_HANDLER,
-} from "@/prompts/promptimporter/promptcommandrunner";
-import { getFileNameAndExtension } from "@/prompts/prompthelpers/fileutils";
+} from "prompts/promptimporter/promptcommandrunner";
+import { getFileNameAndExtension } from "prompts/prompthelpers/fileutils";
 
 export async function fileExists(filePath: string): Promise<boolean> {
   try {

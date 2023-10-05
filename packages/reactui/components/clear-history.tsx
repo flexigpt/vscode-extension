@@ -2,7 +2,7 @@
 // import { useRouter } from 'next/navigation'
 // import { toast } from 'react-hot-toast'
 
-// import { Button } from '@/reactui/components/ui/button'
+// import { Button } from '@/components/ui/button'
 // import {
 //   AlertDialog,
 //   AlertDialogAction,
@@ -13,8 +13,8 @@
 //   AlertDialogHeader,
 //   AlertDialogTitle,
 //   AlertDialogTrigger
-// } from '@/reactui/components/ui/alert-dialog'
-// import { IconSpinner } from '@/reactui/components/ui/icons'
+// } from '@/components/ui/alert-dialog'
+// import { IconSpinner } from '@/components/ui/icons'
 
 // interface ClearHistoryProps {
 //   clearChats: () => Promise<{ error?: string } | void>

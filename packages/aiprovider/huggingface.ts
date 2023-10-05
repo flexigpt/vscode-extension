@@ -1,12 +1,12 @@
-import { log } from "@/logger/log";
-import { GptAPI } from "@/aiprovider/api";
-import { CompletionProvider, filterMessagesByTokenCount } from "@/aiprovider/strategy";
+import { GptAPI } from '@/api';
+import { CompletionProvider, filterMessagesByTokenCount } from '@/strategy';
+import { AxiosRequestConfig } from 'axios';
+import { log } from 'logger/log';
 import {
-  CompletionRequest,
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
-import { AxiosRequestConfig } from "axios";
+  CompletionRequest
+} from 'spec/chat';
 
 export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
   #timeout: number;
@@ -21,14 +21,14 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     origin: string,
     headers: Record<string, string> = {}
   ) {
-    const apiKeyHeaderKey = "Authorization";
+    const apiKeyHeaderKey = 'Authorization';
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      "content-type": "application/json",
+      'content-type': 'application/json'
     };
     super(origin, apiKey, apiKeyHeaderKey, {
       ...defaultHeaders,
-      ...headers,
+      ...headers
     });
     this.#timeout = timeout;
     this.defaultCompletionModel = defaultCompletionModel;
@@ -37,20 +37,20 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
 
   async getModelType(model: string) {
     const requestConfig: AxiosRequestConfig = {
-      url: "/models/" + model,
-      method: "GET",
+      url: '/models/' + model,
+      method: 'GET'
     };
     const data = await this.request(requestConfig);
-    if (typeof data !== "object" || data === null) {
-      throw new Error("Invalid data response. Expected an object.");
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Invalid data response. Expected an object.');
     }
-    if ("tags" in data) {
+    if ('tags' in data) {
       const tags = data.tags as string[];
-      if ("conversational" in tags) {
-        return "chat";
+      if ('conversational' in tags) {
+        return 'chat';
       }
     }
-    return "completion";
+    return 'completion';
   }
   async completion(input: CompletionRequest): Promise<any> {
     return this.chatCompletion(input);
@@ -68,10 +68,10 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     const generated_responses: string[] = [];
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const past_user_inputs: string[] = [];
-    let text = "";
+    let text = '';
 
     for (let i = 0; i < messages.length; i++) {
-      const icontent: string = messages[i].content || "";
+      const icontent: string = messages[i].content || '';
       if (messages[i].role === ChatCompletionRoleEnum.assistant) {
         generated_responses.push(icontent);
       } else if (
@@ -92,7 +92,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
 
   async chatCompletion(input: CompletionRequest): Promise<any> {
     if (!input.messages) {
-      throw Error("No input messages found");
+      throw Error('No input messages found');
     }
     const model = input.model;
     const modeltype = await this.getModelType(model);
@@ -109,9 +109,9 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       repetition_penalty: input.presencePenalty,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      max_time: input.timeout ? input.timeout : this.#timeout,
+      max_time: input.timeout ? input.timeout : this.#timeout
     };
-    if (modeltype !== "chat") {
+    if (modeltype !== 'chat') {
       parameters.return_full_text = false;
       if (!input.maxTokens || input.maxTokens > 250) {
         parameters.max_length = 250;
@@ -126,27 +126,27 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     const inputmessages = this.getInputs(messages);
 
     const request: Record<string, any> = {
-      parameters: parameters,
+      parameters: parameters
     };
 
-    if (modeltype === "chat") {
+    if (modeltype === 'chat') {
       request.inputs = inputmessages;
     } else {
       request.inputs = inputmessages.text;
     }
 
     const requestConfig: AxiosRequestConfig = {
-      url: "/models/" + input.model,
-      method: "POST",
-      data: request,
+      url: '/models/' + input.model,
+      method: 'POST',
+      data: request
     };
     const data = await this.request(requestConfig);
     const fullResponse = data;
-    if (typeof data !== "object" || data === null) {
-      throw new Error("Invalid data response. Expected an object." + data);
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Invalid data response. Expected an object.' + data);
     }
-    let respText = "";
-    if ("generated_text" in data) {
+    let respText = '';
+    if ('generated_text' in data) {
       respText = data.generated_text as string;
     } else if (Array.isArray(data) && data.length > 0) {
       // Get 'generated_text' from the first element of the array, if the array is not empty
@@ -171,13 +171,13 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       n: inputParams?.n,
       stream: false,
       presencePenalty: inputParams?.presencePenalty,
-      timeout: inputParams?.timeout,
+      timeout: inputParams?.timeout
     };
 
     if (completionRequest.prompt) {
       const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt,
+        content: completionRequest.prompt
       };
       if (!completionRequest.messages) {
         completionRequest.messages = [message];

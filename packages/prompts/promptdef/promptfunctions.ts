@@ -1,4 +1,4 @@
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 
 export function createFunctionFromString(fnString: string): {
   name: string;

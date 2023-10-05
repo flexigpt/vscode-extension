@@ -5,7 +5,7 @@ import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import { Divider } from '@nextui-org/divider';
 import { Link } from '@nextui-org/link';
 
-import { IconArrowRight } from '@/reactui/components/ui/icons';
+import { IconArrowRight } from '@/components/ui/icons';
 
 import { UseChatHelpers } from 'ai/react';
 

@@ -8,9 +8,9 @@ import {
   NavbarItem
 } from '@nextui-org/navbar';
 
-import { Sidebar } from '@/reactui/components/sidebar';
-import { ThemeToggle } from '@/reactui/components/theme-switcher';
-import { IconFlexiGPT } from '@/reactui/components/ui/icons';
+import { Sidebar } from '@/components/sidebar';
+import { ThemeToggle } from '@/components/theme-switcher';
+import { IconFlexiGPT } from '@/components/ui/icons';
 
 export function FlexiNavbar() {
   return (

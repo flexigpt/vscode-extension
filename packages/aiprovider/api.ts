@@ -1,12 +1,11 @@
 import axios, {
   AxiosError,
+  AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-} from "axios";
-import { log } from "@/logger/log";
-
+  InternalAxiosRequestConfig
+} from 'axios';
+import { log } from 'logger/log';
 
 export function filterSensitiveInfo(obj: any): any {
   const sensitiveKeys = ['authorization', 'key'];
@@ -24,7 +23,11 @@ export function filterSensitiveInfo(obj: any): any {
   // Recursive case: if obj is an object, filter each key.
   const filteredObj: any = {};
   for (const key in obj) {
-    if (!sensitiveKeys.some(sensitiveKey => key.toLowerCase().includes(sensitiveKey))) {
+    if (
+      !sensitiveKeys.some(sensitiveKey =>
+        key.toLowerCase().includes(sensitiveKey)
+      )
+    ) {
       filteredObj[key] = filterSensitiveInfo(obj[key]);
     }
   }
@@ -53,8 +56,8 @@ export class GptAPI {
   ) {
     this.origin = origin;
     this.apiKeyHeaderKey = apiKeyHeaderKey;
-    if (apiKeyHeaderKey === "Authorization") {
-      this.apiKey = "Bearer " + apiKey;
+    if (apiKeyHeaderKey === 'Authorization') {
+      this.apiKey = 'Bearer ' + apiKey;
     } else {
       this.apiKey = apiKey;
     }
@@ -67,11 +70,11 @@ export class GptAPI {
       this.axiosInstance.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
           // Caution: avoid logging sensitive information in production
-          log.info("Axios Request:", config);
-          log.info("cURL Command:", this.generateCurlCommand(config));
+          log.info('Axios Request:', config);
+          log.info('cURL Command:', this.generateCurlCommand(config));
           return config;
         },
-        (error) => {
+        error => {
           throw error;
         }
       );
@@ -80,14 +83,14 @@ export class GptAPI {
 
   // Function to generate the cURL command
   generateCurlCommand(config: AxiosRequestConfig): string {
-    let curlCommand = "curl -X " + config.method?.toUpperCase() + " ";
+    let curlCommand = 'curl -X ' + config.method?.toUpperCase() + ' ';
     curlCommand += '"' + config.url + '" ';
 
     // Headers
     if (config.headers) {
-      Object.keys(config.headers).forEach((key) => {
+      Object.keys(config.headers).forEach(key => {
         const value = config.headers?.[key];
-        curlCommand += '-H "' + key + ": " + value + '" ';
+        curlCommand += '-H "' + key + ': ' + value + '" ';
       });
     }
 
@@ -103,13 +106,13 @@ export class GptAPI {
     const mergedHeaders = {
       ...(this.apiKeyHeaderKey ? { [this.apiKeyHeaderKey]: this.apiKey } : {}),
       ...this.headers,
-      ...(requestConfig.headers || {}),
+      ...(requestConfig.headers || {})
     };
 
     const config: AxiosRequestConfig = {
       ...requestConfig,
-      url: this.origin + (requestConfig.url || ""),
-      headers: mergedHeaders,
+      url: this.origin + (requestConfig.url || ''),
+      headers: mergedHeaders
     };
 
     try {
@@ -123,17 +126,18 @@ export class GptAPI {
         const axiosError = error as AxiosError;
         let errorData: string;
         if (axiosError.response) {
-          const headers = filterSensitiveInfo(
-            axiosError.response.headers
-          );
+          const headers = filterSensitiveInfo(axiosError.response.headers);
           errorData =
-            JSON.stringify(axiosError.response.data, null, 2) + "\n" +
-            JSON.stringify(axiosError.response.status, null, 2) + "\n" +
-            JSON.stringify(headers, null, 2) + "\n";
+            JSON.stringify(axiosError.response.data, null, 2) +
+            '\n' +
+            JSON.stringify(axiosError.response.status, null, 2) +
+            '\n' +
+            JSON.stringify(headers, null, 2) +
+            '\n';
         } else {
-          errorData = JSON.stringify(axiosError, null, 2) + "\n";
+          errorData = JSON.stringify(axiosError, null, 2) + '\n';
         }
-        error.message = errorData + "\n" + error.message;
+        error.message = errorData + '\n' + error.message;
       }
       throw error;
     }

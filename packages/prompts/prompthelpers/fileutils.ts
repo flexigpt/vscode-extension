@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 
 export function formatPath(filePath: string): string {
   return filePath.split("\\").join(path.sep);

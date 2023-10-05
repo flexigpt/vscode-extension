@@ -5,12 +5,12 @@ import { suite, test } from "mocha";
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from "vscode";
-import OpenAIAPIProvider from "@/aiprovider/openaiapi";
-import { CompletionProvider } from "@/aiprovider/strategy";
+import OpenAIAPIProvider from "aiprovider/openaiapi";
+import { CompletionProvider } from "aiprovider/strategy";
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
+} from "spec/chat";
 
 suite("CheckParams Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests for checkparams.");

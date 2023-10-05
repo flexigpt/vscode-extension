@@ -1,13 +1,16 @@
-import { log } from "@/logger/log";
-import { GptAPI } from "@/aiprovider/api";
-import { CompletionProvider, unescapeChars, filterMessagesByTokenCount } from "@/aiprovider/strategy";
-import { AxiosRequestConfig } from "axios";
-
+import { GptAPI } from '@/api';
 import {
-  CompletionRequest,
+  CompletionProvider,
+  filterMessagesByTokenCount,
+  unescapeChars
+} from '@/strategy';
+import { AxiosRequestConfig } from 'axios';
+import { log } from 'logger/log';
+import {
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
+  CompletionRequest
+} from 'spec/chat';
 
 export default class OpenAIAPIProvider
   extends GptAPI
@@ -25,14 +28,14 @@ export default class OpenAIAPIProvider
     origin: string,
     headers: Record<string, string> = {}
   ) {
-    const apiKeyHeaderKey = "Authorization";
+    const apiKeyHeaderKey = 'Authorization';
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      "content-type": "application/json",
+      'content-type': 'application/json'
     };
     super(origin, apiKey, apiKeyHeaderKey, {
       ...defaultHeaders,
-      ...headers,
+      ...headers
     });
     this.#timeout = timeout;
     this.defaultCompletionModel = defaultCompletionModel;
@@ -51,13 +54,13 @@ export default class OpenAIAPIProvider
     // return tempCodeString;
     // let messages: ChatCompletionRequestMessage[] = [{"role": "user", "content": "Hello!"}];
     if (!input.messages) {
-      throw Error("No input messages found");
+      throw Error('No input messages found');
     }
     let chatModel = false;
-    if (input.model.startsWith("gpt-3.5") || input.model.startsWith("gpt-4")) {
+    if (input.model.startsWith('gpt-3.5') || input.model.startsWith('gpt-4')) {
       chatModel = true;
     }
-    let stoparg: string | string[] = "";
+    let stoparg: string | string[] = '';
     if (input.stop) {
       stoparg = input.stop;
     }
@@ -78,16 +81,19 @@ export default class OpenAIAPIProvider
       frequency_penalty: input.frequencyPenalty,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       logit_bias: input.logitBias,
-      user: input.user,
+      user: input.user
     };
-    let modelpath = "/v1/completions";
+    let modelpath = '/v1/completions';
     if (chatModel) {
-      modelpath = "/v1/chat/completions";
+      modelpath = '/v1/chat/completions';
       let filterTokens = 2048;
       if (input.maxTokens) {
         filterTokens = input.maxTokens;
       }
-      request.messages = filterMessagesByTokenCount(input.messages, filterTokens);
+      request.messages = filterMessagesByTokenCount(
+        input.messages,
+        filterTokens
+      );
       request.functions = input?.functions;
       // eslint-disable-next-line @typescript-eslint/naming-convention
       request.function_call = input?.functionCall;
@@ -102,20 +108,20 @@ export default class OpenAIAPIProvider
 
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
-      method: "POST",
-      data: request,
+      method: 'POST',
+      data: request
     };
     try {
       const data = await this.request(requestConfig);
       const fullResponse = data;
-      if (typeof data !== "object" || data === null) {
-        throw new Error("Invalid data response. Expected an object." + data);
+      if (typeof data !== 'object' || data === null) {
+        throw new Error('Invalid data response. Expected an object.' + data);
       }
-      let respText = "";
-      let functionName = "";
+      let respText = '';
+      let functionName = '';
       let functionArgs: any;
       if (
-        "choices" in data &&
+        'choices' in data &&
         Array.isArray(data.choices) &&
         data.choices.length > 0
       ) {
@@ -123,41 +129,41 @@ export default class OpenAIAPIProvider
           const responseMessage = data.choices[0].message;
           respText = responseMessage?.content
             ? (responseMessage?.content as string)
-            : "";
+            : '';
           if (
-            "function_call" in responseMessage &&
-            responseMessage["function_call"]
+            'function_call' in responseMessage &&
+            responseMessage['function_call']
           ) {
-            functionName = responseMessage["function_call"]["name"];
-            respText += "\nFunction call:\nName:" + functionName;
+            functionName = responseMessage['function_call']['name'];
+            respText += '\nFunction call:\nName:' + functionName;
             try {
               functionArgs = JSON.parse(
-                unescapeChars(responseMessage["function_call"]["arguments"])
+                unescapeChars(responseMessage['function_call']['arguments'])
               );
             } catch (error) {
               log.error(
-                "Error parsing function call arguments: " +
+                'Error parsing function call arguments: ' +
                   error +
-                  " " +
-                  responseMessage["function_call"]["arguments"]
+                  ' ' +
+                  responseMessage['function_call']['arguments']
               );
-              respText += "\nError in parsing returned args\n";
-              functionArgs = responseMessage["function_call"]["arguments"];
+              respText += '\nError in parsing returned args\n';
+              functionArgs = responseMessage['function_call']['arguments'];
             }
-            respText += "\nArgs: " + JSON.stringify(functionArgs, null, 2);
+            respText += '\nArgs: ' + JSON.stringify(functionArgs, null, 2);
           }
         } else {
-          respText = data.choices[0].text ? data.choices[0].text : "";
+          respText = data.choices[0].text ? data.choices[0].text : '';
         }
       }
       return {
         fullResponse: fullResponse,
         data: respText,
         functionName: functionName,
-        functionArgs: functionArgs,
+        functionArgs: functionArgs
       };
     } catch (error) {
-      log.error("Error in completion request: " + error);
+      log.error('Error in completion request: ' + error);
       throw error;
     }
   }
@@ -170,7 +176,7 @@ export default class OpenAIAPIProvider
     const model =
       (inputParams?.model as string) || this.defaultChatCompletionModel;
     let chatModel = false;
-    if (model.startsWith("gpt-3.5") || model.startsWith("gpt-4")) {
+    if (model.startsWith('gpt-3.5') || model.startsWith('gpt-4')) {
       chatModel = true;
     }
     const completionRequest: CompletionRequest = {
@@ -198,7 +204,7 @@ export default class OpenAIAPIProvider
           : inputParams?.frequencyPenalty || 0.5,
       bestOf: inputParams?.bestOf === 0 ? 0 : inputParams?.bestOf || 1,
       logitBias: inputParams?.logitBias || undefined,
-      user: (inputParams?.user as string) || undefined,
+      user: (inputParams?.user as string) || undefined
     };
     if (chatModel) {
       completionRequest.functions = inputParams?.functions || undefined;
@@ -207,7 +213,7 @@ export default class OpenAIAPIProvider
     if (completionRequest.prompt) {
       const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt,
+        content: completionRequest.prompt
       };
       if (!completionRequest.messages) {
         completionRequest.messages = [message];

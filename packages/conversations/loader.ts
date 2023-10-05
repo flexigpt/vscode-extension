@@ -4,10 +4,10 @@ import * as yaml from "js-yaml";
 import {
   IMessage,
   IView
-} from "@/spec/chat";
+} from "spec/chat";
 
-import { log } from "@/logger/log";
-import { ConversationCollection } from "./collection";
+import { log } from "logger/log";
+import { ConversationCollection } from "@/collection";
 
 export function loadConversations(
   filePath: string

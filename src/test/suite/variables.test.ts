@@ -4,7 +4,7 @@ import {
   Variable,
   VariableContext,
   VariableNamespaces,
-} from "@/prompts/promptdef/promptvariables";
+} from "prompts/promptdef/promptvariables";
 import {
   getBaseFolder,
   getSelectedText,

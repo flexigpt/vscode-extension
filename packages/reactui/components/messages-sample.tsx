@@ -1,4 +1,4 @@
-import { ChatCompletionRoleEnum, IMessage } from '@/spec/chat';
+import { ChatCompletionRoleEnum, IMessage } from 'spec/chat';
 
 const messages: IMessage[] = [
   {

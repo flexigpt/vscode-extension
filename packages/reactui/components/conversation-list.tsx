@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { IMessage } from '@/spec/chat';
+import { IMessage } from 'spec/chat';
 
 import { Listbox, ListboxItem } from '@nextui-org/listbox';
 
-import { ChatMessage } from '@/reactui/components/chat-message';
+import { ChatMessage } from '@/components/chat-message';
 
 export interface ConversationListItems {
   messages: IMessage[];

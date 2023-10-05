@@ -2,21 +2,13 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDirs": ["src"],
-    "sourceMap": true,
+    "sourceMap": false,
     "target": "ES2020",
     "module": "commonjs",
     "lib": [
       "ES2020",
       "DOM"
     ],
-    "paths": {
-      "@/aiprovider/*": ["packages/aiprovider/*"],
-      "@/conversations/*": ["packages/conversations/*"],
-      "@/logger/*": ["packages/logger/*"],
-      "@/prompts/*": ["packages/prompts/*"],
-      "@/spec/*": ["packages/spec/*"],
-      "@/reactui/*": ["packages/reactui/*"]
-    },
     "baseUrl": "./",
     "esModuleInterop": true,
     "jsx": "react",

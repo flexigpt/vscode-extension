@@ -20,11 +20,6 @@ const webpackCompileExtractedStyle = function () {
   };
 };
 
-module.exports = {
-  postcssExtractToFile,
-  webpackCompileExtractedStyle
-};
-
 function postcssExtractToFile(options) {
   return function (css) {
     options = options || {};
@@ -115,3 +110,38 @@ function postcssExtractToFile(options) {
     return false;
   }
 }
+
+function postcssReplaceHsl() {
+  return root => {
+    root.walkDecls(decl => {
+      if (decl.value.includes('hsl(var')) {
+        decl.value = decl.value.replace(/hsl/g, 'rgb');
+      }
+    });
+  };
+}
+
+function replaceSelector(opts = {}) {
+  // Ensure that options for targetSelector and replacementString are provided
+  if (!opts.targetSelector) {
+    throw new Error(
+      'TargetSelector option must be provided'
+    );
+  }
+
+  return root => {
+    root.walkRules(rule => {
+      // Check if the current rule's selector matches the targetSelector
+      if (rule.selector === opts.targetSelector) {
+        rule.replaceWith(opts.replacementString);
+      }
+    });
+  };
+}
+
+module.exports = {
+  postcssExtractToFile,
+  webpackCompileExtractedStyle,
+  postcssReplaceHsl,
+  replaceSelector
+};

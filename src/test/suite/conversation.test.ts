@@ -6,8 +6,8 @@ import fs from "fs";
 
 import {
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
-import { Conversation } from "@/conversations/conversation";
+} from "spec/chat";
+import { Conversation } from "conversations/conversation";
 
 describe("Conversation", () => {
   describe("addMessage", () => {

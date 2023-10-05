@@ -3,8 +3,8 @@ import React, { FC } from 'react';
 import { Button } from '@nextui-org/button';
 import { ButtonProps } from '@nextui-org/button';
 
-import { programmingLanguages } from '@/reactui/components/ui/code-types';
-import { IconDownload } from '@/reactui/components/ui/icons';
+import { programmingLanguages } from '@/components/ui/code-types';
+import { IconDownload } from '@/components/ui/icons';
 
 export interface DownloadButtonProps extends ButtonProps {
   language: string;

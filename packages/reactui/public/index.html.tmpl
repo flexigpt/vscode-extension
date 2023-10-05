@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <% if (VSCodeOnly) { %>
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src vscode-webview: vscode-webview-resource: vscode-resource: https: file: 'unsafe-inline' 'unsafe-eval'; img-src vscode-webview: vscode-webview-resource: vscode-resource: https: file:; style-src vscode-webview: vscode-webview-resource:  vscode-resource: https: file: 'unsafe-inline';">
+    <% } %>
+    <link rel="icon" href="icons/favicon-color-16x16.png" type="image/png" />
+    <title>FlexiGPT ReactUI</title>
+    <script>
+      window.__ICON_PATHS__ = {
+        icon36x36: 'icons/favicon-color-36x36.png',
+        icon16x16: 'icons/favicon-color-16x16.png'
+      };
+      window.__VSCodeOnly__ = <%= VSCodeOnly %>;
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

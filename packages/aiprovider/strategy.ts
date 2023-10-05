@@ -1,8 +1,8 @@
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 import {
   ChatCompletionRequestMessage,
   CompletionRequest,
-} from "@/spec/chat";
+} from "spec/chat";
 
 export interface CompletionProvider {
   completion(

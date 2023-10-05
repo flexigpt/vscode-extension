@@ -3,8 +3,8 @@ import React from 'react';
 import { Accordion, AccordionItem } from '@nextui-org/accordion';
 import { Button } from '@nextui-org/button';
 
-import { ConversationList } from '@/reactui/components/conversation-list';
-import { IconFlexiGPT, IconMenu } from '@/reactui/components/ui/icons';
+import { ConversationList } from '@/components/conversation-list';
+import { IconFlexiGPT, IconMenu } from '@/components/ui/icons';
 import {
   Sheet,
   SheetBody,
@@ -12,7 +12,7 @@ import {
   SheetFooter,
   SheetHeader,
   useDisclosure
-} from '@/reactui/components/ui/sheet';
+} from '@/components/ui/sheet';
 
 export function Sidebar() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

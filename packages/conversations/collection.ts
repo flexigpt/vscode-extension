@@ -5,10 +5,10 @@ import {
   ChatCompletionResponseMessage,
   IMessage,
   IView
-} from "@/spec/chat";
+} from "spec/chat";
 
-import { log } from "@/logger/log";
-import { Conversation } from "@/conversations/conversation";
+import { log } from "logger/log";
+import { Conversation } from "@/conversation";
 
 
 export class ConversationCollection {
