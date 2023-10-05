@@ -1,9 +1,9 @@
-import { GptAPI } from '@/api';
+import { GptAPI } from './api';
 import {
   CompletionProvider,
   filterMessagesByTokenCount,
   unescapeChars
-} from '@/strategy';
+} from './strategy';
 import { AxiosRequestConfig } from 'axios';
 import { log } from 'logger/log';
 import {

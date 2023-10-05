@@ -2,11 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "paths": {
-      "@/*": [
-        "packages/conversations/*"
-      ]
-    }
+    "declarationDir": "./dist/types",
+    "declaration": true,
   },
   "include": [
     "./**/*.ts"

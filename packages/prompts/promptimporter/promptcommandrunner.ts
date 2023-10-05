@@ -1,9 +1,8 @@
-// import { log } from "@/logger/log";
-import { systemVariableNames } from "@/promptimporter/predefinedvariables";
+import { systemVariableNames } from "../promptimporter/predefinedvariables";
 
-import { FunctionWrapper, FunctionContext } from "@/promptdef/promptfunctions";
-import { Variable, VariableNamespaces } from "@/promptdef/promptvariables";
-import { COMMAND_TYPE_CLI, Command } from "@/promptdef/promptcommand";
+import { FunctionWrapper, FunctionContext } from "../promptdef/promptfunctions";
+import { Variable, VariableNamespaces } from "../promptdef/promptvariables";
+import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
 
 // import { get } from "http";
 

@@ -10,7 +10,7 @@ import {
   IView
 } from "spec/chat";
 
-// import { log } from "@/logger/log";
+// import { log } from "./logger/log";
 
 export class Conversation {
   private messages: IMessage[];

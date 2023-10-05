@@ -7,7 +7,7 @@ import {
 } from "spec/chat";
 
 import { log } from "logger/log";
-import { ConversationCollection } from "@/collection";
+import { ConversationCollection } from "./collection";
 
 export function loadConversations(
   filePath: string

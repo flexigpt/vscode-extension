@@ -8,7 +8,7 @@ import {
 } from "spec/chat";
 
 import { log } from "logger/log";
-import { Conversation } from "@/conversation";
+import { Conversation } from "./conversation";
 
 
 export class ConversationCollection {

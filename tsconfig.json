@@ -13,8 +13,6 @@
     "esModuleInterop": true,
     "jsx": "react",
     "outDir": "out",
-    "declarationDir": "dist/types",
-    "declaration": true,
     "strict": true
   },
   "exclude": [
