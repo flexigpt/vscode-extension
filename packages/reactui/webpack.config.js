@@ -10,7 +10,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'webpack.main.bundle.js'
   },
-  devtool: 'inline-source-map', // or 'inline-source-map' for development
   devServer: {
     static: {
       directory: path.resolve(__dirname, 'dist')
@@ -37,8 +36,8 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        // use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
-        use: ['style-loader', 'css-loader', 'postcss-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+        // use: ['style-loader', 'css-loader', 'postcss-loader']
       }
     ]
   },
@@ -75,9 +74,15 @@ module.exports = {
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
     }),
-    // new MiniCssExtractPlugin({
-    //   filename: 'webpack.[name].css',
-    //   chunkFilename: '[id].css'
-    // }),
+    new MiniCssExtractPlugin({
+      filename: 'webpack.[name].css',
+      chunkFilename: '[id].css'
+    }),
   ]
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.devtool = 'source-map';
+} else {
+  module.exports.devtool = 'inline-source-map';
+}

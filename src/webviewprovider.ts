@@ -287,8 +287,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.options = {
       // Allow scripts in the webview
       enableScripts: true,
-      // localResourceRoots: [this._extensionUri]
-      localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, "packages", "reactui", "dist")]
+      localResourceRoots: [this._extensionUri]
     };
 
     // set the HTML for the webview

@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDirs": ["src"],
-    "sourceMap": false,
+    "sourceMap": true,
     "target": "ES2020",
     "module": "commonjs",
     "lib": [
@@ -19,7 +19,6 @@
     "node_modules",
     ".vscode-test",
     "**/node_modules",
-    "**/dist",
     "**/out"
   ],
   "include": [

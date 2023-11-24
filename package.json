@@ -301,9 +301,10 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "esbuild-base": "rimraf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
     "build:packages": "pnpm -r --filter './packages/!reactui' run build && pnpm --filter './packages/reactui' run build-vscode",
-    "build:top": "pnpm run esbuild-base --sourcemap",
+    "postbuild:packages": "rimraf media/reactout/* && cp -Rf packages/reactui/dist/* media/reactout/",
+    "build:top": "pnpm run clean:top && pnpm run postbuild:packages && pnpm run esbuild-base",
     "build": "pnpm run build:packages && pnpm run build:top",
     "watch": "pnpm run build --watch",
     "clean:packages": "pnpm -r --filter './packages/*' run clean",

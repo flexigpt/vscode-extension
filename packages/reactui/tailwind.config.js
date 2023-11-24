@@ -4,8 +4,11 @@ const { vscodeDark, rosePineDawn, rosePineMoon } = require('./themes');
 module.exports = {
   darkMode: 'class',
   content: [
-    './dist/**/*.{js,ts,jsx,tsx,html}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.tsx',
+    './components/**/*.tsx',
+    './globals/**/*.css',
+    './public/**/*.{js,ts,jsx,tsx,html,html.tmpl}',
   ],
   themes: {
     extend: {}
