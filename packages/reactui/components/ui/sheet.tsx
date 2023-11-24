@@ -1,18 +1,22 @@
-import React from 'react';
-import { ElementRef, forwardRef } from 'react';
+import * as _nextui_org_system from '@nextui-org/system';
+import React, { ElementRef, forwardRef } from 'react';
 
 import {
   Modal,
   ModalBody,
+  ModalBodyProps,
   ModalContent,
+  ModalContentProps,
   ModalFooter,
+  ModalFooterProps,
   ModalHeader,
+  ModalHeaderProps,
   ModalProps,
   useDisclosure
 } from '@nextui-org/modal';
 import { ModalSlots, SlotsToClasses } from '@nextui-org/theme';
 
-import { type ClassValue, clsx } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
 import { HTMLMotionProps } from 'framer-motion';
 import { twMerge } from 'tailwind-merge';
 
@@ -76,12 +80,13 @@ export const Sheet = forwardRef<ElementRef<typeof Modal>, SheetProps>(
 );
 Sheet.displayName = 'Sheet';
 
-export const SheetBody = ModalBody;
+type KeysToOmit = "children" | "role";
+export const SheetBody: _nextui_org_system.InternalForwardRefRenderFunction<"div", ModalBodyProps, never> = ModalBody;
 
-export const SheetContent = ModalContent;
+export const SheetContent: _nextui_org_system.InternalForwardRefRenderFunction<"div", ModalContentProps, KeysToOmit> = ModalContent;
 
-export const SheetFooter = ModalFooter;
+export const SheetFooter: _nextui_org_system.InternalForwardRefRenderFunction<"footer", ModalFooterProps, never> = ModalFooter;
 
-export const SheetHeader = ModalHeader;
+export const SheetHeader: _nextui_org_system.InternalForwardRefRenderFunction<"header", ModalHeaderProps, never> = ModalHeader;
 
 export { useDisclosure };

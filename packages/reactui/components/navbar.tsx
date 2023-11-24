@@ -15,21 +15,22 @@ import { IconFlexiGPT } from '@/components/ui/icons';
 export function FlexiNavbar() {
   return (
     <Navbar isBordered>
-      <NavbarItem className="justify-start">
+      <NavbarContent justify="start">
         <Sidebar />
-      </NavbarItem>
-      <NavbarContent>
-        <NavbarBrand className="flex-grow justify-center">
+      </NavbarContent>
+      <NavbarContent justify="center">
+        <NavbarBrand className="flex-grow justify-center items-center">
           <Link
-            className="font-bold text-inherit"
+            className="flex items-center font-bold text-inherit"
             href="https://github.com/ppipada/vscode-flexigpt"
             isExternal
           >
-            <IconFlexiGPT className="mr-2" />
-            FlexiGPT
+            <IconFlexiGPT className="inline-block align-middle mr-2" /> FlexiGPT
           </Link>
         </NavbarBrand>
-        <NavbarItem className="justify-end">
+      </NavbarContent>
+      <NavbarContent justify="end">
+        <NavbarItem>
           <ThemeToggle />
         </NavbarItem>
       </NavbarContent>

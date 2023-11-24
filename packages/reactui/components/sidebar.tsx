@@ -18,7 +18,7 @@ export function Sidebar() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
-    <>
+    <div>
       <Button isIconOnly onPress={onOpen} variant="light">
         <IconMenu />
       </Button>
@@ -87,6 +87,6 @@ export function Sidebar() {
           )}
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }
