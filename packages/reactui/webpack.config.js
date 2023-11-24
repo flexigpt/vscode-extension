@@ -10,6 +10,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'webpack.main.bundle.js'
   },
+  devtool: 'inline-source-map', // or 'inline-source-map' for development
   devServer: {
     static: {
       directory: path.resolve(__dirname, 'dist')

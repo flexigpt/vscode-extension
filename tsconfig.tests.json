@@ -3,7 +3,8 @@
     "compilerOptions": {
       "outDir": "./out/test",
       "rootDir": "src",
-      "types": ["mocha", "node", "chai"]
+      "types": ["mocha", "node", "chai"],
+      "preserveSymlinks": true
     },
     "include": ["src/test/**/*.ts"],
     "exclude": ["node_modules/*", "media/*", "docs/*", "dist/*", "out/*"]

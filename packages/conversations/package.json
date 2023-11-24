@@ -14,9 +14,9 @@
   "author": "Pankaj Pipada",
   "license": "MIT",
   "dependencies": {
+    "logger": "workspace:*",
+    "spec": "workspace:*",
     "js-yaml": "^4.1.0",
-    "logger": "^1.0.0",
-    "nanoid": "^5.0.1",
-    "spec": "^1.0.0"
+    "nanoid": "^5.0.1"
   }
 }

@@ -5,3 +5,5 @@ node_modules
 *.vsix
 .DS_Store
 conversations.yml
+.pnpm-store/**
+.nx/**

@@ -1,19 +1,27 @@
 /* eslint-disable no-unused-vars */
-import * as vscode from 'vscode';
 import * as path from 'path';
+import * as vscode from 'vscode';
 
 import * as prettier from 'prettier';
 import { v4 as uuidv4 } from 'uuid';
 
-import Providers, { CompletionProvider } from 'aiprovider/strategy';
 import { filterSensitiveInfoFromJsonString } from 'aiprovider/api';
+import Providers, { CompletionProvider } from 'aiprovider/strategy';
 
 import log from './logger/log';
 
-import { importAllPrompts } from './setupprompts';
-import { getAllProviders } from './setupaiproviders';
-import { CommandRunnerContext } from 'prompts/promptimporter/promptcommandrunner';
+import {
+  ConversationCollection
+} from 'conversations/collection';
+import {
+  loadConversations
+} from 'conversations/loader';
+import { COMMAND_TYPE_CLI, Command } from 'prompts/promptdef/promptcommand';
 import { systemVariableNames } from 'prompts/promptimporter/predefinedvariables';
+import { CommandRunnerContext } from 'prompts/promptimporter/promptcommandrunner';
+import { ChatCompletionRoleEnum, IView } from 'spec/chat';
+import { getAllProviders } from './setupaiproviders';
+import { importAllPrompts } from './setupprompts';
 import {
   append,
   getActiveDocumentFilePath,
@@ -21,15 +29,7 @@ import {
   getActiveLine,
   runCommandInShell
 } from './vscodeutils/vscodefunctions';
-import {
-  ConversationCollection
-} from 'conversations/collection';
-import {
-  loadConversations
-} from 'conversations/loader';
-import { ChatCompletionRoleEnum, IView } from 'spec/chat';
-import { COMMAND_TYPE_CLI, Command } from 'prompts/promptdef/promptcommand';
-import { getWebviewHtml, getWebviewHtmlReact } from './webviewhtml';
+import { getWebviewHtmlReact } from './webviewhtml';
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'flexigpt.chatView';
@@ -292,15 +292,15 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     };
 
     // set the HTML for the webview
-    // webviewView.webview.html = getWebviewHtmlReact(
-    //   webviewView.webview,
-    //   this._extensionUri
-    // );
-
-    webviewView.webview.html = getWebviewHtml(
+    webviewView.webview.html = getWebviewHtmlReact(
       webviewView.webview,
       this._extensionUri
     );
+
+    // webviewView.webview.html = getWebviewHtml(
+    //   webviewView.webview,
+    //   this._extensionUri
+    // );
 
     webviewView.webview.onDidReceiveMessage(async data => {
       switch (data.type) {

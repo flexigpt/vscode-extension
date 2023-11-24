@@ -9,8 +9,8 @@
   ],
   "scripts": {
     "dev": "webpack serve --config webpack.config.js --mode=development",
-    "build": "npm run clean ; webpack --config webpack.config.js --mode=production",
-    "build-vscode": "npm run clean ; vscode=true webpack --config webpack.config.js --mode=development",
+    "build": "pnpm run clean ; webpack --config webpack.config.js --mode=production",
+    "build-vscode": "pnpm run clean ; vscode=true webpack --config webpack.config.js --mode=development",
     "start": "rollup -c -w",
     "clean": "rimraf dist",
     "format": "prettier --write \"**/*.{ts,tsx,jsx}\""
@@ -21,8 +21,10 @@
   "dependencies": {
     "@nextui-org/react": "^2.1.13",
     "ai": "^2.2.13",
+    "clsx": "^2.0.0",
     "framer-motion": "^10.16.4",
-    "logger": "^1.0.0",
+    "logger": "workspace:*",
+    "nanoid": "^5.0.3",
     "next-themes": "^0.2.1",
     "postcss-preset-env": "^9.1.4",
     "react": "^18.2.0",
@@ -34,12 +36,14 @@
     "react-syntax-highlighter": "^15.5.0",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
-    "spec": "^1.0.0",
+    "spec": "workspace:*",
     "tailwind-merge": "^1.14.0",
+    "tailwindcss": "^3.3.5",
     "tailwindcss-animate": "^1.0.7",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.7",
     "@types/react-syntax-highlighter": "^15.5.7",
     "autoprefixer": "^10.4.16",
@@ -52,7 +56,6 @@
     "postcss-loader": "^7.3.3",
     "process": "^0.11.10",
     "style-loader": "^3.3.3",
-    "tailwindcss": "^3.3.3",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
