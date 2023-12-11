@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
 
-import { Button } from '@nextui-org/button';
-import { ButtonProps } from '@nextui-org/button';
+import { Button, ButtonProps } from 'grommet';
+import { Download } from 'grommet-icons';
 
 import { programmingLanguages } from '@/components/ui/code-types';
-import { IconDownload } from '@/components/ui/icons';
 
 export interface DownloadButtonProps extends ButtonProps {
   language: string;
@@ -55,15 +54,13 @@ export const DownloadButton: FC<DownloadButtonProps> = ({
 
   return (
     <Button
-      isIconOnly
+      a11yTitle='Download'
+      icon={<Download/>}
       className="absolute z-50 right-3 top-8 border-1 border-transparent bg-transparent before:bg-white/10 before:content-[''] before:block before:z-[-1] before:absolute before:inset-0 before:backdrop-blur-md before:backdrop-saturate-100 before:rounded-lg"
       size="sm"
-      variant="bordered"
-      onPress={downloadAsFile}
+      plain={false}
+      onClick={downloadAsFile}
       {...buttonProps}
-    >
-      <IconDownload />
-      <span className="sr-only">Download</span>
-    </Button>
+    />
   );
 };

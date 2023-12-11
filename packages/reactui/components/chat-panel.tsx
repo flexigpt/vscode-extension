@@ -2,11 +2,11 @@ import * as React from 'react';
 
 import { IMessage } from 'spec/chat';
 
-import { Button } from '@nextui-org/button';
+import { Button } from 'grommet';
+import { Refresh, Stop } from 'grommet-icons';
 
 import { PromptForm } from '@/components/chat-panel-prompt-input';
 import { ButtonScrollToBottom } from '@/components/ui/button-scroll-to-bottom';
-import { IconRefresh, IconStop } from '@/components/ui/icons';
 
 export interface ChatPanelProps {
   id?: string;
@@ -25,23 +25,19 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
         <div className="flex h-10 items-center justify-center">
           {isLoading ? (
             <Button
-              variant="light"
               onClick={() => stop()}
               className="bg-background"
-            >
-              <IconStop className="mr-2" />
-              Stop generating
-            </Button>
+              icon={<Stop />}
+              tip={'Stop generating'}
+            ></Button>
           ) : (
             messages?.length > 0 && (
               <Button
-                variant="light"
                 // onClick={() => reload()}
                 className="bg-background"
-              >
-                <IconRefresh className="mr-2" />
-                Regenerate response
-              </Button>
+                icon={<Refresh />}
+                tip={'Regenerate response'}
+              ></Button>
             )
           )}
         </div>

@@ -1,30 +1,17 @@
-import * as React from 'react';
-import { useState } from 'react';
-import { toast } from 'react-hot-toast';
+import React, { useState } from 'react';
 
 import { IMessage } from 'spec/chat';
 
-import { useLocalStorage } from '@/lib/hooks/use-local-storage';
 import { cn } from '@/lib/utils';
 
-import { Button } from '@nextui-org/button';
-import { Divider } from '@nextui-org/divider';
-import { Input } from '@nextui-org/input';
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure
-} from '@nextui-org/modal';
+
 
 import { ChatPanel } from '@/components/chat-panel';
 import { Conversation } from '@/components/conversation';
 import { EmptyScreen } from '@/components/empty-screen';
+import { KeyForm } from '@/components/get-key';
 import { ScrollAnchor } from '@/components/ui/scroll-anchor';
 
-import { useChat } from 'ai/react';
 
 const IS_PREVIEW = false;
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -33,16 +20,15 @@ export interface ChatProps extends React.ComponentProps<'div'> {
 }
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
-  const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
-    'ai-token',
-    null
-  );
-
-  const [previewTokenModal, setPreviewTokenModal] = useState(IS_PREVIEW);
+  const [previewToken, setPreviewToken] = useState('');
   const [previewTokenInput, setPreviewTokenInput] = useState(
     previewToken ?? ''
   );
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+
   const isLoading = true;
   const setInput = (input: string) => {
     return;
@@ -74,40 +60,14 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         )}
       </div>
       <ChatPanel id={id} messages={initialMessages} />
-
-      <Modal isOpen={previewTokenModal} onOpenChange={setPreviewTokenModal}>
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            {' '}
-            Enter your OpenAI Key{' '}
-          </ModalHeader>
-          <ModalBody>
-            If you have not obtained your OpenAI API key, you can do so by{' '}
-            <a href="https://platform.openai.com/signup/" className="underline">
-              signing up
-            </a>{' '}
-            on the OpenAI website. This is only necessary for preview
-            environments so that the open source community can test the app. The
-            token will be saved to your browser&apos;s local storage under the
-            name <code className="font-mono">ai-token</code>.
-          </ModalBody>
-          <Input
-            value={previewTokenInput}
-            placeholder="OpenAI API key"
-            onChange={e => setPreviewTokenInput(e.target.value)}
-          />
-          <ModalFooter className="items-center">
-            <Button
-              onClick={() => {
-                setPreviewToken(previewTokenInput);
-                setPreviewTokenModal(false);
-              }}
-            >
-              Save Token
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <KeyForm
+        isOpen={isOpen}
+        setOpen={setIsOpen}
+        previewToken={previewToken}
+        setPreviewToken={setPreviewToken}
+        previewTokenInput={previewTokenInput}
+        setPreviewTokenInput={setPreviewTokenInput}
+      />
     </>
   );
 }

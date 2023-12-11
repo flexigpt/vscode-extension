@@ -2,9 +2,8 @@ import * as React from 'react';
 
 import { IMessage } from 'spec/chat';
 
-import { Listbox, ListboxItem } from '@nextui-org/listbox';
+import { List } from 'grommet';
 
-import { ChatMessage } from '@/components/chat-message';
 
 export interface ConversationListItems {
   messages: IMessage[];
@@ -42,14 +41,22 @@ export function ConversationList({ messages }: ConversationListItems) {
   if (!items.length) {
     return null;
   }
+  const [clicked, setClicked] = React.useState<DropdownItemType|null>(null);
+  const [show, setShow] = React.useState(false);
 
   return (
-    <Listbox
-      items={items}
-      aria-label="Conversation selector"
-      onAction={key => alert(key)}
-    >
-      {item => <ListboxItem key={item.key}>{item.label}</ListboxItem>}
-    </Listbox>
+    <List
+      a11yTitle="Conversation selector"
+      data={items.map(item => item.label)}
+      // ((event: { item?: string | undefined; index?: number | undefined; }) => void) | undefined'.
+
+      onClickItem={(event: { index?: number }) => {
+        if (typeof event.index !== 'undefined') {
+          const selectedItem = items[event.index];
+          setClicked(selectedItem);
+          setShow(true);
+        }
+      }}
+    />
   );
 }

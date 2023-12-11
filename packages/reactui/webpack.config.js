@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.tsx', // Your library's entry point
+  entry: './src/app.tsx', // Your library's entry point
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'webpack.main.bundle.js'

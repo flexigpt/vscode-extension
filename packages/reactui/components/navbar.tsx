@@ -1,39 +1,43 @@
 import React from 'react';
 
-import { Link } from '@nextui-org/link';
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem
-} from '@nextui-org/navbar';
-
-import { Sidebar } from '@/components/sidebar';
-import { ThemeToggle } from '@/components/theme-switcher';
 import { IconFlexiGPT } from '@/components/ui/icons';
 
-export function FlexiNavbar() {
-  return (
-    <Navbar isBordered>
-      <NavbarContent justify="start">
-        <Sidebar />
-      </NavbarContent>
-      <NavbarContent justify="center">
-        <NavbarBrand className="flex-grow justify-center items-center">
-          <Link
-            className="flex items-center font-bold text-inherit"
-            href="https://github.com/ppipada/vscode-flexigpt"
-            isExternal
-          >
-            <IconFlexiGPT className="inline-block align-middle mr-2" /> FlexiGPT
-          </Link>
-        </NavbarBrand>
-      </NavbarContent>
-      <NavbarContent justify="end">
-        <NavbarItem>
-          <ThemeToggle />
-        </NavbarItem>
-      </NavbarContent>
-    </Navbar>
-  );
+import { Anchor, Box, Button, Header } from 'grommet';
+import { Menu, Moon, Sun } from 'grommet-icons';
+
+export interface AppHeaderProps {
+  onMenuClick: () => void;
+  onThemeToggle: () => void;
+  theme: 'light' | 'dark';
 }
+
+export const AppHeader: React.FC<AppHeaderProps> = ({
+  onMenuClick,
+  onThemeToggle,
+  theme
+}) => {
+  return (
+    <Header
+      background="brand"
+      pad="small"
+      elevation="medium"
+      style={{ zIndex: 1 }}
+    >
+      <Button icon={<Menu />} onClick={onMenuClick} />
+      <Box direction="row" align="center" gap="small" flex justify="center">
+        <Anchor
+          className="flex items-center font-bold"
+          href="https://github.com/ppipada/vscode-flexigpt"
+          icon={<IconFlexiGPT className="inline-block align-middle mr-2" />}
+          label="FlexiGPT"
+          target="_blank"
+          color={"text"}
+        ></Anchor>
+      </Box>
+      <Button
+        icon={theme === 'dark' ? <Sun /> : <Moon />}
+        onClick={onThemeToggle}
+      />
+    </Header>
+  );
+};

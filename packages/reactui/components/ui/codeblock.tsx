@@ -6,8 +6,8 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { CodeProps } from '@/components/ui/code-types';
-import { CopyButton } from '@/components/ui/copy-button';
-import { DownloadButton } from '@/components/ui/download-button';
+import { Button } from 'grommet';
+import { Copy, Download } from 'grommet-icons';
 
 const CodeBlock: FC<CodeProps> = memo(({ language, value }) => {
   return (
@@ -15,16 +15,21 @@ const CodeBlock: FC<CodeProps> = memo(({ language, value }) => {
       <div className="flex items-center justify-between w-full px-6 py-2 pr-4 bg-zinc-800 text-zinc-100">
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
-          <DownloadButton
+          <Button
             className="w-8 h-8 text-zinc-100"
-            language={language}
+            a11yTitle='Download'
+            icon={<Download/>}
+            plain={false}
             value={value}
+            size="small"
           />
-          <CopyButton
+          <Button
             className="w-8 h-8 text-zinc-100"
+            a11yTitle='Copy'
+            icon={<Copy/>}
             value={value}
-            variant="bordered"
-            size="sm"
+            plain={false}
+            size="small"
           />
         </div>
       </div>

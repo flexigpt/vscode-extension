@@ -8,9 +8,8 @@ import { ChatMessageContent } from '@/components/chat-message-content';
 import { CopyButton } from '@/components/ui/copy-button';
 import {
   IconFlexiGPT,
-  IconOpenAI,
-  IconUser
 } from '@/components/ui/icons';
+import { User } from 'grommet-icons';
 
 export interface ChatMessageProps {
   message: IMessage;
@@ -29,7 +28,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         )}
       >
         {message.role === 'user' ? (
-          <IconUser />
+          <User />
         ) : (
           <IconFlexiGPT className="h-6 w-6" />
         )}
@@ -40,10 +39,8 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         {...props}
       >
         <CopyButton
-          className="w-8 h-8 justify-center"
           value={message.content}
-          variant="ghost"
-          size="sm"
+          size="small"
         />
       </div>
     </div>

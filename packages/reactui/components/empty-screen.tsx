@@ -1,13 +1,9 @@
 import * as React from 'react';
 
-import { Button } from '@nextui-org/button';
-import { Card, CardBody, CardHeader } from '@nextui-org/card';
-import { Divider } from '@nextui-org/divider';
-import { Link } from '@nextui-org/link';
+import { HorizontalDivider as Divider } from '@/components/ui/divider';
+import { Anchor, Button, Card, CardBody, CardHeader } from 'grommet';
 
-import { IconArrowRight } from '@/components/ui/icons';
-
-import { UseChatHelpers } from 'ai/react';
+import { Next, Share } from 'grommet-icons';
 
 const exampleMessages = [
   {
@@ -33,14 +29,14 @@ export function EmptyScreen() {
         <p className="text-small text-default-500">
           The fully open source AI Assistant.
         </p>
-        <Link
-          isExternal
-          showAnchorIcon
+        <Anchor
+          label="Visit source code on GitHub."
+          icon={< Share />}
           className="text-xs text-default-500 text-muted-foreground"
           href="https://github.com/ppipada/vscode-flexigpt"
+          target="_blank"
         >
-          Visit source code on GitHub.
-        </Link>
+        </Anchor>
       </CardHeader>
       <Divider />
       <CardBody>
@@ -51,12 +47,11 @@ export function EmptyScreen() {
           {exampleMessages.map((message, index) => (
             <Button
               key={index}
-              variant="light"
+              label = {message.heading}
               className="h-auto p-2 text-base"
+              icon={< Next className="mr-2 text-muted-foreground"/>}
               // onClick={() => setInput(message.message)}
             >
-              <IconArrowRight className="mr-2 text-muted-foreground" />
-              {message.heading}
             </Button>
           ))}
         </div>
