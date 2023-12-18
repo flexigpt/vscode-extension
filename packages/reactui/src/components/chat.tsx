@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 
 import { IMessage } from 'spec/chat';
 
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 
 
-import { ChatPanel } from '@/components/chat-panel';
-import { Conversation } from '@/components/conversation';
-import { EmptyScreen } from '@/components/empty-screen';
-import { KeyForm } from '@/components/get-key';
-import { ScrollAnchor } from '@/components/ui/scroll-anchor';
+import { ChatPanel } from './chat-panel';
+import { Conversation } from './conversation';
+import { EmptyScreen } from './empty-screen';
+import { KeyForm } from './get-key';
+import { ScrollAnchor } from './scroll-anchor';
 
 
 const IS_PREVIEW = false;

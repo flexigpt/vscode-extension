@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 function IconNextChat({
   className,
@@ -492,32 +492,7 @@ function IconMenu({ className, ...props }: React.ComponentProps<'svg'>) {
 }
 
 export {
-  IconMenu,
-  IconFlexiGPT,
-  IconEdit,
-  IconNextChat,
-  IconOpenAI,
-  IconGitHub,
-  IconSeparator,
-  IconArrowDown,
-  IconArrowRight,
-  IconUser,
-  IconPlus,
-  IconArrowElbow,
-  IconSpinner,
-  IconMessage,
-  IconTrash,
-  IconRefresh,
-  IconStop,
-  IconSidebar,
-  IconMoon,
-  IconSun,
-  IconCopy,
-  IconCheck,
-  IconDownload,
-  IconClose,
-  IconShare,
-  IconUsers,
-  IconExternalLink,
-  IconChevronUpDown
+  IconArrowDown, IconArrowElbow, IconArrowRight, IconCheck, IconChevronUpDown, IconClose, IconCopy, IconDownload, IconEdit, IconExternalLink, IconFlexiGPT, IconGitHub, IconMenu, IconMessage, IconMoon, IconNextChat,
+  IconOpenAI, IconPlus, IconRefresh, IconSeparator, IconShare, IconSidebar, IconSpinner, IconStop, IconSun, IconTrash, IconUser, IconUsers
 };
+

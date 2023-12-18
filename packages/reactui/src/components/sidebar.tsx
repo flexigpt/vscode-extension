@@ -1,6 +1,6 @@
-import { ConversationList } from '@/components/conversation-list';
 import { Accordion, AccordionPanel, Sidebar, Text } from 'grommet';
 import React from 'react';
+import { ConversationList } from './conversation-list';
 
 export const FlexiSidebar: React.FC = () => {
   return (

@@ -1,16 +1,16 @@
-import '@/globals/globals.css';
 import { Box, Grommet, Layer } from 'grommet';
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
+import '../globals/globals.css';
 
-import { nanoid } from '@/lib/utils';
+import { nanoid } from './lib/utils';
 
-import { Chat } from '@/components/chat';
-import messages from '@/components/messages-sample';
-import { AppHeader } from '@/components/navbar';
+import { Chat } from './components/chat';
+import messages from './components/messages-sample';
+import { AppHeader } from './components/navbar';
 
-import { FlexiSidebar } from '@/components/sidebar';
+import { FlexiSidebar } from './components/sidebar';
 import { RosePineMergedTheme } from './theme';
 
 const App: React.FC = () => {

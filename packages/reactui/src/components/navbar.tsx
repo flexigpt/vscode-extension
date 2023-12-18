@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IconFlexiGPT } from '@/components/ui/icons';
+import { IconFlexiGPT } from './icons';
 
 import { Anchor, Box, Button, Header } from 'grommet';
 import { Menu, Moon, Sun } from 'grommet-icons';

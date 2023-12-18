@@ -4,8 +4,8 @@ import * as React from 'react';
 
 // import { IMessage } from 'spec/chat';
 
-import { CodeBlock } from '@/components/ui/codeblock';
-import { MemoizedReactMarkdown } from '@/components/ui/markdown';
+import { CodeBlock } from './codeblock';
+import { MemoizedReactMarkdown } from './markdown';
 
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';

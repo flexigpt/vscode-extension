@@ -4,11 +4,6 @@
       "outDir": "./dist",
       "declarationDir": "./dist/types",
       "declaration": true,
-      "paths": {
-        "@/*": [
-          "packages/reactui/*"
-        ]
-      }
     },
     "include": [
       "./**/*.ts",

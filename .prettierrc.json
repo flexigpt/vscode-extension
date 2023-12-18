@@ -9,13 +9,6 @@
     "importOrder": [
       "^(react/(.*)$)|^(react$)|^(react(.*)$)",
       "^(grommet/(.*)$)|^(grommet$)|^(grommet(.*)$)",
-      "^(@/logger/(.*)$)|^(@/logger$)",
-      "^(@/spec/(.*)$)|^(@/spec$)",
-      "^(@/aiprovider/(.*)$)|^(@/aiprovider$)",
-      "^(@/prompts/(.*)$)|^(@/prompts$)",
-      "^(@/conversations/(.*)$)|^(@/conversations$)",
-      "^(@/reactui/lib/(.*)$)|^(@/reactui/lib$)",
-      "^(@/reactui/components/(.*)$)|^(@/reactui/components$)",
       "<THIRD_PARTY_MODULES>",
       "",
       "^[./]"
