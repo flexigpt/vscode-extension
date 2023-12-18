@@ -6,9 +6,10 @@ import '../globals/globals.css';
 
 import { nanoid } from './lib/utils';
 
-import { Chat } from './components/chat';
-import messages from './components/messages-sample';
+import { Chat } from './components/chat-screen';
+
 import { AppHeader } from './components/navbar';
+import messages from './lib/messages-sample';
 
 import { FlexiSidebar } from './components/sidebar';
 import { RosePineMergedTheme } from './theme';

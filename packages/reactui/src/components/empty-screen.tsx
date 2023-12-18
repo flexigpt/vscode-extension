@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Anchor, Button, Card, CardBody, CardHeader } from 'grommet';
-import { HorizontalDivider as Divider } from './divider';
+import { HorizontalDivider as Divider } from './base/divider';
 
 import { Next, Share } from 'grommet-icons';
 

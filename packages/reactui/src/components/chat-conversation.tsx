@@ -2,12 +2,12 @@ import React from 'react';
 
 import { Box } from 'grommet';
 import { User } from 'grommet-icons';
+import { IconFlexiGPT } from './base/icons';
 import { ChatMessageContent } from './chat-message-content';
-import { IconFlexiGPT } from './icons';
 
 import { IMessage } from 'spec/chat';
-import { CopyButton } from './copy-button';
-import { HorizontalDivider } from './divider';
+import { CopyButton } from './base/copy-button';
+import { HorizontalDivider } from './base/divider';
 
 export interface MessageList {
   messages: IMessage[];

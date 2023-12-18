@@ -6,11 +6,11 @@ import { cn } from '../lib/utils';
 
 
 
+import { ScrollAnchor } from './base/scroll-anchor';
+import { Conversation } from './chat-conversation';
 import { ChatPanel } from './chat-panel';
-import { Conversation } from './conversation';
 import { EmptyScreen } from './empty-screen';
-import { KeyForm } from './get-key';
-import { ScrollAnchor } from './scroll-anchor';
+import { KeyForm } from './provider-get-key';
 
 
 const IS_PREVIEW = false;

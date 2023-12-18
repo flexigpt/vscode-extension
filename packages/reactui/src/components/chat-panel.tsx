@@ -6,7 +6,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 
 import { ChangeEvent } from 'react';
 import { IMessage } from 'spec/chat';
-import { ButtonScrollToBottom } from './button-scroll-to-bottom';
+import { ButtonScrollToBottom } from './base/button-scroll-to-bottom';
 
 export interface ChatPanelProps {
   id?: string;
