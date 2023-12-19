@@ -39,6 +39,7 @@ const App: React.FC = () => {
               position="left"
               full="vertical"
               modal={false}
+              responsive={true}
               onClickOutside={() => setShowSidebar(false)}
               onEsc={() => setShowSidebar(false)}
             >

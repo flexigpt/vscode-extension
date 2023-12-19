@@ -1,25 +1,21 @@
+import { Box } from 'grommet';
 import React, { useState } from 'react';
 
 import { IMessage } from 'spec/chat';
-
-import { cn } from '../lib/utils';
-
-
 
 import { ScrollAnchor } from './base/scroll-anchor';
 import { Conversation } from './chat-conversation';
 import { ChatPanel } from './chat-panel';
 import { EmptyScreen } from './empty-screen';
-import { KeyForm } from './provider-get-key';
-
 
 const IS_PREVIEW = false;
-export interface ChatProps extends React.ComponentProps<'div'> {
+
+export interface ChatProps {
   initialMessages: IMessage[];
   id: string;
 }
 
-export function Chat({ id, initialMessages, className }: ChatProps) {
+export function Chat({ id, initialMessages }: ChatProps) {
   const [previewToken, setPreviewToken] = useState('');
   const [previewTokenInput, setPreviewTokenInput] = useState(
     previewToken ?? ''
@@ -30,44 +26,31 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   };
 
   const isLoading = true;
-  const setInput = (input: string) => {
-    return;
-  };
-  //   const { messages, append, reload, stop, isLoading, input, setInput } =
-  //     useChat({
-  //       initialMessages,
-  //       id,
-  //       body: {
-  //         id,
-  //         previewToken
-  //       },
-  //       onResponse(response) {
-  //         if (response.status === 401) {
-  //           toast.error(response.statusText);
-  //         }
-  //       }
-  //     });
+
   return (
-    <>
-      <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
+    <Box flex={true}>
+      <Box
+        pad={{ bottom: 'xlarge', top: 'small' }}
+        flex={true}
+      >
         {initialMessages.length ? (
-          <>
+          <Box flex={true}>
             <Conversation messages={initialMessages} />
             <ScrollAnchor trackVisibility={isLoading} />
-          </>
+          </Box>
         ) : (
           <EmptyScreen />
         )}
-      </div>
+      </Box>
       <ChatPanel id={id} messages={initialMessages} />
-      <KeyForm
+      {/* <KeyForm
         isOpen={isOpen}
         setOpen={setIsOpen}
         previewToken={previewToken}
         setPreviewToken={setPreviewToken}
         previewTokenInput={previewTokenInput}
         setPreviewTokenInput={setPreviewTokenInput}
-      />
-    </>
+      /> */}
+    </Box>
   );
 }

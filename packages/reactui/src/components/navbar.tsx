@@ -21,7 +21,11 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
       background="brand"
       pad="small"
       elevation="medium"
-      style={{ zIndex: 1 }}
+      style={{
+        zIndex: 1,
+        position: 'sticky',
+        top: 0
+      }}
     >
       <Button icon={<Menu />} onClick={onMenuClick} />
       <Box direction="row" align="center" gap="small" flex justify="center">
@@ -31,7 +35,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           icon={<IconFlexiGPT className="inline-block align-middle mr-2" />}
           label="FlexiGPT"
           target="_blank"
-          color={"text"}
+          color={'text'}
         ></Anchor>
       </Box>
       <Button

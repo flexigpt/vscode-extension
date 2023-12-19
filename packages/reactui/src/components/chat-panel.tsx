@@ -1,4 +1,11 @@
-import { Box, Button, Form, FormField, Layer } from 'grommet';
+import {
+  Box,
+  Button,
+  Form,
+  FormField,
+  Layer,
+  ResponsiveContext
+} from 'grommet';
 import { Add, Refresh, Send, Stop } from 'grommet-icons';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -43,10 +50,14 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
       responsive={false}
       plain={true}
     >
-      <Box fill="vertical" justify="between" align="center">
-        <ButtonScrollToBottom />
-
-        <Box direction="row" justify="center" pad="small">
+      <Box
+        flex="grow"
+        direction="column"
+        justify="between"
+        align="center"
+        fill="horizontal"
+      >
+        <Box align="center" justify="center" pad="none" margin="none">
           {isLoading ? (
             <Button
               onClick={() => stop()}
@@ -68,61 +79,92 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
             )
           )}
         </Box>
-
-        <Form
-          value={value}
-          onChange={nextValue => setValue(nextValue)}
-          onSubmit={e => {
-            e.preventDefault();
-            handleSendMessage();
-          }}
-        >
-          <Box
-            direction="row"
-            background="background"
-            align="center"
-            gap="small"
-            pad={{ horizontal: 'small', vertical: 'small' }}
-            border={{ color: 'border', size: 'small' }}
-            round="small"
-            width="large"
-            alignSelf="center"
-          >
-            <Button
-              icon={<Add />}
-              onClick={() => navigate('/')}
-              tip="New Conversation"
-              style={{ border: '1px solid #ccc', borderRadius: '50%' }}
-            />
-            <FormField name="message" required flex>
-              <TextareaAutosize
-                name="message"
-                placeholder="Send a message..."
-                minRows={2}
-                maxRows={10}
-                onChange={handleTextChange}
-                style={{
-                  backgroundColor: 'inherit',
-                  color: 'inherit',
-                  fontFamily: 'inherit',
-                  border: '1px solid inherit',
-                  borderRadius: 'inherit',
-                  fontSize: 'inherit',
-                  outline: 'none'
+        <ResponsiveContext.Consumer>
+          {size => (
+            <Box width={size === 'small' ? '100%' : '80%'}>
+              <Form
+                value={value}
+                onChange={nextValue => setValue(nextValue)}
+                onSubmit={e => {
+                  e.preventDefault();
+                  handleSendMessage();
                 }}
-              />
-            </FormField>
-            <Button
-              type="submit"
-              tip="Send message"
-              icon={<Send />}
-              size="small"
-              disabled={!value.message.trim()}
-              style={{ borderRadius: '50%' }}
-            />
-          </Box>
-        </Form>
+              >
+                <Box
+                  flex="grow"
+                  direction="row"
+                  background="background"
+                  align="center"
+                  justify="center"
+                  gap="small"
+                  pad={{ horizontal: 'small', vertical: 'small' }}
+                  border={[
+                    {
+                      color: 'border',
+                      size: 'small',
+                      side: 'top'
+                    },
+                    {
+                      color: 'border',
+                      size: 'small',
+                      side: 'left'
+                    },
+                    {
+                      color: 'border',
+                      size: 'small',
+                      side: 'right'
+                    }
+                  ]}
+                  round={{ corner: 'top', size: 'small' }}
+                >
+                  <Button
+                    icon={<Add />}
+                    onClick={() => navigate('/')}
+                    tip="New Conversation"
+                    style={{ border: '1px solid #ccc', borderRadius: '50%' }}
+                  />
+                  <FormField name="message" required flex>
+                    <TextareaAutosize
+                      name="message"
+                      placeholder="Send a message..."
+                      minRows={2}
+                      maxRows={10}
+                      onChange={handleTextChange}
+                      style={{
+                        backgroundColor: 'inherit',
+                        color: 'inherit',
+                        fontFamily: 'inherit',
+                        border: '1px solid inherit',
+                        borderRadius: 'inherit',
+                        fontSize: 'inherit',
+                        outline: 'none'
+                      }}
+                    />
+                  </FormField>
+                  <Button
+                    type="submit"
+                    tip="Send message"
+                    icon={<Send />}
+                    size="small"
+                    disabled={!value.message.trim()}
+                    style={{ borderRadius: '50%' }}
+                  />
+                </Box>
+              </Form>
+            </Box>
+          )}
+        </ResponsiveContext.Consumer>
       </Box>
+
+      <Layer
+        position="bottom-right"
+        modal={false}
+        responsive={false}
+        plain={true}
+        margin={{ bottom: 'xlarge', right: 'medium' }}
+      >
+        <ButtonScrollToBottom />
+      </Layer>
     </Layer>
   );
 }

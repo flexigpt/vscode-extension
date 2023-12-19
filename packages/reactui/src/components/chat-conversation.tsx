@@ -43,28 +43,38 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
   return (
     <Box
-      direction="row"
-      align="center"
-      gap="small"
       elevation="small"
       margin={{ bottom: 'small' }}
       pad="small"
       round="small"
       onMouseEnter={() => setShowCopy(true)}
       onMouseLeave={() => setShowCopy(false)}
+      style={{ position: 'relative' }}
     >
-      <Box
-        height="xsmall"
-        width="xsmall"
-        align="center"
-        justify="center"
-        round="full"
-        background="background"
-      >
-        {message.role === 'user' ? <User /> : <IconFlexiGPT />}
+      <Box direction="row" align="center" gap="small">
+        <Box
+          height="xxsmall"
+          width="xxsmall"
+          align="center"
+          justify="center"
+          round="full"
+          background="background"
+        >
+          {message.role === 'user' ? <User /> : <IconFlexiGPT />}
+        </Box>
+        <ChatMessageContent content={message.content} />
       </Box>
-      <ChatMessageContent content={message.content} />
-      {showCopy && <CopyButton value={message.content} size="small" />}
+      {showCopy && (
+        <Box
+          style={{
+            position: 'absolute',
+            top: '0',
+            right: '0'
+          }}
+        >
+          <CopyButton value={message.content} size="small" />
+        </Box>
+      )}
     </Box>
   );
 }

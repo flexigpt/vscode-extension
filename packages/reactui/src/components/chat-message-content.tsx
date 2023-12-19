@@ -21,7 +21,6 @@ export interface ChatMessageContentProps {
   content: string;
 }
 
-
 interface CodeProps {
   language: string;
   value: string;
@@ -63,7 +62,13 @@ export function ChatMessageContent({
   ...props
 }: ChatMessageContentProps) {
   return (
-    <div className="flex-1 px-1 ml-4 space-y-1 overflow-hidden">
+    <Box
+      flex
+      pad="xsmall"
+      margin={{ left: 'medium' }}
+      gap="small"
+      overflow="auto"
+    >
       <MemoizedReactMarkdown
         className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
         remarkPlugins={[remarkGfm, remarkMath]}
@@ -105,6 +110,6 @@ export function ChatMessageContent({
       >
         {content}
       </MemoizedReactMarkdown>
-    </div>
+    </Box>
   );
 }
