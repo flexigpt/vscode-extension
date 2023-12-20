@@ -1,17 +1,21 @@
-// Inspired by Chatbot-UI and modified to fit the needs of this project
-// @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
-import React, { FC, memo } from 'react';
+import React, { FC, ReactNode, memo } from 'react';
 
-import { Box, Button } from 'grommet';
-import { Copy, Download } from 'grommet-icons';
-import ReactMarkdown, { Options } from 'react-markdown';
+import {
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Markdown,
+  Paragraph,
+  Text
+} from 'grommet';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
+import { CopyButton } from './base/copy-button';
+import { DownloadButton } from './base/download-button';
 
-export const MemoizedReactMarkdown: FC<Options> = memo(
-  ReactMarkdown,
+export const MemoizedMarkdown = memo(
+  Markdown,
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children &&
     prevProps.className === nextProps.className
@@ -26,90 +30,108 @@ interface CodeProps {
   value: string;
 }
 
-export const CodeBlock: FC<CodeProps> = memo(({ language, value }) => {
+const CodeBlock: FC<CodeProps> = memo(({ language, value }) => {
   return (
-    <Box fill="horizontal" background="dark-3" pad="small">
-      <Box
-        direction="row"
-        justify="between"
-        background="dark-2"
-        pad={{ horizontal: 'medium', vertical: 'small' }}
-      >
-        <Box basis="1/4">{language}</Box>
-        <Box direction="row" gap="small">
-          <Button icon={<Download />} plain={false} size="small" />
-          <Button icon={<Copy />} plain={false} size="small" />
+    <Card
+      elevation="none"
+      round="medium"
+      background="dark-1"
+      overflow="hidden"
+      margin={{ top: 'small', bottom: 'small' }}
+    >
+      <CardHeader pad="small" background="dark-2" height="xxsmall">
+        <Text>{language}</Text>
+        <Box direction="row" flex="shrink" justify="end">
+          <DownloadButton language={language} value={value} />
+          <CopyButton value={value} />
         </Box>
-      </Box>
-      <SyntaxHighlighter
-        language={language}
-        style={monokaiSublime}
-        showLineNumbers
-        customStyle={{
-          background: 'transparent',
-          padding: 'medium',
-          borderRadius: 'small'
-        }}
-      >
-        {value}
-      </SyntaxHighlighter>
-    </Box>
+      </CardHeader>
+      <CardBody pad="small">
+        <SyntaxHighlighter
+          language={language}
+          style={monokaiSublime}
+          showLineNumbers
+          customStyle={{
+            background: 'transparent',
+            padding: 'medium',
+            borderRadius: 'small'
+          }}
+        >
+          {value}
+        </SyntaxHighlighter>
+      </CardBody>
+    </Card>
   );
 });
+
+type divProps = JSX.IntrinsicElements['div'];
+interface CodeComponentProps extends divProps {
+  node: any; // This can be more specific if you know the structure
+  inline?: boolean;
+  className?: string;
+  children: ReactNode;
+}
+interface PComponentProps extends divProps {
+  children: ReactNode;
+}
 
 export function ChatMessageContent({
   content,
   ...props
 }: ChatMessageContentProps) {
+  const components = {
+    p({ children }: PComponentProps) {
+      return (
+        <Paragraph
+          fill
+          margin={{ top: 'small', bottom: 'small' }}
+          style={{ lineHeight: '1.5' }}
+        >
+          {children}
+        </Paragraph>
+      );
+    },
+    code: ({
+      node,
+      inline,
+      className,
+      children,
+      ...props
+    }: CodeComponentProps) => {
+      // Check if it's an inline code or a block
+      // console.log({className, inline, node, children, props});
+      // console.log(inline);
+      if (inline || !className) {
+        return (
+          <Text as="code" {...props}>
+            {children}
+          </Text>
+        );
+      }
+      let match = /lang-(\w+)/.exec(className || '');
+      if (!match) {
+        match = /language-(\w+)/.exec(className || '');
+      }
+      const language = match && match[1] ? match[1] : 'text';
+
+      return (
+        <CodeBlock
+          language={language}
+          value={String(children).replace(/\n$/, '')}
+          {...props}
+        />
+      );
+    }
+  };
   return (
-    <Box
-      flex
-      pad="xsmall"
-      margin={{ left: 'medium' }}
-      gap="small"
-      overflow="auto"
-    >
-      <MemoizedReactMarkdown
-        className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
-        remarkPlugins={[remarkGfm, remarkMath]}
-        components={{
-          p({ children }) {
-            return <p className="mb-2 last:mb-0">{children}</p>;
-          },
-          code({ node, inline, className, children, ...props }) {
-            if (children.length) {
-              if (children[0] === '▍') {
-                return (
-                  <span className="mt-1 cursor-default animate-pulse">▍</span>
-                );
-              }
-
-              children[0] = (children[0] as string).replace('`▍`', '▍');
-            }
-
-            const match = /language-(\w+)/.exec(className || '');
-
-            if (inline) {
-              return (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            }
-
-            return (
-              <CodeBlock
-                key={Math.random()}
-                language={(match && match[1]) || ''}
-                value={String(children).replace(/\n$/, '')}
-                {...props}
-              />
-            );
-          }
+    <Box fill>
+      <MemoizedMarkdown
+        options={{
+          overrides: components
         }}
       >
         {content}
-      </MemoizedReactMarkdown>
+      </MemoizedMarkdown>
     </Box>
   );
 }

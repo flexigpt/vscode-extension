@@ -1,8 +1,15 @@
 import React from 'react';
 
-import { Box } from 'grommet';
-import { User } from 'grommet-icons';
-import { IconFlexiGPT } from './base/icons';
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Text
+} from 'grommet';
+import { Info, Refresh, Stop, User } from 'grommet-icons';
 import { ChatMessageContent } from './chat-message-content';
 
 import { IMessage } from 'spec/chat';
@@ -19,7 +26,7 @@ export function Conversation({ messages }: MessageList) {
   }
 
   return (
-    <Box gap="medium">
+    <Box gap="small" pad="xsmall">
       {' '}
       {/* Replaced div with Box */}
       {messages.map((message, index) => (
@@ -40,41 +47,57 @@ export interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const [showCopy, setShowCopy] = React.useState(false);
-
+  const isLoading = false;
   return (
-    <Box
-      elevation="small"
-      margin={{ bottom: 'small' }}
+    <Card
+      elevation="none"
+      margin={{ bottom: 'xsmall' }}
       pad="small"
-      round="small"
+      width={{max: "xlarge"}}
       onMouseEnter={() => setShowCopy(true)}
       onMouseLeave={() => setShowCopy(false)}
-      style={{ position: 'relative' }}
     >
-      <Box direction="row" align="center" gap="small">
-        <Box
-          height="xxsmall"
-          width="xxsmall"
-          align="center"
-          justify="center"
-          round="full"
-          background="background"
-        >
-          {message.role === 'user' ? <User /> : <IconFlexiGPT />}
-        </Box>
+      <CardHeader direction="row" align="center" gap="small" height="xxsmall">
+        {message.role === 'user' ? (
+          <Box direction="row" gap="xsmall">
+            <User /> <Text weight="bold">You</Text>
+          </Box>
+        ) : (
+          <Box direction="row" gap="xsmall">
+            <Info /> <Text weight="bold"> Assistant </Text>
+          </Box>
+        )}
+
+        {showCopy && (
+          <Box justify="end" flex="shrink">
+            <CopyButton value={message.content} />
+          </Box>
+        )}
+      </CardHeader>
+      <CardBody background="background-contrast" round="medium" pad="medium">
         <ChatMessageContent content={message.content} />
-      </Box>
-      {showCopy && (
-        <Box
-          style={{
-            position: 'absolute',
-            top: '0',
-            right: '0'
-          }}
-        >
-          <CopyButton value={message.content} size="small" />
-        </Box>
-      )}
-    </Box>
+      </CardBody>
+      <CardFooter justify="end" pad="none" margin="none" height="xxsmall">
+        {isLoading && message.role === 'assistant' && showCopy && (
+          <Button
+            onClick={() => stop()}
+            icon={<Stop />}
+            tip={{
+              content: 'Stop generating',
+              dropProps: { align: { right: 'left' } }
+            }}
+          />
+        )}
+        {message.role === 'assistant' && showCopy && (
+          <Button
+            icon={<Refresh />}
+            tip={{
+              content: 'Regenerate response',
+              dropProps: { align: { right: 'left' } }
+            }}
+          />
+        )}
+      </CardFooter>
+    </Card>
   );
 }

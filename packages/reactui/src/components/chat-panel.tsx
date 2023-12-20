@@ -6,7 +6,7 @@ import {
   Layer,
   ResponsiveContext
 } from 'grommet';
-import { Add, Refresh, Send, Stop } from 'grommet-icons';
+import { Add, Send } from 'grommet-icons';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -23,7 +23,6 @@ export interface ChatPanelProps {
 export function ChatPanel({ id, messages }: ChatPanelProps) {
   const [value, setValue] = React.useState({ message: '' });
   const navigate = useNavigate();
-  const isLoading = false;
 
   if (!messages) {
     messages = [];
@@ -57,28 +56,6 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
         align="center"
         fill="horizontal"
       >
-        <Box align="center" justify="center" pad="none" margin="none">
-          {isLoading ? (
-            <Button
-              onClick={() => stop()}
-              icon={<Stop />}
-              tip={{
-                content: 'Stop generating',
-                dropProps: { align: { left: 'right' } }
-              }}
-            />
-          ) : (
-            messages.length > 0 && (
-              <Button
-                icon={<Refresh />}
-                tip={{
-                  content: 'Regenerate response',
-                  dropProps: { align: { left: 'right' } }
-                }}
-              />
-            )
-          )}
-        </Box>
         <ResponsiveContext.Consumer>
           {size => (
             <Box width={size === 'small' ? '100%' : '80%'}>
