@@ -25,8 +25,8 @@ const App: React.FC = () => {
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
-  // const startEmpty = true;
-  const startEmpty = false;
+  const startEmpty = true;
+  // const startEmpty = false;
   return (
     <Grommet theme={RosePineMergedTheme} themeMode={themeMode}>
       <Box fill>

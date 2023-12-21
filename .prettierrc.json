@@ -7,14 +7,14 @@
     "tabWidth": 2,
     "trailingComma": "none",
     "importOrder": [
-      "^(react/(.*)$)|^(react$)|^(react(.*)$)",
-      "^(grommet/(.*)$)|^(grommet$)|^(grommet(.*)$)",
-      "<THIRD_PARTY_MODULES>",
-      "",
+      "^react$",
+      "^react(.+)$",
+      "^grommet$",
+      "^grommet(.+)$",
       "^[./]"
     ],
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true,
     "importOrderGroupNamespaceSpecifiers": true,
-    "importOrderParserPlugins": ["typescript", "tsx", "jsx", "decorators-legacy"]
+    "importOrderParserPlugins": ["jsx", "tsx", "typescript", "decorators-legacy"]
   }

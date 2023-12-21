@@ -4,6 +4,7 @@ import { IconFlexiGPT } from './base/icons';
 
 import { Anchor, Box, Button, Header } from 'grommet';
 import { Menu, Moon, Sun } from 'grommet-icons';
+import { GITHUB_REPO_URL } from '../lib/consts';
 
 export interface AppHeaderProps {
   onMenuClick: () => void;
@@ -31,7 +32,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
       <Box direction="row" align="center" gap="small" flex justify="center">
         <Anchor
           className="flex items-center font-bold"
-          href="https://github.com/ppipada/vscode-flexigpt"
+          href={GITHUB_REPO_URL}
           icon={<IconFlexiGPT className="inline-block align-middle mr-2" />}
           label="FlexiGPT"
           target="_blank"
