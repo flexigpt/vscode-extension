@@ -92,7 +92,7 @@ export function ChatPanel({ id, messages }: ChatPanelProps) {
                       side: 'right'
                     }
                   ]}
-                  round={{ corner: 'top', size: 'small' }}
+                  round={{ corner: 'top', size: 'medium' }}
                 >
                   <Button
                     icon={<Add />}

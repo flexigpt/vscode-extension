@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 
 import { IMessage } from 'spec/chat';
 
-import { ScrollAnchor } from './base/scroll-anchor';
 import { Conversation } from './chat-conversation';
-import { ChatPanel } from './chat-panel';
+import { ChatPanel } from './chat-input-panel';
 import { EmptyScreen } from './empty-screen';
 
 const IS_PREVIEW = false;
@@ -28,16 +27,10 @@ export function Chat({ id, initialMessages }: ChatProps) {
   const isLoading = true;
 
   return (
-    <Box flex={true}>
-      <Box
-        pad={{ bottom: 'xlarge', top: 'small' }}
-        flex={true}
-      >
+    <Box flex>
+      <Box pad={{ bottom: 'xlarge', top: 'small' }} flex={true}>
         {initialMessages.length ? (
-          <Box flex={true}>
-            <Conversation messages={initialMessages} />
-            <ScrollAnchor trackVisibility={isLoading} />
-          </Box>
+          <Conversation messages={initialMessages} />
         ) : (
           <EmptyScreen />
         )}

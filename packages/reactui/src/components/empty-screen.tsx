@@ -1,9 +1,15 @@
+import {
+  Anchor,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Text
+} from 'grommet';
+import { Github, Next } from 'grommet-icons';
 import * as React from 'react';
-
-import { Anchor, Button, Card, CardBody, CardHeader } from 'grommet';
-import { HorizontalDivider as Divider } from './base/divider';
-
-import { Next, Share } from 'grommet-icons';
+import { HorizontalDivider } from './base/divider'; // Your custom HorizontalDivider component
 
 const exampleMessages = [
   {
@@ -20,42 +26,49 @@ const exampleMessages = [
   }
 ];
 
-// export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
 export function EmptyScreen() {
   return (
-    <Card className="relative mx-auto max-w-2xl px-4">
-      <CardHeader className="flex flex-col gap-3">
-        <p className="text-md text-center">Welcome to FlexiGPT !</p>
-        <p className="text-small text-default-500">
-          The fully open source AI Assistant.
-        </p>
-        <Anchor
-          label="Visit source code on GitHub."
-          icon={< Share />}
-          className="text-xs text-default-500 text-muted-foreground"
-          href="https://github.com/ppipada/vscode-flexigpt"
-          target="_blank"
-        >
-        </Anchor>
-      </CardHeader>
-      <Divider />
-      <CardBody>
-        <div className="mt-4 flex flex-col items-start space-y-2">
-          <p className="leading-normal text-muted-foreground">
-            You can start a conversation here or try the following examples:
-          </p>
-          {exampleMessages.map((message, index) => (
-            <Button
-              key={index}
-              label = {message.heading}
-              className="h-auto p-2 text-base"
-              icon={< Next className="mr-2 text-muted-foreground"/>}
-              // onClick={() => setInput(message.message)}
-            >
-            </Button>
-          ))}
-        </div>
-      </CardBody>
-    </Card>
+    <Box
+      align="center"
+      justify="center"
+      width="100vw"
+      height="80vh"
+      overflow="hidden"
+    >
+      <Card elevation="none" border="all" pad="medium" width={{ max: 'large' }}>
+        <CardHeader direction="column" pad="medium">
+          <Text textAlign="center" size="medium">
+            Welcome to FlexiGPT
+          </Text>
+
+          <Anchor
+            label="The fully open source AI Assistant."
+            icon={<Github />}
+            size="small"
+            color="text-weak"
+            href="https://github.com/ppipada/vscode-flexigpt"
+            target="_blank"
+          />
+        </CardHeader>
+        <HorizontalDivider />
+        <CardBody pad="medium" overflow="auto">
+          <Box gap="small">
+            <Text margin='small'>
+              You can start a conversation here or try the following examples:
+            </Text>
+            {exampleMessages.map((message, index) => (
+              <Button
+                key={index}
+                label={message.heading}
+                icon={<Next />}
+                justify="start"
+                // onClick={() => setInput(message.message)}
+                // Adjust styling as needed
+              />
+            ))}
+          </Box>
+        </CardBody>
+      </Card>
+    </Box>
   );
 }

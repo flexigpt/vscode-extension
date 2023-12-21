@@ -9,9 +9,9 @@ import { nanoid } from './lib/utils';
 import { Chat } from './components/chat-screen';
 
 import { AppHeader } from './components/navbar';
-import messages from './lib/messages-sample';
 
 import { FlexiSidebar } from './components/sidebar';
+import messages from './lib/messages-sample';
 import { RosePineMergedTheme } from './theme';
 
 const App: React.FC = () => {
@@ -25,6 +25,8 @@ const App: React.FC = () => {
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+  // const startEmpty = true;
+  const startEmpty = false;
   return (
     <Grommet theme={RosePineMergedTheme} themeMode={themeMode}>
       <Box fill>
@@ -47,7 +49,11 @@ const App: React.FC = () => {
             </Layer>
           )}
           <Box flex align="center" justify="center">
-            <Chat id={nanoid()} initialMessages={messages} />
+            {startEmpty ? (
+              <Chat id={nanoid()} initialMessages={[]} />
+            ) : (
+              <Chat id={nanoid()} initialMessages={messages} />
+            )}
           </Box>
         </Box>
       </Box>
