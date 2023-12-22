@@ -19,7 +19,8 @@
     "node_modules",
     ".vscode-test",
     "**/node_modules",
-    "**/out"
+    "**/out",
+    "**/dist",
   ],
   "include": [
     "./**/*.ts", // Include your source files

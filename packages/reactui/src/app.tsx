@@ -13,6 +13,7 @@ import { AppHeader } from './components/navbar';
 import { FlexiSidebar } from './components/sidebar';
 import messages from './lib/messages-sample';
 import { RosePineMergedTheme } from './theme';
+import { WorkflowProviderContext, workflowProvider } from './providercontext';
 
 const App: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -29,34 +30,36 @@ const App: React.FC = () => {
   // const startEmpty = false;
   return (
     <Grommet theme={RosePineMergedTheme} themeMode={themeMode}>
-      <Box fill>
-        <AppHeader
-          onMenuClick={toggleSidebar}
-          onThemeToggle={toggleTheme}
-          theme={'dark'}
-        />
-        <Box direction="row" flex overflow={{ horizontal: 'hidden' }}>
-          {showSidebar && (
-            <Layer
-              position="left"
-              full="vertical"
-              modal={false}
-              responsive={true}
-              onClickOutside={() => setShowSidebar(false)}
-              onEsc={() => setShowSidebar(false)}
-            >
-              <FlexiSidebar />
-            </Layer>
-          )}
-          <Box flex align="center" justify="center">
-            {startEmpty ? (
-              <Chat id={nanoid()} initialMessages={[]} />
-            ) : (
-              <Chat id={nanoid()} initialMessages={messages} />
+      <WorkflowProviderContext.Provider value={workflowProvider}>
+        <Box fill>
+          <AppHeader
+            onMenuClick={toggleSidebar}
+            onThemeToggle={toggleTheme}
+            theme={'dark'}
+          />
+          <Box direction="row" flex overflow={{ horizontal: 'hidden' }}>
+            {showSidebar && (
+              <Layer
+                position="left"
+                full="vertical"
+                modal={false}
+                responsive={true}
+                onClickOutside={() => setShowSidebar(false)}
+                onEsc={() => setShowSidebar(false)}
+              >
+                <FlexiSidebar />
+              </Layer>
             )}
+            <Box flex align="center" justify="center">
+              {startEmpty ? (
+                <Chat id={nanoid()} initialMessages={[]} />
+              ) : (
+                <Chat id={nanoid()} initialMessages={messages} />
+              )}
+            </Box>
           </Box>
         </Box>
-      </Box>
+      </WorkflowProviderContext.Provider>
     </Grommet>
   );
 };

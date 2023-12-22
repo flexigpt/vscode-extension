@@ -6,7 +6,7 @@ import * as prettier from 'prettier';
 import { v4 as uuidv4 } from 'uuid';
 
 import { filterSensitiveInfoFromJsonString } from 'aiprovider/api';
-import Providers, { CompletionProvider } from 'aiprovider/strategy';
+import { CompletionProvider, Providers } from 'aiprovider/strategy';
 
 import log from './logger/log';
 

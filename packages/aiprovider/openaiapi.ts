@@ -12,10 +12,7 @@ import {
   CompletionRequest
 } from 'spec/chat';
 
-export default class OpenAIAPIProvider
-  extends GptAPI
-  implements CompletionProvider
-{
+export class OpenAIAPIProvider extends GptAPI implements CompletionProvider {
   #timeout: number;
   defaultCompletionModel: string;
   defaultChatCompletionModel: string;
@@ -226,4 +223,22 @@ export default class OpenAIAPIProvider
     }
     return completionRequest;
   }
+}
+
+export function getOpenAIProvider(): CompletionProvider {
+  // Default values for OpenAI Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'gpt-3.5-turbo';
+  const defaultChatCompletionModel = 'gpt-3.5-turbo';
+  const defaultOrigin = 'https://api.openai.com';
+
+  log.info('OpenAI API provider initialized');
+  return new OpenAIAPIProvider(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
 }

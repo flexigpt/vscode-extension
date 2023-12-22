@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: './src/app.tsx', // Your library's entry point
@@ -78,6 +79,7 @@ module.exports = {
       filename: 'webpack.[name].css',
       chunkFilename: '[id].css'
     }),
+    new Dotenv(),
   ]
 };
 

@@ -181,3 +181,21 @@ export class LlamaCPPAPIProvider extends GptAPI implements CompletionProvider {
     return completionRequest;
   }
 }
+
+export function getLlamaCPPAPIProvider(): CompletionProvider {
+  // Default values for LlamaCPP API Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'llama2';
+  const defaultChatCompletionModel = 'llama2';
+  const defaultOrigin = 'http://127.0.0.1:8080';
+
+  log.info('LlamaCPP API provider initialized');
+  return new LlamaCPPAPIProvider(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
+}

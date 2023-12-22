@@ -150,3 +150,21 @@ export class GoogleGenerativeLanguageAPI
     return completionRequest;
   }
 }
+
+export function getGoogleGenerativeLanguageProvider(): CompletionProvider {
+  // Default values for Google Generative Language Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'text-bison-001';
+  const defaultChatCompletionModel = 'chat-bison-001';
+  const defaultOrigin = 'https://generativelanguage.googleapis.com';
+
+  log.info('GoogleGenerativeLanguage API provider initialized');
+  return new GoogleGenerativeLanguageAPI(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
+}

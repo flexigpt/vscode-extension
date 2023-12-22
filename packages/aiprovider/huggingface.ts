@@ -192,3 +192,21 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     return completionRequest;
   }
 }
+
+export function getHuggingFaceProvider(): CompletionProvider {
+  // Default values for Hugging Face Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'bigcode/starcoderbase';
+  const defaultChatCompletionModel = 'microsoft/DialoGPT-large';
+  const defaultOrigin = 'https://api-inference.huggingface.co';
+
+  log.info('HuggingFace API provider initialized');
+  return new HuggingFaceAPI(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
+}

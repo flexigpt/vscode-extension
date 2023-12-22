@@ -81,6 +81,15 @@ export class GptAPI {
     }
   }
 
+  public setAPIKey(key: string) {
+    if (!key) {
+      log.error("Got empty key");
+      return;
+    }
+    this.apiKey = key;
+    log.info("Set API key done.");
+  }
+
   // Function to generate the cURL command
   generateCurlCommand(config: AxiosRequestConfig): string {
     let curlCommand = 'curl -X ' + config.method?.toUpperCase() + ' ';

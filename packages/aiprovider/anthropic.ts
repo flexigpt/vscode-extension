@@ -173,3 +173,21 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     return completionRequest;
   }
 }
+
+export function getAnthropicProvider(): CompletionProvider {
+  // Default values for Anthropic Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'claude-2';
+  const defaultChatCompletionModel = 'claude-2';
+  const defaultOrigin = 'https://api.anthropic.com';
+
+  log.info('Anthropic API provider initialized');
+  return new AnthropicAPI(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
+}

@@ -1,4 +1,4 @@
-import { systemVariableNames } from "../promptimporter/predefinedvariables";
+import { systemVariableNames } from "./predefinedvariables";
 
 import { FunctionWrapper, FunctionContext } from "../promptdef/promptfunctions";
 import { Variable, VariableNamespaces } from "../promptdef/promptvariables";

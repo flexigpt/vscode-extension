@@ -11,7 +11,19 @@ export const noopLogger: ILogger = {
     info: (..._args: unknown[]) => {},
 };
 
-let globalLogger: ILogger = noopLogger;
+export const consoleLogger: ILogger = {
+  log: (..._args: unknown[]) => {
+    console.log(..._args);
+  },
+  error: (..._args: unknown[]) => {
+    console.error("[ERROR]", ..._args);
+  },
+  info: (..._args: unknown[]) => {
+    console.info("[INFO]", ..._args);
+  },
+};
+
+let globalLogger: ILogger = consoleLogger;
 
 export function setGlobalLogger(logger: ILogger): void {
   globalLogger = logger;

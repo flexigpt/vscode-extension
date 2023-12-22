@@ -60,9 +60,6 @@ importers:
       '@types/node':
         specifier: ^18.14.2
         version: 18.14.2
-      '@types/prettier':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@types/vscode':
         specifier: ^1.85.0
         version: 1.85.0
@@ -146,6 +143,9 @@ importers:
 
   packages/prompts:
     dependencies:
+      axios:
+        specifier: ^1.6.2
+        version: 1.6.2
       logger:
         specifier: workspace:*
         version: link:../logger
@@ -206,6 +206,9 @@ importers:
       web-vitals:
         specifier: ^2.1.4
         version: 2.1.4
+      workflowprovider:
+        specifier: workspace:*
+        version: link:../workflowprovider
     devDependencies:
       '@types/react':
         specifier: ^18.2.45
@@ -225,6 +228,12 @@ importers:
       css-loader:
         specifier: ^6.8.1
         version: 6.8.1(webpack@5.89.0)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
+      dotenv-webpack:
+        specifier: ^8.0.1
+        version: 8.0.1(webpack@5.89.0)
       html-webpack-plugin:
         specifier: ^5.5.3
         version: 5.5.3(webpack@5.89.0)
@@ -263,6 +272,30 @@ importers:
         version: 4.15.1(webpack-cli@5.1.4)(webpack@5.89.0)
 
   packages/spec: {}
+
+  packages/workflowprovider:
+    dependencies:
+      aiprovider:
+        specifier: workspace:*
+        version: link:../aiprovider
+      conversations:
+        specifier: workspace:*
+        version: link:../conversations
+      logger:
+        specifier: workspace:*
+        version: link:../logger
+      prettier:
+        specifier: ^3.1.1
+        version: 3.1.1
+      prompts:
+        specifier: workspace:*
+        version: link:../prompts
+      spec:
+        specifier: workspace:*
+        version: link:../spec
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
 
 packages:
 
@@ -1474,13 +1507,6 @@ packages:
       undici-types: 5.26.5
     dev: true
 
-  /@types/prettier@3.0.0:
-    resolution: {integrity: sha512-mFMBfMOz8QxhYVbuINtswBp9VL2b4Y0QqYHwqLz3YbgtfAcat2Dl6Y1o4e22S/OVE6Ebl9m7wWiMT2lSbAs1wA==}
-    deprecated: This is a stub types definition. prettier provides its own type definitions, so you do not need this installed.
-    dependencies:
-      prettier: 3.1.1
-    dev: true
-
   /@types/prop-types@15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
 
@@ -2241,7 +2267,7 @@ packages:
       check-error: 1.0.3
       deep-eql: 4.1.3
       get-func-name: 2.0.2
-      loupe: 2.3.6
+      loupe: 2.3.7
       pathval: 1.1.1
       type-detect: 4.0.8
     dev: true
@@ -2765,6 +2791,32 @@ packages:
     dependencies:
       no-case: 3.0.4
       tslib: 2.6.2
+    dev: true
+
+  /dotenv-defaults@2.0.2:
+    resolution: {integrity: sha512-iOIzovWfsUHU91L5i8bJce3NYK5JXeAwH50Jh6+ARUdLiiGlYWfGw6UkzsYqaXZH/hjE/eCd/PlfM/qqyK0AMg==}
+    dependencies:
+      dotenv: 8.6.0
+    dev: true
+
+  /dotenv-webpack@8.0.1(webpack@5.89.0):
+    resolution: {integrity: sha512-CdrgfhZOnx4uB18SgaoP9XHRN2v48BbjuXQsZY5ixs5A8579NxQkmMxRtI7aTwSiSQcM2ao12Fdu+L3ZS3bG4w==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      webpack: ^4 || ^5
+    dependencies:
+      dotenv-defaults: 2.0.2
+      webpack: 5.89.0(esbuild@0.17.5)(webpack-cli@5.1.4)
+    dev: true
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
+    engines: {node: '>=12'}
+    dev: true
+
+  /dotenv@8.6.0:
+    resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
+    engines: {node: '>=10'}
     dev: true
 
   /eastasianwidth@0.2.0:
@@ -4013,9 +4065,8 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /loupe@2.3.6:
-    resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
-    deprecated: Please upgrade to 2.3.7 which fixes GHSA-4q6p-r6v2-jvc5
+  /loupe@2.3.7:
+    resolution: {integrity: sha512-zSMINGVYkdpYSOBmLi0D1Uo7JU9nVdQKrHxC8eYlV+9YKK9WePqAlL7lSlorG/U2Fw1w0hTBmaa/jrQ3UbPHtA==}
     dependencies:
       get-func-name: 2.0.2
     dev: true
@@ -5899,7 +5950,7 @@ packages:
     hasBin: true
     dependencies:
       '@jridgewell/source-map': 0.3.5
-      acorn: 8.10.0
+      acorn: 8.11.2
       commander: 2.20.3
       source-map-support: 0.5.21
     dev: true
