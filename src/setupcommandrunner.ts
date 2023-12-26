@@ -1,31 +1,34 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
-import { systemVariableNames } from "prompts/promptimporter/predefinedvariables";
-import { preDefinedFunctions } from "./vscodeutils/predefinedfunctions";
+import { systemVariableNames } from 'prompts/promptimporter/predefinedvariables';
+import { preDefinedFunctions } from './vscodeutils/predefinedfunctions';
 
 import {
-  getBaseFolder,
-  getSelectedText,
   getActiveDocumentExtension,
   getActiveDocumentFileFolder,
   getActiveDocumentFilePath,
   getActiveDocumentLanguageID,
   getActiveFileName,
-  readOpenFileOrPath,
-} from "./vscodeutils/vscodefunctions";
+  getBaseFolder,
+  getSelectedText,
+  readOpenFileOrPath
+} from './vscodeutils/vscodefunctions';
 
-import { Variable } from "prompts/promptdef/promptvariables";
-import { CommandRunnerContext } from "prompts/promptimporter/promptcommandrunner";
-import { getCommitAndTagListString } from "./vscodeutils/gitfunctions";
+import { Variable } from 'prompts/promptdef/promptvariables';
+import { CommandRunnerContext } from 'prompts/promptimporter/promptcommandrunner';
+import { WorkflowProvider } from 'workflowprovider';
+import { getCommitAndTagListString } from './vscodeutils/gitfunctions';
 
 export function setupCommandRunnerContext(
-  context: vscode.ExtensionContext
-): CommandRunnerContext {
-  const commandRunnerContext = new CommandRunnerContext();
-  initPreDefinedFunctions(commandRunnerContext);
-  initDocumentContext(commandRunnerContext);
-  initEvents(commandRunnerContext);
-  return commandRunnerContext;
+  context: vscode.ExtensionContext,
+  workflowProvider: WorkflowProvider
+) {
+  initPreDefinedFunctions(workflowProvider.commandRunnerContext);
+  initDocumentContext(workflowProvider.commandRunnerContext);
+  initEvents(workflowProvider.commandRunnerContext);
+  workflowProvider.commandRunnerContext.setSystemVariable(
+    new Variable(systemVariableNames.extensionUri, context.extensionUri)
+  );
 }
 
 function initPreDefinedFunctions(commandRunnerContext: CommandRunnerContext) {
@@ -65,23 +68,20 @@ function initDocumentContext(commandRunnerContext: CommandRunnerContext) {
     )
   );
   commandRunnerContext.setSystemVariable(
-    new Variable(
-      systemVariableNames.readFile,
-      readOpenFileOrPath,
-    )
+    new Variable(systemVariableNames.readFile, readOpenFileOrPath)
   );
 }
 
 function initEvents(commandRunnerContext: CommandRunnerContext) {
-  vscode.window.onDidChangeActiveTextEditor((e) => {
+  vscode.window.onDidChangeActiveTextEditor(e => {
     if (!e) {
       return;
     }
   });
 
-  vscode.window.onDidChangeTextEditorSelection(async (e) => {
+  vscode.window.onDidChangeTextEditorSelection(async e => {
     // Check if the editor where the event originated is a file editor
-    if (!e || e.textEditor.document.uri.scheme !== "file") {
+    if (!e || e.textEditor.document.uri.scheme !== 'file') {
       return;
     }
     const selection = getSelectedText();

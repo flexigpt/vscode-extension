@@ -340,6 +340,7 @@
     "js-yaml": "^4.1.0",
     "mocha": "^10.2.0",
     "npm-version": "^1.1.0",
+    "prettier": "^3.1.1",
     "rimraf": "^5.0.5",
     "stylelint": "^16.0.2",
     "stylelint-config-standard": "^35.0.0",
@@ -347,16 +348,14 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@types/uuid": "^9.0.7",
     "aiprovider": "workspace:*",
     "axios": "^1.6.2",
     "conversations": "workspace:*",
     "logger": "workspace:*",
-    "prettier": "^3.1.1",
     "prompts": "workspace:*",
     "reactui": "workspace:*",
     "spec": "workspace:*",
-    "uuid": "^9.0.1"
+    "workflowprovider": "workspace:*"
   },
   "workspaces": [
     "packages/*"

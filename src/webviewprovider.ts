@@ -2,26 +2,14 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import * as prettier from 'prettier';
-import { v4 as uuidv4 } from 'uuid';
 
 import { filterSensitiveInfoFromJsonString } from 'aiprovider/api';
-import { CompletionProvider, Providers } from 'aiprovider/strategy';
 
 import log from './logger/log';
 
-import {
-  ConversationCollection
-} from 'conversations/collection';
-import {
-  loadConversations
-} from 'conversations/loader';
 import { COMMAND_TYPE_CLI, Command } from 'prompts/promptdef/promptcommand';
-import { systemVariableNames } from 'prompts/promptimporter/predefinedvariables';
-import { CommandRunnerContext } from 'prompts/promptimporter/promptcommandrunner';
-import { ChatCompletionRoleEnum, IView } from 'spec/chat';
-import { getAllProviders } from './setupaiproviders';
-import { importAllPrompts } from './setupprompts';
+import { IView } from 'spec/chat';
+import { WorkflowProvider } from 'workflowprovider';
 import {
   append,
   getActiveDocumentFilePath,
@@ -29,56 +17,25 @@ import {
   getActiveLine,
   runCommandInShell
 } from './vscodeutils/vscodefunctions';
-import { getWebviewHtmlReact } from './webviewhtml';
+import { getWebviewHtml } from './webviewhtml';
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'flexigpt.chatView';
-
   public _view?: vscode.WebviewView | undefined;
-
-  // This variable holds a reference to the ChatGPTAPI instance
-  private _apiProvider: Providers | null = null;
-  private _commandRunnerContext?: CommandRunnerContext;
-  private _conversationCollection?: ConversationCollection;
-  private _response?: string;
-  private _prompt?: string;
-  private _fullPrompt?: string;
-  private _conversationHistoryPath?: string;
-
-  public selectedInsideCodeblock = true;
-  public pasteOnClick = false;
+  public workflowProvider: WorkflowProvider;
 
   // In the constructor, we store the URI of the extension
   constructor(
     private readonly _extensionUri: vscode.Uri,
-    private context: vscode.ExtensionContext
-  ) {}
+    private context: vscode.ExtensionContext,
+    workflowProvider: WorkflowProvider
+  ) {
+    this.workflowProvider = workflowProvider;
+  }
 
   // Set the api key and create a new API instance based on this
-  public setAPIProviders(providers: Providers) {
-    this._apiProvider = providers;
-  }
-
-  private _newAPI() {
-    this._apiProvider = getAllProviders();
-  }
-
-  unescapeChars(text: string) {
-    return text
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&');
-  }
-
-  getProvider(model: string, providerName = ''): CompletionProvider {
-    if (!this._apiProvider) {
-      this._newAPI();
-    }
-    if (!this._apiProvider) {
-      throw Error('Could not get API provider');
-    } else {
-      return this._apiProvider.getProvider(model, providerName);
-    }
+  public setWorkflowProvider(provider: WorkflowProvider) {
+    this.workflowProvider = provider;
   }
 
   public importConversations() {
@@ -86,150 +43,84 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     const extensionPath = this.context.extensionUri.fsPath;
 
     // Define the path of the conversation history file relative to the extension path
-    this._conversationHistoryPath = path.join(
+    const conversationHistoryPath = path.join(
       extensionPath,
       'conversations.yml'
     );
-    log.info('Conversation history path: ' + this._conversationHistoryPath);
-    // Load conversations from the file
-    const conversations = loadConversations(this._conversationHistoryPath);
-    if (conversations) {
-      this._conversationCollection = conversations;
-    } else {
-      this._conversationCollection = new ConversationCollection();
+    if (!conversationHistoryPath) {
+      log.info('Could not geta conversation history path');
+      return;
     }
-    if (this._conversationCollection) {
-      this._conversationCollection.startNewConversation();
-      this.sendConversationListMessage();
-    }
-  }
-
-  public setCommandRunnerContext(commandRunnerContext: CommandRunnerContext) {
-    this._commandRunnerContext = commandRunnerContext;
+    this.workflowProvider.importConversations(conversationHistoryPath, true);
+    this.sendConversationListMessage();
   }
 
   public importAllPromptFiles() {
-    if (this._commandRunnerContext) {
-      log.info('Importing files now');
-      importAllPrompts(this._extensionUri, this._commandRunnerContext);
-      this.sendCommandListMessage();
+    const config = vscode.workspace.getConfiguration('flexigpt');
+    const promptFiles = config.get('promptFiles') as string | '';
+    const inBuiltPrompts = config.get('inBuiltPrompts') as string | '';
+
+    let inBuiltPromptNames = 'flexigptbasic.js';
+    if (inBuiltPrompts) {
+      inBuiltPromptNames = inBuiltPromptNames + ';' + inBuiltPrompts;
     }
+    const basePath = vscode.Uri.joinPath(
+      this._extensionUri,
+      'media',
+      'prompts'
+    ).fsPath;
+
+    const parray = inBuiltPromptNames.split(';');
+    const fullPromptsArray = parray.map(f => `${basePath}/${f}`);
+    if (promptFiles) {
+      const newPromptFiles = promptFiles.split(';');
+      fullPromptsArray.push(...newPromptFiles);
+    }
+
+    if (fullPromptsArray) {
+      this.workflowProvider.importAllPromptFiles(fullPromptsArray);
+    }
+    this.sendCommandListMessage();
   }
 
   public async runCLIOptions() {
-    if (!this._commandRunnerContext) {
+    if (!this.workflowProvider) {
       return;
     }
     const items =
-      this._commandRunnerContext.getAllCommandsAsLabels(COMMAND_TYPE_CLI);
+      this.workflowProvider.commandRunnerContext.getAllCommandsAsLabels(
+        COMMAND_TYPE_CLI
+      );
     const result = await vscode.window.showQuickPick(items, {
       placeHolder: 'Pick an CLI to run'
     });
-    if (result) {
-      log.info(`Running CLI: ${result.label}`);
-      await vscode.commands.executeCommand('flexigpt.chatView.focus');
-      const prompt = result.label;
-      const uuid = uuidv4();
-      let response = '';
-
-      const preparedIn =
-        this._commandRunnerContext?.prepareAndSetCommand(prompt);
-      const preparedQuestion = (preparedIn?.question as string) || '';
-      const command = preparedIn?.command;
-      if (!command) {
-        throw Error('Could not get prepared command');
-      }
-      response = await this.processCli(prompt, uuid, preparedQuestion, command);
-      // Saves the response
-      this._response = response;
+    if (!result) {
+      return {};
     }
+    log.info(`Running CLI: ${result.label}`);
+    await vscode.commands.executeCommand('flexigpt.chatView.focus');
+    const resp = await this.search(result.label);
+    return resp;
   }
 
-  public getCodeUsingComment() {
-    const line = getActiveLine();
-    if (!line) {
-      return '';
-    }
-    const fpath = getActiveDocumentFilePath();
-    const lang = getActiveDocumentLanguageID();
-    const inline =
-      `Give code using the below comment.\nFilename: ${fpath}\nLang:${lang}\nComment:` +
-      line.trim();
-    this.getResponseUsingInput(inline).then(response => {
-      append('\n' + response, 'end');
-    });
+  public async viewId(): Promise<string> {
+    return ChatViewProvider.viewType;
   }
 
-  async getResponseUsingInput(line: string) {
-    let response: string;
-    let fullResponseStr = '';
-    try {
-      const preparedIn = this._commandRunnerContext?.prepareAndSetCommand(
-        line,
-        '',
-        false
-      );
-      const preparedQuestion = (preparedIn?.question as string) || '';
-      const command = preparedIn?.command;
-      if (!command) {
-        throw Error('Could not get prepared command');
-      }
-      // Send the search prompt to the API instance
-      this._fullPrompt = preparedQuestion;
-      // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
-      const model = command.requestparams?.model as string;
-      const providerName = (command.requestparams?.provider as string) || '';
-      const apiProvider = this.getProvider(model, providerName);
-      const crequest = apiProvider?.checkAndPopulateCompletionParams(
-        preparedQuestion,
-        null,
-        command.requestparams
-      );
-      if (crequest) {
-        const crequestJsonStr = JSON.stringify(crequest, null, 2);
-        let crequestStr = "";
-        if (crequestJsonStr) {
-          crequestStr = await prettier.format(crequestJsonStr, {
-            parser: 'json'
-          });
-        }
-        log.info(`sending api request. Full request: ${crequestStr}`);
-
-        const completionResponse = await apiProvider?.completion(crequest);
-        // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
-
-        response = completionResponse?.data as string | '';
-        if (response) {
-          response = this.unescapeChars(response);
-        } else {
-          response = 'Got empty response';
-        }
-        fullResponseStr = JSON.stringify(
-          completionResponse?.fullResponse,
-          null,
-          2
-        );
-      } else {
-        throw Error('Could not process request');
-      }
-    } catch (e) {
-      log.error(e);
-      response = `[ERROR] ${e}`;
-      fullResponseStr = filterSensitiveInfoFromJsonString(
-        JSON.stringify(e, null, 2)
-      );
-    }
-    log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
-    return response;
+  public async setFocus() {
+    await vscode.commands.executeCommand('flexigpt.chatView.focus');
+    // log.info("in set focus");
+    await this.sendMessage({ type: 'focus', value: '' });
+    return;
   }
 
   private sendCommandListMessage() {
-    if (!this._commandRunnerContext) {
+    if (!this.workflowProvider.commandRunnerContext) {
       return;
     }
     this._view?.webview.postMessage({
       type: 'setCommandList',
-      data: this._commandRunnerContext.getAllCommandsAsLabels()
+      data: this.workflowProvider.commandRunnerContext.getAllCommandsAsLabels()
     });
   }
 
@@ -245,37 +136,43 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   private sendConversationListMessage() {
-    if (
-      !this._conversationCollection ||
-      !this._conversationCollection.conversations
-    ) {
+    const conversationList =
+      this.workflowProvider.conversationCollection.getConversationListSummary();
+    if (!conversationList) {
       return;
-    }
-    if (
-      this._conversationCollection.conversations.length === 1 &&
-      this._conversationCollection.conversations[0].getMessageStream()
-        .length === 0
-    ) {
-      return;
-    }
-    const convoSlice = this._conversationCollection.conversations
-      .slice(-20)
-      .reverse();
-    const conversationList: { label: number; description: string }[] = [];
-    for (const c of convoSlice) {
-      if (c.getMessageStream().length > 0) {
-        conversationList.push({
-          label: c.id,
-          description: `${c.id}: ${c
-            .getMessageStream()[0]
-            .content.substring(0, 32)}...`
-        });
-      }
     }
     this._view?.webview.postMessage({
       type: 'setConversationList',
       data: conversationList
     });
+  }
+
+  /**
+   * Message sender, stores if a message cannot be delivered
+   * @param message Message to be sent to WebView
+   * @param ignoreMessageIfNullWebView We will ignore the command if webView is null/not-focused
+   */
+  public async sendMessage(message: any, ignoreMessageIfNullWebView?: boolean) {
+    // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
+    if (this._view === null) {
+      // log.info(" in chatview focus");
+      await vscode.commands.executeCommand('flexigpt.chatView.focus');
+    } else {
+      // log.info(" in show view");
+      this._view?.show?.(true);
+    }
+    // log.info(" posting message focus");
+    // await this._view?.webview.postMessage(message);
+    await new Promise<void>(resolve => {
+      const interval = setInterval(() => {
+        if (this._view?.webview?.postMessage) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+
+    await this._view?.webview.postMessage(message);
   }
 
   public resolveWebviewView(
@@ -291,19 +188,25 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     };
 
     // set the HTML for the webview
-    webviewView.webview.html = getWebviewHtmlReact(
-      webviewView.webview,
-      this._extensionUri
-    );
-
-    // webviewView.webview.html = getWebviewHtml(
+    // webviewView.webview.html = getWebviewHtmlReact(
     //   webviewView.webview,
     //   this._extensionUri
     // );
 
+    webviewView.webview.html = getWebviewHtml(
+      webviewView.webview,
+      this._extensionUri
+    );
+
     webviewView.webview.onDidReceiveMessage(async data => {
       switch (data.type) {
         case 'addFreeTextQuestion':
+          // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
+          if (this._view === null) {
+            await vscode.commands.executeCommand('flexigpt.chatView.focus');
+          } else {
+            this._view?.show?.(true);
+          }
           this.search(data.value);
           break;
         // case "ask": {
@@ -311,20 +214,14 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         //   break;
         // }
         case 'clearConversation':
-          this._conversationCollection?.saveAndStartNewConversation(
-            this._conversationHistoryPath,
-            true
-          );
+          this.workflowProvider.clearConversation();
           break;
         case 'saveConversation':
-          this._conversationCollection?.saveCurrentConversation(
-            this._conversationHistoryPath,
-            true
-          );
+          this.workflowProvider.saveConversation();
           break;
         case 'exportConversation': {
           const conversationYaml =
-            this._conversationCollection?.currentConversation.getConversationYML();
+            this.workflowProvider.conversationCollection.currentConversation.getConversationYML();
           if (!conversationYaml) {
             break;
           }
@@ -338,13 +235,22 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         case 'loadConversation': {
           const msg = data.value;
           // log.info(`loading conversation for ${JSON.stringify(msg)}`);
-          this._conversationCollection?.setConversationAsActive(msg.label);
+          this.workflowProvider.conversationCollection.setConversationAsActive(
+            msg.label
+          );
           this.sendConversationsViewMessage(
-            this._conversationCollection?.currentConversation.views
+            this.workflowProvider.conversationCollection.currentConversation
+              .views
           );
           break;
         }
         case 'prompt': {
+          // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
+          if (this._view === null) {
+            await vscode.commands.executeCommand('flexigpt.chatView.focus');
+          } else {
+            this._view?.show?.(true);
+          }
           this.search(data.value);
           break;
         }
@@ -381,123 +287,50 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     this.sendCommandListMessage();
   }
 
-  public async viewId(): Promise<string> {
-    return ChatViewProvider.viewType;
-  }
-
-  public async setFocus() {
-    await vscode.commands.executeCommand('flexigpt.chatView.focus');
-    // log.info("in set focus");
-    await this.sendMessage({ type: 'focus', value: '' });
-    return;
-  }
-
-  /**
-   * Message sender, stores if a message cannot be delivered
-   * @param message Message to be sent to WebView
-   * @param ignoreMessageIfNullWebView We will ignore the command if webView is null/not-focused
-   */
-  public async sendMessage(message: any, ignoreMessageIfNullWebView?: boolean) {
-    // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
-    if (this._view === null) {
-      // log.info(" in chatview focus");
-      await vscode.commands.executeCommand('flexigpt.chatView.focus');
-    } else {
-      // log.info(" in show view");
-      this._view?.show?.(true);
-    }
-    // log.info(" posting message focus");
-    // await this._view?.webview.postMessage(message);
-    await new Promise<void>(resolve => {
-      const interval = setInterval(() => {
-        if (this._view?.webview?.postMessage) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-
-    await this._view?.webview.postMessage(message);
-  }
-
   async sendAPIRequest(
+    reqUUID: string,
     inPrompt: string,
-    uuid: string,
     preparedQuestion: string,
     command: Command
-  ): Promise<string> {
-    let response: string;
+  ) {
+    let fullReqStr = '';
+    let response = '';
     let fullResponseStr = '';
+    const docLanguage = getActiveDocumentLanguageID();
     try {
-      // Send the search prompt to the ChatGPTAPI instance and store the response
-      // If successfully signed in
-      this._fullPrompt = preparedQuestion;
-      // log.info(`Request params read: ${JSON.stringify(command.requestparams, null, 2)}`);
-      const model = command.requestparams?.model as string;
-      const providerName = (command.requestparams?.provider as string) || '';
-      const apiProvider = this.getProvider(model, providerName);
-      const crequest = apiProvider?.checkAndPopulateCompletionParams(
-        preparedQuestion,
-        this._conversationCollection?.currentConversation?.getMessagesAsRequests() ||
-          null,
-        command.requestparams
-      );
-      if (crequest) {
-        if (crequest.messages && crequest.messages.length >= 1) {
-          this._conversationCollection?.addMessagesToCurrent([
-            crequest.messages[crequest.messages.length - 1]
-          ]);
-        }
-        const crequestJsonStr = JSON.stringify(crequest, null, 2);
-        let crequestStr = "";
-        if (crequestJsonStr) {
-          crequestStr = await prettier.format(crequestJsonStr, {
-            parser: 'json'
-          });
-        }
-
-        // log.info(`sending api request. Full request: ${crequestStr}`);
-        await this.sendMessage({
-          type: 'addQuestion',
-          value: inPrompt,
-          id: uuid,
-          fullapi: crequestStr
-        });
-        this._conversationCollection?.addViewsToCurrent([
-          { type: 'addQuestion', value: inPrompt, id: uuid, full: crequestStr }
-        ]);
-
-        const completionResponse = await apiProvider?.completion(crequest);
-        // let completionResponse = {fullResponse: "full", data:"This is a unittest \n ```def myfunc(): print('hello there')```"};
-
-        response = completionResponse?.data as string | '';
-        if (response) {
-          response = this.unescapeChars(response);
-        } else {
-          response = 'Got empty response';
-        }
-        fullResponseStr = JSON.stringify(
-          completionResponse?.fullResponse,
-          null,
-          2
-        );
-        this._conversationCollection?.addMessagesToCurrent([
-          { role: 'assistant' as ChatCompletionRoleEnum, content: response }
-        ]);
-        this._commandRunnerContext?.processAnswer(
+      const { apiProvider, crequest, crequestStr } =
+        await this.workflowProvider.createCompletionRequest(
+          reqUUID,
+          inPrompt,
+          preparedQuestion,
           command,
-          response,
-          getActiveDocumentLanguageID()
+          true
         );
-        const processedResponse = this._commandRunnerContext?.getSystemVariable(
-          systemVariableNames.sanitizedAnswer
-        );
-        if (processedResponse) {
-          response = processedResponse;
-        }
-      } else {
-        throw Error('Could not process request');
-      }
+      fullReqStr = crequestStr;
+
+      // log.info(`sending api request. Full request: ${crequestStr}`);
+      await this.sendMessage({
+        type: 'addQuestion',
+        value: inPrompt,
+        id: reqUUID,
+        fullapi: fullReqStr
+      });
+
+      const resp = await this.workflowProvider.getCompletionResponse(
+        reqUUID,
+        apiProvider,
+        crequest,
+        true,
+        docLanguage
+      );
+      response = resp.response;
+      fullResponseStr = resp.fullResponseStr;
+
+      response = this.workflowProvider.postProcessResp(
+        command,
+        response,
+        docLanguage
+      );
     } catch (e) {
       log.error(e);
       response = `[ERROR] ${e}`;
@@ -505,34 +338,20 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         JSON.stringify(e, null, 2)
       );
     }
-    let cresponseStr = '';
-    if (fullResponseStr !== '') {
-      cresponseStr = await prettier.format(fullResponseStr, {
-        parser: 'json'
-      });
-    }
-    
+
     await this.sendMessage({
       type: 'addResponse',
       value: response,
-      id: uuid,
+      id: reqUUID,
       done: true,
-      fullResponse: cresponseStr,
+      fullResponse: fullResponseStr,
       docLanguage: getActiveDocumentLanguageID()
     });
-    this._conversationCollection?.addViewsToCurrent([
-      {
-        type: 'addResponse',
-        value: response,
-        id: uuid,
-        full: cresponseStr,
-        params: { done: true, docLanguage: getActiveDocumentLanguageID() }
-      }
-    ]);
+
     if (!response) {
       throw Error('Could not get response from CompletionProvider.');
     }
-    return response;
+    return { response, fullResponseStr };
   }
 
   async processCli(
@@ -540,7 +359,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
     uuid: string,
     preparedQuestion: string,
     command: Command
-  ): Promise<string> {
+  ) {
     let response = '';
     let fullResponseStr = '';
     await this.sendMessage({
@@ -571,9 +390,7 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       fullResponseStr = filterSensitiveInfoFromJsonString(
         JSON.stringify(e, null, 2)
       );
-    }
-    if (fullResponseStr !== '') {
-      fullResponseStr = await prettier.format(fullResponseStr, { parser: 'json' });
+      fullResponseStr = JSON.stringify(fullResponseStr, null, 2);
     }
     await this.sendMessage({
       type: 'addResponse',
@@ -583,38 +400,55 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
       fullResponse: fullResponseStr,
       docLanguage: 'shell'
     });
-    return response;
+    return { response, fullResponseStr };
   }
 
   public async search(prompt: string) {
-    // If the ChatGPT view is not in focus/visible; focus on it to render Q&A
-    if (this._view === null) {
-      await vscode.commands.executeCommand('flexigpt.chatView.focus');
-    } else {
-      this._view?.show?.(true);
-    }
-
-    const uuid = uuidv4();
+    let reqUUID = '';
     let response = '';
+    let fullResponseStr = '';
+    try {
+      const { question, command, reqID } =
+        this.workflowProvider.prepareCommand(prompt);
+      reqUUID = reqID;
 
-    const preparedIn = this._commandRunnerContext?.prepareAndSetCommand(prompt);
-    const preparedQuestion = (preparedIn?.question as string) || '';
-    const command = preparedIn?.command;
-    if (!command) {
-      throw Error('Could not get prepared command');
-    }
-
-    if (command.type === COMMAND_TYPE_CLI) {
-      response = await this.processCli(prompt, uuid, preparedQuestion, command);
-    } else {
-      response = await this.sendAPIRequest(
-        prompt,
-        uuid,
-        preparedQuestion,
-        command
+      if (command.type === COMMAND_TYPE_CLI) {
+        const resp = await this.processCli(prompt, reqID, question, command);
+        response = resp.response;
+        fullResponseStr = resp.fullResponseStr;
+      } else {
+        const resp = await this.sendAPIRequest(
+          reqID,
+          prompt,
+          question,
+          command
+        );
+        response = resp.response;
+        fullResponseStr = resp.fullResponseStr;
+      }
+    } catch (e) {
+      log.error(e);
+      response = `[ERROR] ${e}`;
+      fullResponseStr = filterSensitiveInfoFromJsonString(
+        JSON.stringify(e, null, 2)
       );
     }
-    // Saves the response
-    this._response = response;
+    log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
+    return { reqUUID, prompt, response, fullResponseStr };
+  }
+
+  public getCodeUsingComment() {
+    const line = getActiveLine();
+    if (!line) {
+      return '';
+    }
+    const fpath = getActiveDocumentFilePath();
+    const lang = getActiveDocumentLanguageID();
+    const inline =
+      `Give code using the below comment.\nFilename: ${fpath}\nLang:${lang}\nComment:` +
+      line.trim();
+    this.workflowProvider.getResponseUsingInput(inline).then(response => {
+      append('\n' + response, 'end');
+    });
   }
 }

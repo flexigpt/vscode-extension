@@ -44,6 +44,9 @@ export class GptAPI {
   origin: string;
   apiKey: string;
   apiKeyHeaderKey: string;
+  timeout: number;
+  defaultCompletionModel: string;
+  defaultChatCompletionModel: string;
   headers: Record<string, string>;
   logRequests = false;
   private axiosInstance: AxiosInstance;
@@ -52,15 +55,17 @@ export class GptAPI {
     origin: string,
     apiKey: string,
     apiKeyHeaderKey: string,
+    timeout: number,
+    defaultCompletionModel: string,
+    defaultChatCompletionModel: string,
     headers: Record<string, string> = {}
   ) {
     this.origin = origin;
     this.apiKeyHeaderKey = apiKeyHeaderKey;
-    if (apiKeyHeaderKey === 'Authorization') {
-      this.apiKey = 'Bearer ' + apiKey;
-    } else {
-      this.apiKey = apiKey;
-    }
+    this.apiKey = apiKey;
+    this.timeout = timeout;
+    this.defaultCompletionModel = defaultCompletionModel;
+    this.defaultChatCompletionModel = defaultChatCompletionModel;
     this.headers = headers;
 
     this.axiosInstance = axios.create();
@@ -81,13 +86,32 @@ export class GptAPI {
     }
   }
 
-  public setAPIKey(key: string) {
-    if (!key) {
-      log.error("Got empty key");
+  // Method to set attribute values
+  public setAttribute(key: string, value: any): void {
+    // Check if the attribute exists in the class
+    if (!(key in this)) {
+      log.error(`Attribute '${key}' does not exist in the class.`);
       return;
     }
-    this.apiKey = key;
-    log.info("Set API key done.");
+    // Check if the value is not null or undefined
+    if (value === null || value === undefined) {
+      log.error('Value cannot be null or undefined.');
+      return;
+    }
+
+    // Check if the type of the value matches the type of the attribute in the class
+    const currentType = typeof this[key as keyof this];
+    const valueType = typeof value;
+
+    if (currentType !== valueType) {
+      log.error(
+        `Type mismatch: Expected ${currentType}, but got ${valueType}.`
+      );
+      return;
+    }
+
+    // Set the value
+    this[key as keyof this] = value;
   }
 
   // Function to generate the cURL command
@@ -112,8 +136,12 @@ export class GptAPI {
   }
 
   async request<T>(requestConfig: AxiosRequestConfig): Promise<T> {
+    let apiKey = this.apiKey;
+    if (this.apiKeyHeaderKey === 'Authorization') {
+      apiKey = 'Bearer ' + apiKey;
+    }
     const mergedHeaders = {
-      ...(this.apiKeyHeaderKey ? { [this.apiKeyHeaderKey]: this.apiKey } : {}),
+      ...(this.apiKeyHeaderKey ? { [this.apiKeyHeaderKey]: apiKey } : {}),
       ...this.headers,
       ...(requestConfig.headers || {})
     };
@@ -125,9 +153,8 @@ export class GptAPI {
     };
 
     try {
-      const response: AxiosResponse<T> = await this.axiosInstance.request(
-        config
-      );
+      const response: AxiosResponse<T> =
+        await this.axiosInstance.request(config);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

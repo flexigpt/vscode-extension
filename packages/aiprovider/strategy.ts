@@ -13,7 +13,7 @@ export interface CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest;
-  setAPIKey(key: string): void;
+  setAttribute(key: string, value: any): void;
 }
 
 export class Providers {
@@ -34,12 +34,12 @@ export class Providers {
     }
   }
 
-  public setAPIKeyForProvider(name: string, key: string) {
+  public setAttribute(name: string, attrName: string, attrValue: any) {
     if (!this.providers[name]) {
       log.error('No provider found for name:', name);
       return;
     }
-    this.providers[name].setAPIKey(key);
+    this.providers[name].setAttribute(attrName, attrValue);
   }
 
   public getProvider(model: string, providerName = ''): CompletionProvider {

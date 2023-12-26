@@ -14,10 +14,10 @@
   "author": "Pankaj Pipada",
   "license": "MIT",
   "dependencies": {
+    "@types/uuid": "^9.0.7",
     "aiprovider": "workspace:*",
     "conversations": "workspace:*",
     "logger": "workspace:*",
-    "prettier": "^3.1.1",
     "prompts": "workspace:*",
     "spec": "workspace:*",
     "uuid": "^9.0.1"

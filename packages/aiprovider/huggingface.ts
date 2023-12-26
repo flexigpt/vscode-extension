@@ -1,5 +1,3 @@
-import { GptAPI } from './api';
-import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
 import { AxiosRequestConfig } from 'axios';
 import { log } from 'logger/log';
 import {
@@ -7,12 +5,10 @@ import {
   ChatCompletionRoleEnum,
   CompletionRequest
 } from 'spec/chat';
+import { GptAPI } from './api';
+import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
 
 export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
-  #timeout: number;
-  defaultCompletionModel: string;
-  defaultChatCompletionModel: string;
-
   constructor(
     apiKey: string,
     timeout: number,
@@ -26,13 +22,18 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'content-type': 'application/json'
     };
-    super(origin, apiKey, apiKeyHeaderKey, {
-      ...defaultHeaders,
-      ...headers
-    });
-    this.#timeout = timeout;
-    this.defaultCompletionModel = defaultCompletionModel;
-    this.defaultChatCompletionModel = defaultChatCompletionModel;
+    super(
+      origin,
+      apiKey,
+      apiKeyHeaderKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel,
+      {
+        ...defaultHeaders,
+        ...headers
+      }
+    );
   }
 
   async getModelType(model: string) {
@@ -109,7 +110,7 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       repetition_penalty: input.presencePenalty,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      max_time: input.timeout ? input.timeout : this.#timeout
+      max_time: input.timeout ? input.timeout : this.timeout
     };
     if (modeltype !== 'chat') {
       parameters.return_full_text = false;

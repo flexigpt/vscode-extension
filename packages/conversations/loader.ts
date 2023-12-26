@@ -70,6 +70,7 @@ export function loadConversations(
     return conversationCollection;
   } catch (err) {
     log.error(`Error loading conversations from ${filePath}: ${err}`);
-    return null;
+    const conversationCollection = new ConversationCollection();
+    return conversationCollection;
   }
 }

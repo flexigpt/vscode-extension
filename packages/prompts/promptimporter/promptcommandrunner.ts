@@ -1,8 +1,8 @@
 import { systemVariableNames } from "./predefinedvariables";
 
-import { FunctionWrapper, FunctionContext } from "../promptdef/promptfunctions";
-import { Variable, VariableNamespaces } from "../promptdef/promptvariables";
 import { COMMAND_TYPE_CLI, Command } from "../promptdef/promptcommand";
+import { FunctionContext, FunctionWrapper } from "../promptdef/promptfunctions";
+import { Variable, VariableNamespaces } from "../promptdef/promptvariables";
 
 // import { get } from "http";
 
@@ -199,7 +199,6 @@ export class CommandRunnerContext {
         updatedValue = "\n```" + docLanguage + "\n" + updatedValue + "\n```\n";
       }
     }
-    // const updatedValueStr = prettier.format(updatedValue, { parser: 'json' });
     this.setSystemVariable(new Variable(systemVariableNames.answer, answer));
     const retval = this.runResponseHandler(command, command.responseHandler);
     if (retval.sanitizedAnswer !== "") {

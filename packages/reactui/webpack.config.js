@@ -26,7 +26,8 @@ module.exports = {
     alias: {
       '@': path.resolve(__dirname, '../../packages/reactui'),
       process: 'process/browser.js'
-    }
+    },
+    fallback: { os: false, fs: false, path: false, url: false, assert: false, tty: false }
   },
   module: {
     rules: [
@@ -66,20 +67,20 @@ module.exports = {
       template: './public/index.html.tmpl',
       inject: true,
       templateParameters: {
-        VSCodeOnly: process.env.vscode === 'true' ? true : false,
-      },
+        VSCodeOnly: process.env.vscode === 'true' ? true : false
+      }
     }),
     new CopyWebpackPlugin({
       patterns: [{ from: 'public/icons', to: 'icons' }]
     }),
     new webpack.optimize.LimitChunkCountPlugin({
-      maxChunks: 1,
+      maxChunks: 1
     }),
     new MiniCssExtractPlugin({
       filename: 'webpack.[name].css',
       chunkFilename: '[id].css'
     }),
-    new Dotenv(),
+    new Dotenv()
   ]
 };
 

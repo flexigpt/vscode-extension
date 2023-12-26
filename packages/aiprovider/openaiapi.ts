@@ -1,9 +1,3 @@
-import { GptAPI } from './api';
-import {
-  CompletionProvider,
-  filterMessagesByTokenCount,
-  unescapeChars
-} from './strategy';
 import { AxiosRequestConfig } from 'axios';
 import { log } from 'logger/log';
 import {
@@ -11,12 +5,14 @@ import {
   ChatCompletionRoleEnum,
   CompletionRequest
 } from 'spec/chat';
+import { GptAPI } from './api';
+import {
+  CompletionProvider,
+  filterMessagesByTokenCount,
+  unescapeChars
+} from './strategy';
 
 export class OpenAIAPIProvider extends GptAPI implements CompletionProvider {
-  #timeout: number;
-  defaultCompletionModel: string;
-  defaultChatCompletionModel: string;
-
   constructor(
     apiKey: string,
     timeout: number,
@@ -30,13 +26,18 @@ export class OpenAIAPIProvider extends GptAPI implements CompletionProvider {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'content-type': 'application/json'
     };
-    super(origin, apiKey, apiKeyHeaderKey, {
-      ...defaultHeaders,
-      ...headers
-    });
-    this.#timeout = timeout;
-    this.defaultCompletionModel = defaultCompletionModel;
-    this.defaultChatCompletionModel = defaultChatCompletionModel;
+    super(
+      origin,
+      apiKey,
+      apiKeyHeaderKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel,
+      {
+        ...defaultHeaders,
+        ...headers
+      }
+    );
   }
 
   async completion(input: CompletionRequest) {
