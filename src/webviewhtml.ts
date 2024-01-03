@@ -1,6 +1,6 @@
-import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import * as vscode from "vscode";
 import log from "./logger/log";
 
 export function getWebviewHtml(
@@ -59,23 +59,71 @@ export function getWebviewHtml(
   return html;
 }
 
+// export function getWebviewHtmlReact(
+//   webview: vscode.Webview,
+//   extensionUri: vscode.Uri
+// ) {
+//   // Read the HTML file from disk
+//   const htmlPath = path.join(extensionUri.fsPath, "packages", "reactui", "dist", "index.html");
+//   let htmlContent = fs.readFileSync(htmlPath, "utf-8");
+
+//   // const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "webpack"));
+//   // // Replace the "webpack.*" reference
+//   // htmlContent = htmlContent.replace(
+//   //   /\/webpack/g,
+//   //   reactBundleUri.toString()
+//   // );
+
+//   const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist"));
+//   htmlContent = htmlContent.replace(
+//     /webpack\.main\.bundle\.js/g,
+//     reactBundleUri.with({ path: reactBundleUri.path + '/webpack.main.bundle.js' }).toString()
+//   );
+
+//   const reactIconsBaseUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "icons"));
+//   // Replace the icon references
+//   htmlContent = htmlContent.replace(
+//     /icons\/favicon-color-16x16\.png/g,
+//     reactIconsBaseUri.with({ path: reactIconsBaseUri.path + '/favicon-color-16x16.png' }).toString()
+//   );
+  
+//   htmlContent = htmlContent.replace(
+//     /icons\/favicon-color-36x36\.png/g,
+//     reactIconsBaseUri.with({ path: reactIconsBaseUri.path + '/favicon-color-36x36.png' }).toString()
+//   );
+//   log.info(`HTML: ${htmlContent}`);
+//   return htmlContent;
+// }
+
 export function getWebviewHtmlReact(
   webview: vscode.Webview,
   extensionUri: vscode.Uri
 ) {
   // Read the HTML file from disk
-  const htmlPath = path.join(extensionUri.fsPath, "packages", "reactui", "dist", "index.html");
+  // const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist"));
+  const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "reactout"));
+  const htmlPath = vscode.Uri.joinPath(reactBundleUri, "index.html").fsPath;
   let htmlContent = fs.readFileSync(htmlPath, "utf-8");
 
-  const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "bundle.js"));
-  // Replace the "bundle.js" reference in your HTML
+  // const reactBundleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "webpack"));
+  // // Replace the "webpack.*" reference
+  // htmlContent = htmlContent.replace(
+  //   /\/webpack/g,
+  //   reactBundleUri.toString()
+  // );
+
+  
   htmlContent = htmlContent.replace(
-    /bundle\.js/g,
-    reactBundleUri.toString()
+    /webpack\.main\.bundle\.js/g,
+    reactBundleUri.with({ path: reactBundleUri.path + '/webpack.main.bundle.js' }).toString()
+  );
+  htmlContent = htmlContent.replace(
+    /webpack\.main\.css/g,
+    reactBundleUri.with({ path: reactBundleUri.path + '/webpack.main.css' }).toString()
   );
 
-  const reactIconsBaseUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "reactui", "dist", "icons"));
-  // Replace the icon references in your HTML
+  const reactIconsBaseUri = webview.asWebviewUri(vscode.Uri.joinPath(reactBundleUri, "icons"));
+  // Replace the icon references
   htmlContent = htmlContent.replace(
     /icons\/favicon-color-16x16\.png/g,
     reactIconsBaseUri.with({ path: reactIconsBaseUri.path + '/favicon-color-16x16.png' }).toString()

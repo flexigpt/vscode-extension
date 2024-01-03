@@ -1,22 +1,14 @@
-import { log } from "@/logger/log";
-import { GptAPI } from "@/aiprovider/api";
-import { CompletionProvider, filterMessagesByTokenCount } from "@/aiprovider/strategy";
-import { AxiosRequestConfig } from "axios";
-
+import { AxiosRequestConfig } from 'axios';
+import { log } from 'logger/log';
 import {
-  CompletionRequest,
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
+  CompletionRequest
+} from 'spec/chat';
+import { GptAPI } from './api';
+import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
 
-export class LlamaCPPAPIProvider
-  extends GptAPI
-  implements CompletionProvider
-{
-  #timeout: number;
-  defaultCompletionModel: string;
-  defaultChatCompletionModel: string;
-
+export class LlamaCPPAPIProvider extends GptAPI implements CompletionProvider {
   constructor(
     apiKey: string,
     timeout: number,
@@ -25,37 +17,42 @@ export class LlamaCPPAPIProvider
     origin: string,
     headers: Record<string, string> = {}
   ) {
-    let apiKeyHeaderKey = "";
-    if (apiKey !== "") {
-        apiKeyHeaderKey = "Authorization";
+    let apiKeyHeaderKey = '';
+    if (apiKey !== '') {
+      apiKeyHeaderKey = 'Authorization';
     }
     const defaultHeaders: Record<string, string> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      "content-type": "application/json",
+      'content-type': 'application/json'
     };
-    super(origin, apiKey, apiKeyHeaderKey, {
-      ...defaultHeaders,
-      ...headers,
-    });
-    this.#timeout = timeout;
-    this.defaultCompletionModel = defaultCompletionModel;
-    this.defaultChatCompletionModel = defaultChatCompletionModel;
+    super(
+      origin,
+      apiKey,
+      apiKeyHeaderKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel,
+      {
+        ...defaultHeaders,
+        ...headers
+      }
+    );
   }
 
   convertChat(
     messages: ChatCompletionRequestMessage[],
-    chatPrompt = "A chat between a curious user and an artificial intelligence assistant",
+    chatPrompt = 'A chat between a curious user and an artificial intelligence assistant',
     systemName = "\\nASSISTANT's RULE: ",
-    userName = "\\nUSER: ",
-    aiName = "\\nASSISTANT: ",
-    stop = "</s>"
+    userName = '\\nUSER: ',
+    aiName = '\\nASSISTANT: ',
+    stop = '</s>'
   ): string {
-    let prompt = "" + chatPrompt.replace("\\n", "\n");
+    let prompt = '' + chatPrompt.replace('\\n', '\n');
 
-    const systemN = systemName.replace("\\n", "\n");
-    const userN = userName.replace("\\n", "\n");
-    const aiN = aiName.replace("\\n", "\n");
-    const stopSymbol = stop.replace("\\n", "\n");
+    const systemN = systemName.replace('\\n', '\n');
+    const userN = userName.replace('\\n', '\n');
+    const aiN = aiName.replace('\\n', '\n');
+    const stopSymbol = stop.replace('\\n', '\n');
 
     for (const line of messages) {
       if (line.role === ChatCompletionRoleEnum.system) {
@@ -81,7 +78,7 @@ export class LlamaCPPAPIProvider
     // return tempCodeString;
     // let messages: ChatCompletionRequestMessage[] = [{"role": "user", "content": "Hello!"}];
     if (!input.messages) {
-      throw Error("No input messages found");
+      throw Error('No input messages found');
     }
     // let chatModel = true;
     // if (input.model.startsWith("gpt-3.5") || input.model.startsWith("gpt-4")) {
@@ -102,7 +99,7 @@ export class LlamaCPPAPIProvider
       // eslint-disable-next-line @typescript-eslint/naming-convention
       n_predict: input.maxTokens,
       stream: false,
-      stop: stoparg,
+      stop: stoparg
     };
     if (input.additionalParameters) {
       for (const key in input.additionalParameters) {
@@ -112,7 +109,7 @@ export class LlamaCPPAPIProvider
         }
       }
     }
-    const modelpath = "/completion";
+    const modelpath = '/completion';
     let filterTokens = 2048;
     if (input.maxTokens) {
       filterTokens = input.maxTokens;
@@ -121,22 +118,22 @@ export class LlamaCPPAPIProvider
 
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
-      method: "POST",
-      data: request,
+      method: 'POST',
+      data: request
     };
     try {
       const data = await this.request(requestConfig);
       const fullResponse = data;
-      if (typeof data !== "object" || data === null) {
-        throw new Error("Invalid data response. Expected an object." + data);
+      if (typeof data !== 'object' || data === null) {
+        throw new Error('Invalid data response. Expected an object.' + data);
       }
-      const respText = "content" in data ? (data?.content as string) : "";
+      const respText = 'content' in data ? (data?.content as string) : '';
       return {
         fullResponse: fullResponse,
-        data: respText,
+        data: respText
       };
     } catch (error) {
-      log.error("Error in completion request: " + error);
+      log.error('Error in completion request: ' + error);
       throw error;
     }
   }
@@ -155,7 +152,7 @@ export class LlamaCPPAPIProvider
       suffix: inputParams?.suffix || undefined,
       maxTokens: inputParams?.maxTokens,
       stream: false,
-      stop: inputParams?.stop || undefined,
+      stop: inputParams?.stop || undefined
     };
 
     if (inputParams) {
@@ -163,7 +160,7 @@ export class LlamaCPPAPIProvider
         completionRequest.additionalParameters =
           completionRequest.additionalParameters || {};
         // eslint-disable-next-line no-prototype-builtins
-        if (!completionRequest.hasOwnProperty(key) && key !== "provider") {
+        if (!completionRequest.hasOwnProperty(key) && key !== 'provider') {
           completionRequest.additionalParameters[key] = inputParams[key];
         }
       }
@@ -172,7 +169,7 @@ export class LlamaCPPAPIProvider
     if (completionRequest.prompt) {
       const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt,
+        content: completionRequest.prompt
       };
       if (!completionRequest.messages) {
         completionRequest.messages = [message];
@@ -184,4 +181,22 @@ export class LlamaCPPAPIProvider
 
     return completionRequest;
   }
+}
+
+export function getLlamaCPPAPIProvider(): CompletionProvider {
+  // Default values for LlamaCPP API Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'llama2';
+  const defaultChatCompletionModel = 'llama2';
+  const defaultOrigin = 'http://127.0.0.1:8080';
+
+  log.info('LlamaCPP API provider initialized');
+  return new LlamaCPPAPIProvider(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
 }

@@ -1,5 +1,5 @@
 import * as cp from "child_process";
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 
 interface Commit {
   sha: string;

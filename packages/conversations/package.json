@@ -8,12 +8,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "rimraf dist"
   },
   "keywords": [],
   "author": "Pankaj Pipada",
   "license": "MIT",
   "dependencies": {
+    "logger": "workspace:*",
+    "spec": "workspace:*",
     "js-yaml": "^4.1.0",
     "nanoid": "^5.0.1"
   }

@@ -1,5 +1,5 @@
 import { append, readFile, replace, writeFile } from "./responseHandlerFunctions";
-import { FunctionWrapper } from "@/prompts/promptdef/promptfunctions";
+import { FunctionWrapper } from "prompts/promptdef/promptfunctions";
 
 export const preDefinedFunctions = [
     new FunctionWrapper("append", append),

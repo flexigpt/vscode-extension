@@ -1,6 +1,6 @@
 import * as mustache from "mustache";
 import * as fs from "fs";
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 
 type Renderer = (template: string) => string;
 

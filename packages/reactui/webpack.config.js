@@ -1,13 +1,15 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
-  entry: './src/index.tsx', // Your library's entry point
+  entry: './src/app.tsx', // Your library's entry point
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: 'webpack.main.bundle.js'
   },
   devServer: {
     static: {
@@ -20,10 +22,12 @@ module.exports = {
     historyApiFallback: true
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.tsx', '.ts', '.js', '.jsx'],
     alias: {
-      '@': path.resolve(__dirname, '../../packages/')
-    }
+      '@': path.resolve(__dirname, '../../packages/reactui'),
+      process: 'process/browser.js'
+    },
+    fallback: { os: false, fs: false, path: false, url: false, assert: false, tty: false }
   },
   module: {
     rules: [
@@ -34,20 +38,54 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader', 'postcss-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+        // use: ['style-loader', 'css-loader', 'postcss-loader']
       }
     ]
   },
+  // optimization: {
+  //   splitChunks: {
+  //     chunks: 'all',
+  //     cacheGroups: {
+  //       vendor: {
+  //         test: /[\\/]node_modules[\\/]/,
+  //         name: 'vendors'
+  //       },
+  //       styles: {
+  //         name: 'styles',
+  //         test: /\.css$/,
+  //         enforce: true
+  //       }
+  //     }
+  //   }
+  // },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html'
+    new webpack.ProvidePlugin({
+      process: 'process/browser.js'
     }),
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
+    new HtmlWebpackPlugin({
+      template: './public/index.html.tmpl',
+      inject: true,
+      templateParameters: {
+        VSCodeOnly: process.env.vscode === 'true' ? true : false
+      }
     }),
     new CopyWebpackPlugin({
       patterns: [{ from: 'public/icons', to: 'icons' }]
-    })
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'webpack.[name].css',
+      chunkFilename: '[id].css'
+    }),
+    new Dotenv()
   ]
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.devtool = 'source-map';
+} else {
+  module.exports.devtool = 'inline-source-map';
+}

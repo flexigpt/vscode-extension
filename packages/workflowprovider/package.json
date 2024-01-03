@@ -1,0 +1,26 @@
+{
+  "name": "workflowprovider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist"
+  },
+  "keywords": [],
+  "author": "Pankaj Pipada",
+  "license": "MIT",
+  "dependencies": {
+    "@types/uuid": "^9.0.7",
+    "aiprovider": "workspace:*",
+    "conversations": "workspace:*",
+    "logger": "workspace:*",
+    "prompts": "workspace:*",
+    "spec": "workspace:*",
+    "uuid": "^9.0.1"
+  }
+}

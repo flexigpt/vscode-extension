@@ -1,8 +1,5 @@
-import { log } from "@/logger/log";
-import {
-  ChatCompletionRequestMessage,
-  CompletionRequest,
-} from "@/spec/chat";
+import { log } from 'logger/log';
+import { ChatCompletionRequestMessage, CompletionRequest } from 'spec/chat';
 
 export interface CompletionProvider {
   completion(
@@ -16,9 +13,10 @@ export interface CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest;
+  setAttribute(key: string, value: any): void;
 }
 
-export default class Providers {
+export class Providers {
   public defaultProvider: string;
   public providers: { [key: string]: CompletionProvider } = {};
 
@@ -28,84 +26,89 @@ export default class Providers {
 
   public addProvider(name: string, provider: CompletionProvider | null) {
     if (!provider) {
-      throw new Error("Provider cannot be null");
+      throw new Error('Provider cannot be null');
     }
     this.providers[name] = provider;
-    if (!this.defaultProvider || this.defaultProvider === "") {
+    if (!this.defaultProvider || this.defaultProvider === '') {
       this.defaultProvider = name;
     }
   }
 
-  public getProvider(
-    model: string,
-    providerName = ""
-  ): CompletionProvider {
-    if (providerName && providerName !== "" && this.providers[providerName]) {
+  public setAttribute(name: string, attrName: string, attrValue: any) {
+    if (!this.providers[name]) {
+      log.error('No provider found for name:', name);
+      return;
+    }
+    this.providers[name].setAttribute(attrName, attrValue);
+  }
+
+  public getProvider(model: string, providerName = ''): CompletionProvider {
+    if (providerName && providerName !== '' && this.providers[providerName]) {
       return this.providers[providerName];
     }
-    if (!model || model === "") {
-      if (this.defaultProvider && this.defaultProvider !== "") {
+    if (!model || model === '') {
+      if (this.defaultProvider && this.defaultProvider !== '') {
         return this.providers[this.defaultProvider];
       }
-      throw new Error("No default provider and No model as input");
+      throw new Error('No default provider and No model as input');
     }
 
     const openAIModels = [
-      "text-davinci-003, text-davinci-002, davinci, curie, babbage, ada",
-      "gpt-4",
-      "gpt-3.5-turbo",
+      'text-davinci-003, text-davinci-002, davinci, curie, babbage, ada',
+      'gpt-4',
+      'gpt-3.5-turbo'
     ];
     if (
-      openAIModels.some((search) => model.startsWith(search)) &&
+      openAIModels.some(search => model.startsWith(search)) &&
       this.providers.openai
     ) {
       return this.providers.openai;
     }
-    const anthropicModels = ["claude"];
+    const anthropicModels = ['claude'];
     if (
-      anthropicModels.some((search) => model.startsWith(search)) &&
+      anthropicModels.some(search => model.startsWith(search)) &&
       this.providers.anthropic
     ) {
       return this.providers.anthropic;
     }
-    const googleglModels = ["bison", "gecko"];
+    const googleglModels = ['bison', 'gecko'];
     if (
-      googleglModels.some((search) => model.includes(search)) &&
+      googleglModels.some(search => model.includes(search)) &&
       this.providers.googlegl
     ) {
       return this.providers.googlegl;
     }
     const huggingfaceModels = [
-      "microsoft/",
-      "replit/",
-      "Salesforce/",
-      "bigcode/",
+      'microsoft/',
+      'replit/',
+      'Salesforce/',
+      'bigcode/'
     ];
     if (
-      huggingfaceModels.some((search) => model.startsWith(search)) &&
+      huggingfaceModels.some(search => model.startsWith(search)) &&
       this.providers.huggingface
     ) {
       return this.providers.huggingface;
     }
     // No provider was given and input model didnt match any known models, but has slash in it, so assume its a huggingface model
-    if (model.includes("/")) {
+    if (model.includes('/')) {
       return this.providers.huggingface;
     }
 
-    if (this.defaultProvider && this.defaultProvider !== "") {
+    if (this.defaultProvider && this.defaultProvider !== '') {
       return this.providers[this.defaultProvider];
     }
     throw new Error(
-      "No default provider and No provider found for model " + model
+      'No default provider and No provider found for model ' + model
     );
   }
 }
 
 export function unescapeChars(text: string) {
   return text
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
 }
 
 function countTokensInContent(content: string): number {
@@ -115,7 +118,7 @@ function countTokensInContent(content: string): number {
   const tokenRegex = /[\s{}\[\]()+-=*/<>,;:.!&|\\]+/;
 
   // Split the content into tokens based on the regex and filter out empty strings.
-  const tokens = content.split(tokenRegex).filter((token) => token !== "");
+  const tokens = content.split(tokenRegex).filter(token => token !== '');
 
   // Return the count of tokens.
   return tokens.length;
@@ -131,7 +134,7 @@ export function filterMessagesByTokenCount(
   // Loop through the messages in reverse order (prioritizing the last element)
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
-    const c = message.content || "";
+    const c = message.content || '';
     const tokensInMessage = countTokensInContent(c);
 
     // Check if adding this message will not exceed maxTokenCount

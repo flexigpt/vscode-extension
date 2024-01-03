@@ -1,18 +1,14 @@
-import { log } from "@/logger/log";
-import { GptAPI } from "@/aiprovider/api";
-import { CompletionProvider, filterMessagesByTokenCount } from "@/aiprovider/strategy";
+import { AxiosRequestConfig } from 'axios';
+import { log } from 'logger/log';
 import {
-  CompletionRequest,
   ChatCompletionRequestMessage,
   ChatCompletionRoleEnum,
-} from "@/spec/chat";
-import { AxiosRequestConfig } from "axios";
+  CompletionRequest
+} from 'spec/chat';
+import { GptAPI } from './api';
+import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
 
 export class AnthropicAPI extends GptAPI implements CompletionProvider {
-  #timeout: number;
-  defaultCompletionModel: string;
-  defaultChatCompletionModel: string;
-
   constructor(
     apiKey: string,
     timeout: number,
@@ -21,45 +17,50 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     origin: string,
     headers: Record<string, string> = {}
   ) {
-    const apiKeyHeaderKey = "x-api-key";
+    const apiKeyHeaderKey = 'x-api-key';
     const defaultHeaders: Record<string, string> = {
-      accept: "application/json",
+      accept: 'application/json',
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      "anthropic-version": "2023-06-01",
+      'anthropic-version': '2023-06-01',
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      "content-type": "application/json",
+      'content-type': 'application/json'
     };
-    super(origin, apiKey, apiKeyHeaderKey, {
-      ...defaultHeaders,
-      ...headers,
-    });
-    this.#timeout = timeout;
-    this.defaultCompletionModel = defaultCompletionModel;
-    this.defaultChatCompletionModel = defaultChatCompletionModel;
+    super(
+      origin,
+      apiKey,
+      apiKeyHeaderKey,
+      timeout,
+      defaultCompletionModel,
+      defaultChatCompletionModel,
+      {
+        ...defaultHeaders,
+        ...headers
+      }
+    );
   }
 
   generateMessageString(messages: ChatCompletionRequestMessage[]): string {
     return (
       messages
-        .map((message) => {
+        .map(message => {
           let roleString: string;
           switch (message.role) {
             case ChatCompletionRoleEnum.system:
-              roleString = "\n\nHuman:";
+              roleString = '\n\nHuman:';
               break;
             case ChatCompletionRoleEnum.user:
-              roleString = "\n\nHuman:";
+              roleString = '\n\nHuman:';
               break;
             case ChatCompletionRoleEnum.assistant:
-              roleString = "\n\nAssistant:";
+              roleString = '\n\nAssistant:';
               break;
             default:
-              roleString = "";
+              roleString = '';
               break;
           }
           return `${roleString} ${message.content}`;
         })
-        .join("") + "\n\nAssistant:"
+        .join('') + '\n\nAssistant:'
     );
   }
 
@@ -69,10 +70,10 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
 
   async chatCompletion(input: CompletionRequest): Promise<any> {
     if (!input.prompt) {
-      throw Error("No input messages found");
+      throw Error('No input messages found');
     }
 
-    let stoparg: string | string[] = ["\n\nHuman:"];
+    let stoparg: string | string[] = ['\n\nHuman:'];
     if (input.stop) {
       if (Array.isArray(input.stop)) {
         stoparg = input.stop;
@@ -83,7 +84,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     let metadata = {};
     if (input.user) {
       metadata = {
-        user: input.user,
+        user: input.user
       };
     }
     const request = {
@@ -99,23 +100,23 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       stream: false,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       stop_sequences: stoparg,
-      metadata: metadata,
+      metadata: metadata
     };
     // eslint-disable-next-line prefer-const
     let requestConfig: AxiosRequestConfig = {
-      url: "/v1/complete",
-      method: "POST",
-      data: request,
+      url: '/v1/complete',
+      method: 'POST',
+      data: request
     };
-      const data = await this.request(requestConfig);
-      if (typeof data !== "object" || data === null) {
-        throw new Error("Invalid data response. Expected an object.");
-      }
-      let respText = "";
-      if ("completion" in data) {
-        respText = data.completion as string;
-      }
-      return { fullResponse: data, data: respText };
+    const data = await this.request(requestConfig);
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Invalid data response. Expected an object.');
+    }
+    let respText = '';
+    if ('completion' in data) {
+      respText = data.completion as string;
+    }
+    return { fullResponse: data, data: respText };
   }
 
   public checkAndPopulateCompletionParams(
@@ -123,7 +124,7 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let stoparg: string | string[] = ["\n\nHuman:"];
+    let stoparg: string | string[] = ['\n\nHuman:'];
     if (inputParams?.stop) {
       if (Array.isArray(inputParams.stop)) {
         stoparg = inputParams.stop;
@@ -145,13 +146,13 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       topP: inputParams?.topP,
       topK: inputParams?.topK,
       stream: false,
-      stop: inputParams?.stop || undefined,
+      stop: inputParams?.stop || undefined
     };
 
     if (completionRequest.prompt) {
       const message: ChatCompletionRequestMessage = {
         role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt,
+        content: completionRequest.prompt
       };
       if (!completionRequest.messages) {
         completionRequest.messages = [message];
@@ -172,4 +173,22 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     }
     return completionRequest;
   }
+}
+
+export function getAnthropicProvider(): CompletionProvider {
+  // Default values for Anthropic Provider
+  const apiKey = '';
+  const timeout = 120;
+  const defaultCompletionModel = 'claude-2';
+  const defaultChatCompletionModel = 'claude-2';
+  const defaultOrigin = 'https://api.anthropic.com';
+
+  log.info('Anthropic API provider initialized');
+  return new AnthropicAPI(
+    apiKey,
+    timeout,
+    defaultCompletionModel,
+    defaultChatCompletionModel,
+    defaultOrigin
+  );
 }

@@ -4,9 +4,9 @@ import * as yaml from "js-yaml";
 import {
   IMessage,
   IView
-} from "@/spec/chat";
+} from "spec/chat";
 
-import { log } from "@/logger/log";
+import { log } from "logger/log";
 import { ConversationCollection } from "./collection";
 
 export function loadConversations(
@@ -70,6 +70,7 @@ export function loadConversations(
     return conversationCollection;
   } catch (err) {
     log.error(`Error loading conversations from ${filePath}: ${err}`);
-    return null;
+    const conversationCollection = new ConversationCollection();
+    return conversationCollection;
   }
 }

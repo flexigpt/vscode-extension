@@ -9,28 +9,18 @@
       "ES2020",
       "DOM"
     ],
-    "paths": {
-      "@/aiprovider/*": ["packages/aiprovider/*"],
-      "@/conversations/*": ["packages/conversations/*"],
-      "@/logger/*": ["packages/logger/*"],
-      "@/prompts/*": ["packages/prompts/*"],
-      "@/spec/*": ["packages/spec/*"],
-      "@/reactui/*": ["packages/reactui/*"]
-    },
     "baseUrl": "./",
     "esModuleInterop": true,
     "jsx": "react",
     "outDir": "out",
-    "declarationDir": "dist/types",
-    "declaration": true,
     "strict": true
   },
   "exclude": [
     "node_modules",
     ".vscode-test",
     "**/node_modules",
+    "**/out",
     "**/dist",
-    "**/out"
   ],
   "include": [
     "./**/*.ts", // Include your source files

@@ -1,20 +1,75 @@
-import React from 'react';
+import { Box, Grommet, Layer } from 'grommet';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
+import '../globals/globals.css';
 
-import { Toaster } from 'react-hot-toast';
-import { FlexiNavbar } from '@/reactui/components/navbar';
-// import { Chat } from '@/reactui/components/chat';
-import { TailwindIndicator } from '@/reactui/components/tailwind-indicator';
-// import { nanoid } from '@/reactui/lib/utils';
+import { nanoid } from './lib/utils';
 
-function App() {
+import { Chat } from './components/chat-screen';
+
+import { AppHeader } from './components/navbar';
+
+import { FlexiSidebar } from './components/sidebar';
+import messages from './lib/messages-sample';
+import { RosePineMergedTheme } from './theme';
+import { WorkflowProviderContext, workflowProvider } from './providercontext';
+
+const App: React.FC = () => {
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
+
+  const toggleTheme = () => {
+    setThemeMode(themeMode === 'light' ? 'dark' : 'light');
+  };
+
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+  const startEmpty = true;
+  // const startEmpty = false;
   return (
-    <div className="app">
-      <Toaster />
-      <FlexiNavbar />
-      {/* <Chat id={nanoid()} /> */}
-      <TailwindIndicator />
-    </div>
+    <Grommet theme={RosePineMergedTheme} themeMode={themeMode}>
+      <WorkflowProviderContext.Provider value={workflowProvider}>
+        <Box fill>
+          <AppHeader
+            onMenuClick={toggleSidebar}
+            onThemeToggle={toggleTheme}
+            theme={'dark'}
+          />
+          <Box direction="row" flex overflow={{ horizontal: 'hidden' }}>
+            {showSidebar && (
+              <Layer
+                position="left"
+                full="vertical"
+                modal={false}
+                responsive={true}
+                onClickOutside={() => setShowSidebar(false)}
+                onEsc={() => setShowSidebar(false)}
+              >
+                <FlexiSidebar />
+              </Layer>
+            )}
+            <Box flex align="center" justify="center">
+              {startEmpty ? (
+                <Chat id={nanoid()} initialMessages={[]} />
+              ) : (
+                <Chat id={nanoid()} initialMessages={messages} />
+              )}
+            </Box>
+          </Box>
+        </Box>
+      </WorkflowProviderContext.Provider>
+    </Grommet>
   );
-}
+};
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <HashRouter>
+      <App />
+    </HashRouter>
+  </React.StrictMode>
+);
 
 export default App;

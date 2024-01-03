@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { getCommitAndTagList } from "@/prompts/prompthelpers/gitutils";
+import { getCommitAndTagList } from "prompts/prompthelpers/gitutils";
 import { describe, it, before, after } from "mocha";
 import log from "../../logger/log";
 

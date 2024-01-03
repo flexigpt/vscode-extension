@@ -1,15 +1,14 @@
-import * as fs from "fs";
+import * as fs from 'fs';
 
 import {
   ChatCompletionRequestMessage,
   ChatCompletionResponseMessage,
   IMessage,
   IView
-} from "@/spec/chat";
+} from 'spec/chat';
 
-import { log } from "@/logger/log";
-import { Conversation } from "@/conversations/conversation";
-
+import { log } from 'logger/log';
+import { Conversation } from './conversation';
 
 export class ConversationCollection {
   private _currentConversation: Conversation;
@@ -56,13 +55,20 @@ export class ConversationCollection {
     }
   }
 
-  public saveAndStartNewConversation(exportFilePath?: string, setViews = false): void {
+  public saveAndStartNewConversation(
+    exportFilePath?: string,
+    setViews = false
+  ): void {
     if (!this._currentConversation.isEmpty()) {
       this.startNewConversation(exportFilePath, setViews);
     }
   }
 
-  public addConversation(id: number, messages: IMessage[], views: IView[]): void {
+  public addConversation(
+    id: number,
+    messages: IMessage[],
+    views: IView[]
+  ): void {
     this.startNewConversation();
     this._currentConversation.id = id;
     if (id >= this._idCounter) {
@@ -81,9 +87,7 @@ export class ConversationCollection {
     }
   }
 
-  public addViewsToCurrent(
-    views: IView[],
-  ) {
+  public addViewsToCurrent(views: IView[]) {
     this._currentConversation.addIViews(views);
   }
 
@@ -93,19 +97,26 @@ export class ConversationCollection {
     }
   }
 
-  public saveCurrentConversation(exportFilePath?: string, setViews = false): void {
+  public saveCurrentConversation(
+    exportFilePath?: string,
+    setViews = false
+  ): void {
     if (!exportFilePath) {
       return;
     }
     // Truncate file if it exists
     if (fs.existsSync(exportFilePath)) {
       // Truncate the file to 0 size by opening it in 'w' mode
-      fs.open(exportFilePath, "w", (err, file) => {
-        if (err) {throw err;}
+      fs.open(exportFilePath, 'w', (err, file) => {
+        if (err) {
+          throw err;
+        }
 
         // Close the file to complete the truncation process
-        fs.close(file, (err) => {
-          if (err) {throw err;}
+        fs.close(file, err => {
+          if (err) {
+            throw err;
+          }
         });
       });
     } else {
@@ -113,5 +124,28 @@ export class ConversationCollection {
     }
     this.exportConversations(exportFilePath, setViews);
   }
-}
 
+  public getConversationListSummary(
+    lastN: number = 20
+  ): { label: number; description: string }[] {
+    if (
+      this._conversations.length === 1 &&
+      this._conversations[0].getMessageStream().length === 0
+    ) {
+      return [];
+    }
+    const convoSlice = this._conversations.slice(-lastN).reverse();
+    const conversationList: { label: number; description: string }[] = [];
+    for (const c of convoSlice) {
+      if (c.getMessageStream().length > 0) {
+        conversationList.push({
+          label: c.id,
+          description: `${c.id}: ${c
+            .getMessageStream()[0]
+            .content.substring(0, 32)}...`
+        });
+      }
+    }
+    return conversationList;
+  }
+}

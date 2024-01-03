@@ -1,0 +1,20 @@
+{
+    "endOfLine": "lf",
+    "semi": true,
+    "useTabs": false,
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "tabWidth": 2,
+    "trailingComma": "none",
+    "importOrder": [
+      "^react$",
+      "^react(.+)$",
+      "^grommet$",
+      "^grommet(.+)$",
+      "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "importOrderGroupNamespaceSpecifiers": true,
+    "importOrderParserPlugins": ["jsx", "tsx", "typescript", "decorators-legacy"]
+  }
