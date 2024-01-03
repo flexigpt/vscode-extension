@@ -10,8 +10,8 @@
   "scripts": {
     "dev": "webpack serve --config webpack.config.js --mode=development",
     "prod": "webpack serve --config webpack.config.js --mode=production",
-    "prebuild": "pnpm rebuild",
-    "build": "pnpm run clean && webpack --config webpack.config.js --mode=development",
+    "buildall": "pnpm -r run clean && pnpm -r run build",
+    "build": "webpack --config webpack.config.js --mode=development",
     "build-vscode": "pnpm run clean ; vscode=true webpack --config webpack.config.js --mode=development",
     "start": "rollup -c -w",
     "clean": "rimraf dist",
