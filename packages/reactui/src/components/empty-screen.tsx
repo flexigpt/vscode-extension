@@ -35,7 +35,7 @@ export function EmptyScreen() {
       align="center"
       justify="center"
       width="100vw"
-      height="80vh"
+      height="90vh"
       overflow="hidden"
     >
       <Card elevation="none" border="all" pad="medium" width={{ max: 'large' }}>

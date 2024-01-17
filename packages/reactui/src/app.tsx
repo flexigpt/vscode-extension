@@ -13,7 +13,8 @@ import { AppHeader } from './components/navbar';
 import { FlexiSidebar } from './components/sidebar';
 import messages from './lib/messages-sample';
 import { RosePineMergedTheme } from './theme';
-import { WorkflowProviderContext, workflowProvider } from './providercontext';
+
+import { WorkflowProviderContextProvider } from './lib/contextprovider';
 
 const App: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -30,7 +31,7 @@ const App: React.FC = () => {
   // const startEmpty = false;
   return (
     <Grommet theme={RosePineMergedTheme} themeMode={themeMode}>
-      <WorkflowProviderContext.Provider value={workflowProvider}>
+      <WorkflowProviderContextProvider>
         <Box fill>
           <AppHeader
             onMenuClick={toggleSidebar}
@@ -59,7 +60,7 @@ const App: React.FC = () => {
             </Box>
           </Box>
         </Box>
-      </WorkflowProviderContext.Provider>
+      </WorkflowProviderContextProvider>
     </Grommet>
   );
 };
