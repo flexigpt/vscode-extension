@@ -9,4 +9,7 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+genreadme_from_docs.py
+packages/**
+docs/**
 

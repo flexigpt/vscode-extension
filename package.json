@@ -305,9 +305,10 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
-    "build:packages": "pnpm -r --filter './packages/!reactui' run build && pnpm --filter './packages/reactui' run build-vscode",
+    "build:packages": "pnpm -r --filter './packages/!reactui' run build",
+    "build:reactui": "pnpm --filter './packages/reactui' run build-vscode",
     "postbuild:packages": "rimraf media/reactout/* && cp -Rf packages/reactui/dist/* media/reactout/",
-    "build:top": "pnpm run clean:top && pnpm run postbuild:packages && pnpm run esbuild-base",
+    "build:top": "pnpm run clean:top && pnpm run esbuild-base",
     "build": "pnpm run build:packages && pnpm run build:top",
     "watch": "pnpm run build --watch",
     "clean:packages": "pnpm -r --filter './packages/*' run clean",
@@ -320,7 +321,7 @@
     "lint": "eslint src --ext ts --fix",
     "debug": "node --inspect-brk $(which vscode-inspect-brk) . --extensionDevelopmentPath=$HOME/github/vscode-flexigpt",
     "truncate-yaml": "echo '' > ./conversations.yml",
-    "vscode:prepublish": "pnpm run truncate-yaml && pnpm run build --minify && pnpm install && vsce package"
+    "vscode:prepublish": "pnpm run truncate-yaml && pnpm run build --minify && pnpm install"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
