@@ -1,14 +1,14 @@
 export enum ChatCompletionRoleEnum {
-  system = "system",
-  user = "user",
-  assistant = "assistant",
-  function = "function",
+  system = 'system',
+  user = 'user',
+  assistant = 'assistant',
+  function = 'function'
 }
 
 export interface IMessage {
   id: string;
   createdAt?: Date;
-  
+
   role: ChatCompletionRoleEnum;
   content: string;
   timestamp?: string;
@@ -175,6 +175,17 @@ export interface CompletionRequest {
    */
   messages?: Array<ChatCompletionRequestMessage> | null;
   /**
+   *
+   * @type {string}
+   * @memberof CompletionRequest
+   */
+  systemPrompt?: string | null;
+  /**
+   * @type {number}
+   * @memberof CompletionRequest
+   */
+  limitContextLength?: number | null;
+  /**
    * A list of functions the model may generate JSON inputs for.
    * @type {Array<ChatCompletionFunctions>}
    * @memberof CreateChatCompletionRequest
@@ -290,21 +301,19 @@ export interface CompletionRequest {
   additionalParameters?: Record<string, any> | null;
 }
 
-
-
 export interface Chat extends Record<string, any> {
-  id: string
-  title: string
-  createdAt: Date
-  userId: string
-  path: string
-  messages: IMessage[]
-  sharePath?: string
+  id: string;
+  title: string;
+  createdAt: Date;
+  userId: string;
+  path: string;
+  messages: IMessage[];
+  sharePath?: string;
 }
 
 export type ServerActionResult<Result> = Promise<
   | Result
   | {
-      error: string
+      error: string;
     }
 >;

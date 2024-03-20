@@ -6,7 +6,11 @@ import {
   CompletionRequest
 } from 'spec/chat';
 import { GptAPI } from './api';
-import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
+import {
+  CompletionProvider,
+  filterMessagesByTokenCount,
+  getCompletionRequest
+} from './strategy';
 
 export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
   constructor(
@@ -97,21 +101,23 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     }
     const model = input.model;
     const modeltype = await this.getModelType(model);
+
     const parameters: Record<string, any> = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      max_length: input.maxTokens,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_k: input.topK,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_p: input.topP,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      num_return_sequences: input.n,
-      temperature: input.temperature,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      repetition_penalty: input.presencePenalty,
+      max_length: input.maxTokens ? input.maxTokens : 4096,
+      temperature: input.temperature ? input.temperature : 0.1,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       max_time: input.timeout ? input.timeout : this.timeout
     };
+
+    if (input.additionalParameters) {
+      for (const key in input.additionalParameters) {
+        if (!parameters.hasOwnProperty(key)) {
+          parameters[key] = input.additionalParameters[key];
+        }
+      }
+    }
+
     if (modeltype !== 'chat') {
       parameters.return_full_text = false;
       if (!input.maxTokens || input.maxTokens > 250) {
@@ -161,36 +167,12 @@ export class HuggingFaceAPI extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    const completionRequest: CompletionRequest = {
-      model: (inputParams?.model as string) || this.defaultCompletionModel,
-      prompt: prompt,
-      messages: messages,
-      maxTokens: inputParams?.maxTokens,
-      temperature: inputParams?.temperature,
-      topP: inputParams?.topP,
-      topK: inputParams?.topK,
-      n: inputParams?.n,
-      stream: false,
-      presencePenalty: inputParams?.presencePenalty,
-      timeout: inputParams?.timeout
-    };
-
-    if (completionRequest.prompt) {
-      const message: ChatCompletionRequestMessage = {
-        role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt
-      };
-      if (!completionRequest.messages) {
-        completionRequest.messages = [message];
-      } else {
-        completionRequest.messages.push(message);
-      }
-    }
-    if (completionRequest.messages) {
-      completionRequest.prompt = null;
-    }
-
-    return completionRequest;
+    return getCompletionRequest(
+      this.defaultChatCompletionModel,
+      prompt,
+      messages,
+      inputParams
+    );
   }
 }
 
@@ -198,8 +180,8 @@ export function getHuggingFaceProvider(): CompletionProvider {
   // Default values for Hugging Face Provider
   const apiKey = '';
   const timeout = 120;
-  const defaultCompletionModel = 'bigcode/starcoderbase';
-  const defaultChatCompletionModel = 'microsoft/DialoGPT-large';
+  const defaultCompletionModel = 'bigcode/starcoder2-15b';
+  const defaultChatCompletionModel = 'deepseek-ai/deepseek-coder-1.3b-instruct';
   const defaultOrigin = 'https://api-inference.huggingface.co';
 
   log.info('HuggingFace API provider initialized');

@@ -177,16 +177,24 @@ export async function openFileOrUnsavedDocument(
 }
 
 export function getActiveLine(): string | undefined {
-  const editor = vscode.window.activeTextEditor;
-
-  if (!editor) {
+  let activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor && activeEditor.document.uri.scheme !== 'file') {
+    const editors = vscode.window.visibleTextEditors;
+    for (const ed of editors) {
+      if (ed.document.uri.scheme === 'file') {
+        activeEditor = ed;
+        break;
+      }
+    }
+  }
+  if (!activeEditor) {
     vscode.window.showInformationMessage('No editor is active');
     return;
   }
 
-  const document: vscode.TextDocument = editor.document;
-  const selection: vscode.Selection = editor.selection;
-  const activeLine: vscode.TextLine = document.lineAt(selection.active.line);
+  const document = activeEditor.document;
+  const selection = activeEditor.selection;
+  const activeLine = document.lineAt(selection.active.line);
 
   return activeLine.text;
 }

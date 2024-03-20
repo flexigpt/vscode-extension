@@ -99,19 +99,24 @@ function registerEvents(
   context: vscode.ExtensionContext,
   provider: ChatViewProvider
 ) {
-  const config = vscode.workspace.getConfiguration('flexigpt');
-  // Change the extension's openai token when configuration is changed
   vscode.workspace.onDidChangeConfiguration(
     (event: vscode.ConfigurationChangeEvent) => {
+      if (!event.affectsConfiguration('flexigpt')) {
+        return;
+      }
+      const config = vscode.workspace.getConfiguration('flexigpt');
+      log.info('Got flexigpt configuration change event');
+      if (!provider.workflowProvider) {
+        log.error('No workflow provider found');
+        return;
+      }
       if (
         event.affectsConfiguration('flexigpt.promptFiles') ||
         event.affectsConfiguration('flexigpt.inBuiltPrompts')
       ) {
         provider.importAllPromptFiles();
       } else if (event.affectsConfiguration('flexigpt.defaultProvider')) {
-        if (provider.workflowProvider) {
-          updateDefaultProvider(config, provider.workflowProvider);
-        }
+        updateDefaultProvider(config, provider.workflowProvider);
       } else if (
         event.affectsConfiguration('flexigpt.openai.timeout') ||
         event.affectsConfiguration('flexigpt.openai.apiKey') ||
@@ -121,9 +126,7 @@ function registerEvents(
         ) ||
         event.affectsConfiguration('flexigpt.openai.defaultOrigin')
       ) {
-        if (provider.workflowProvider) {
-          updateAIProvider(config, provider.workflowProvider, 'openai');
-        }
+        updateAIProvider(config, provider.workflowProvider, 'openai');
       } else if (
         event.affectsConfiguration('flexigpt.anthropic.timeout') ||
         event.affectsConfiguration('flexigpt.anthropic.apiKey') ||
@@ -135,9 +138,7 @@ function registerEvents(
         ) ||
         event.affectsConfiguration('flexigpt.anthropic.defaultOrigin')
       ) {
-        if (provider.workflowProvider) {
-          updateAIProvider(config, provider.workflowProvider, 'anthropic');
-        }
+        updateAIProvider(config, provider.workflowProvider, 'anthropic');
       } else if (
         event.affectsConfiguration('flexigpt.huggingface.timeout') ||
         event.affectsConfiguration('flexigpt.huggingface.apiKey') ||
@@ -149,9 +150,7 @@ function registerEvents(
         ) ||
         event.affectsConfiguration('flexigpt.huggingface.defaultOrigin')
       ) {
-        if (provider.workflowProvider) {
-          updateAIProvider(config, provider.workflowProvider, 'huggingface');
-        }
+        updateAIProvider(config, provider.workflowProvider, 'huggingface');
       } else if (
         event.affectsConfiguration('flexigpt.googlegl.timeout') ||
         event.affectsConfiguration('flexigpt.googlegl.apiKey') ||
@@ -163,17 +162,13 @@ function registerEvents(
         ) ||
         event.affectsConfiguration('flexigpt.googlegl.defaultOrigin')
       ) {
-        if (provider.workflowProvider) {
-          updateAIProvider(config, provider.workflowProvider, 'googlegl');
-        }
+        updateAIProvider(config, provider.workflowProvider, 'googlegl');
       } else if (
         event.affectsConfiguration('flexigpt.llamacpp.timeout') ||
         event.affectsConfiguration('flexigpt.llamacpp.apiKey') ||
         event.affectsConfiguration('flexigpt.llamacpp.defaultOrigin')
       ) {
-        if (provider.workflowProvider) {
-          updateAIProvider(config, provider.workflowProvider, 'llamacpp');
-        }
+        updateAIProvider(config, provider.workflowProvider, 'llamacpp');
       }
     }
   );
@@ -187,7 +182,11 @@ export function activate(context: vscode.ExtensionContext) {
   const workflowProvider = getWorkflowProvider();
   setupCommandRunnerContext(context, workflowProvider);
 
-  const provider = new ChatViewProvider(context.extensionUri, context, workflowProvider);
+  const provider = new ChatViewProvider(
+    context.extensionUri,
+    context,
+    workflowProvider
+  );
   provider.setWorkflowProvider(workflowProvider);
 
   registerCommands(context, provider);

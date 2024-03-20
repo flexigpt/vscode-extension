@@ -2,7 +2,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-
 import { filterSensitiveInfoFromJsonString } from 'aiprovider/api';
 
 import log from './logger/log';
@@ -18,6 +17,7 @@ import {
   runCommandInShell
 } from './vscodeutils/vscodefunctions';
 import { getWebviewHtml } from './webviewhtml';
+import { unescapeChars } from 'aiprovider';
 
 export default class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'flexigpt.chatView';
@@ -433,22 +433,57 @@ export default class ChatViewProvider implements vscode.WebviewViewProvider {
         JSON.stringify(e, null, 2)
       );
     }
-    log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
+    // log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
     return { reqUUID, prompt, response, fullResponseStr };
   }
 
-  public getCodeUsingComment() {
-    const line = getActiveLine();
-    if (!line) {
-      return '';
+  public async getCodeUsingComment() {
+    try {
+      const line = getActiveLine();
+      if (!line) {
+        log.info('Couldnt get the comment to process');
+        return '';
+      }
+      const fpath = getActiveDocumentFilePath();
+      const lang = getActiveDocumentLanguageID();
+      const inlineMsg = 'Give code using the below comment:';
+      const inlineCode =
+        'Language:' +
+        lang +
+        '\n' +
+        'Filename:' +
+        fpath +
+        '\n' +
+        'Comment:' +
+        '\n' +
+        line.trim();
+      const response = await this.workflowProvider.getResponseUsingInput(
+        inlineMsg + '\n' + inlineCode
+      );
+      this.setFocus();
+      await this.sendMessage({
+        type: 'addQuestion',
+        value: inlineMsg,
+        code: inlineCode,
+        id: response.reqUUID,
+        fullapi: response.fullReqStr
+      });
+
+      append('\n' + response.response, 'end');
+      const displayResp = unescapeChars(
+        '\n```' + lang + '\n' + response.response + '\n```\n'
+      );
+
+      await this.sendMessage({
+        type: 'addResponse',
+        value: displayResp,
+        id: response.reqUUID,
+        done: true,
+        fullResponse: response.fullResponseStr,
+        docLanguage: lang
+      });
+    } catch (error) {
+      log.error(error);
     }
-    const fpath = getActiveDocumentFilePath();
-    const lang = getActiveDocumentLanguageID();
-    const inline =
-      `Give code using the below comment.\nFilename: ${fpath}\nLang:${lang}\nComment:` +
-      line.trim();
-    this.workflowProvider.getResponseUsingInput(inline).then(response => {
-      append('\n' + response, 'end');
-    });
   }
 }

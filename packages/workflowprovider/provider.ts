@@ -1,4 +1,4 @@
-import { getAnthropicProvider } from 'aiprovider/anthropic';
+import { getDefaultAnthropicProvider } from 'aiprovider/anthropic';
 import { filterSensitiveInfoFromJsonString } from 'aiprovider/api';
 import { getGoogleGenerativeLanguageProvider } from 'aiprovider/googleapis';
 import { getHuggingFaceProvider } from 'aiprovider/huggingface';
@@ -10,7 +10,7 @@ import {
 } from 'aiprovider/strategy';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getLlamaCPPAPIProvider } from 'aiprovider/llamacpp';
+import { getDefaultLlamaCPPAPIProvider } from 'aiprovider/llamacpp';
 import { ConversationCollection } from 'conversations/collection';
 import { loadConversations } from 'conversations/loader';
 import { log } from 'logger/log';
@@ -38,13 +38,13 @@ export class WorkflowProvider {
 
     this.aiproviders = new Providers('');
     this.aiproviders.addProvider('openai', getOpenAIProvider());
-    this.aiproviders.addProvider('anthropic', getAnthropicProvider());
+    this.aiproviders.addProvider('anthropic', getDefaultAnthropicProvider());
     this.aiproviders.addProvider('huggingface', getHuggingFaceProvider());
     this.aiproviders.addProvider(
       'googlegl',
       getGoogleGenerativeLanguageProvider()
     );
-    this.aiproviders.addProvider('llamacpp', getLlamaCPPAPIProvider());
+    this.aiproviders.addProvider('llamacpp', getDefaultLlamaCPPAPIProvider());
   }
 
   public importConversations(
@@ -167,7 +167,7 @@ export class WorkflowProvider {
         }
       ]);
     }
-    log.info(`Got api request. Full request: ${crequestStr}`);
+    // log.info(`Got api request. Full request: ${crequestStr}`);
     return { apiProvider, crequest, crequestStr };
   }
 
@@ -254,7 +254,7 @@ export class WorkflowProvider {
         JSON.stringify(e, null, 2)
       );
     }
-    log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
+    // log.info(`Got response: ${response}\n Full response: ${fullResponseStr}`);
     return { reqUUID, fullReqStr, response, fullResponseStr };
   }
 }

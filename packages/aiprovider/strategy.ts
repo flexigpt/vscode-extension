@@ -1,5 +1,9 @@
 import { log } from 'logger/log';
-import { ChatCompletionRequestMessage, CompletionRequest } from 'spec/chat';
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRoleEnum,
+  CompletionRequest
+} from 'spec/chat';
 
 export interface CompletionProvider {
   completion(
@@ -82,7 +86,8 @@ export class Providers {
       'microsoft/',
       'replit/',
       'Salesforce/',
-      'bigcode/'
+      'bigcode/',
+      'deepseek-ai/'
     ];
     if (
       huggingfaceModels.some(search => model.startsWith(search)) &&
@@ -160,4 +165,77 @@ export function filterMessagesByTokenCount(
     );
   }
   return filteredMessages.reverse();
+}
+
+export function getCompletionRequest(
+  defaultModel: string,
+  prompt: string | null,
+  messages: Array<ChatCompletionRequestMessage> | null,
+  inputParams?: { [key: string]: any },
+  defaultTemprature: number = 0.1,
+  defaultMaxTokens: number = 2048,
+  defaultLimitContextLength: number = 2048
+): CompletionRequest {
+  if (!inputParams) {
+    inputParams = {};
+  }
+  const completionRequest: CompletionRequest = {
+    model: defaultModel,
+    prompt: prompt,
+    messages: messages,
+    temperature: defaultTemprature,
+    maxTokens: defaultMaxTokens,
+    limitContextLength: defaultLimitContextLength,
+    stream: false
+  };
+
+  for (const key in inputParams) {
+    if (key === 'model' && typeof key === 'string') {
+      completionRequest.model = inputParams.model;
+      continue;
+    }
+    if (key === 'maxTokens' && typeof key === 'number') {
+      completionRequest.maxTokens = inputParams.maxTokens;
+      continue;
+    }
+    if (key === 'temperature' && typeof key === 'number') {
+      completionRequest.temperature = inputParams.temperature;
+      continue;
+    }
+    if (key === 'limitContextLength' && typeof key === 'number') {
+      completionRequest.limitContextLength = inputParams.limitContextLength;
+      continue;
+    }
+    if (key === 'systemPrompt' && typeof key === 'string') {
+      completionRequest.systemPrompt = inputParams.systemPrompt;
+      continue;
+    }
+
+    completionRequest.additionalParameters =
+      completionRequest.additionalParameters || {};
+    // eslint-disable-next-line no-prototype-builtins
+    if (!completionRequest.hasOwnProperty(key) && key !== 'provider') {
+      completionRequest.additionalParameters[key] = inputParams[key];
+    }
+  }
+
+  if (completionRequest.prompt) {
+    const message: ChatCompletionRequestMessage = {
+      role: ChatCompletionRoleEnum.user,
+      content: completionRequest.prompt
+    };
+    if (!completionRequest.messages) {
+      completionRequest.messages = [message];
+    } else {
+      completionRequest.messages.push(message);
+    }
+    completionRequest.prompt = null;
+  }
+  if (completionRequest.messages) {
+    const messages = filterMessagesByTokenCount(
+      completionRequest.messages,
+      completionRequest.limitContextLength || 2048
+    );
+  }
+  return completionRequest;
 }

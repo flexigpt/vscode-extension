@@ -1,7 +1,7 @@
 {
   "name": "flexigpt",
   "displayName": "FlexiGPT",
-  "description": "Interact with GPT AI models (GPT 3.5/4, Anthropic Claude, All models of HuggingFace Inference API, Bison/Gecko by GoogleGL i.e PaLM API, etc, All models from llama.cpp like LLaMA1/2, Vicuna, GPT4All, etc) as a power user",
+  "description": "Interact with GPT AI models (GPT 3.5/4, Anthropic Claude, All models of HuggingFace Inference API, Gemini/Bison/Gecko by GoogleGL i.e Gemini API, etc, All models from llama.cpp like LLaMA1/2, Mistral, Vicuna, GPT4All, etc) as a power user",
   "version": "0.13.2",
   "publisher": "ppipada",
   "pricing": "Free",
@@ -16,6 +16,7 @@
   },
   "categories": [
     "Machine Learning",
+    "Data Science",
     "Other",
     "Programming Languages"
   ],
@@ -24,12 +25,14 @@
     "openai",
     "prompt engineering",
     "gpt-4",
+    "gemini",
+    "claude",
     "chatgpt",
     "ai",
     "llama",
     "vicuna",
-    "huggingface",
-    "palm"
+    "mistral",
+    "huggingface"
   ],
   "activationEvents": [
     "onStartup",
@@ -201,13 +204,13 @@
         },
         "flexigpt.anthropic.defaultCompletionModel": {
           "type": "string",
-          "default": "claude-2",
+          "default": "claude-3-haiku-20240307",
           "description": "Default model to use for completion requests",
           "order": 5
         },
         "flexigpt.anthropic.defaultChatCompletionModel": {
           "type": "string",
-          "default": "claude-2",
+          "default": "claude-3-haiku-20240307",
           "description": "Default model to use for chat completion requests",
           "order": 5
         },
@@ -230,13 +233,13 @@
         },
         "flexigpt.huggingface.defaultCompletionModel": {
           "type": "string",
-          "default": "bigcode/starcoderbase",
+          "default": "bigcode/starcoder2-15b",
           "description": "Default model to use for completion requests",
           "order": 6
         },
         "flexigpt.huggingface.defaultChatCompletionModel": {
           "type": "string",
-          "default": "microsoft/DialoGPT-large",
+          "default": "deepseek-ai/deepseek-coder-1.3b-instruct",
           "description": "Default model to use for chat completion requests",
           "order": 6
         },
@@ -259,13 +262,13 @@
         },
         "flexigpt.googlegl.defaultCompletionModel": {
           "type": "string",
-          "default": "text-bison-001",
+          "default": "gemini-1.0-pro",
           "description": "Default model to use for completion requests",
           "order": 7
         },
         "flexigpt.googlegl.defaultChatCompletionModel": {
           "type": "string",
-          "default": "chat-bison-001",
+          "default": "gemini-1.0-pro",
           "description": "Default model to use for chat completion requests",
           "order": 7
         },
@@ -313,39 +316,39 @@
     "pretest": "rimraf out/test && pnpm run compile-tests",
     "compile-tests": "tsc -p ./tsconfig.tests.json",
     "test:packages": "pnpm -r --filter './packages/*' run test",
-    "test": "pnpm run test:packages && node ./out/test/test/runTest.js",
+    "test": "pnpm run pretest && pnpm run test:packages && node ./out/test/test/runTest.js",
     "lint": "eslint src --ext ts --fix",
-    "debug": "node --inspect-brk $(which vscode-inspect-brk) . --extensionDevelopmentPath=/Users/pankajpipada/github/vscode-flexigpt",
+    "debug": "node --inspect-brk $(which vscode-inspect-brk) . --extensionDevelopmentPath=$HOME/github/vscode-flexigpt",
     "truncate-yaml": "echo '' > ./conversations.yml",
     "prepublish": "pnpm run truncate-yaml",
     "vscode:prepublish": "pnpm run truncate-yaml && pnpm run build --minify"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/chai": "^4.3.11",
-    "@types/glob": "^8.1.0",
+    "@types/chai": "^4.3.13",
     "@types/js-yaml": "^4.0.9",
     "@types/mocha": "^10.0.6",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^18.14.2",
-    "@types/vscode": "^1.85.0",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "@vscode/test-electron": "^2.3.8",
-    "chai": "^4.3.10",
-    "esbuild": "^0.17.5",
-    "eslint": "^8.56.0",
+    "@types/node": "^18.19.26",
+    "@types/vscode": "^1.87.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vscode/test-electron": "^2.3.9",
+    "chai": "^4.4.1",
+    "esbuild": "^0.17.19",
+    "eslint": "^8.57.0",
     "espree": "^9.6.1",
-    "glob": "^8.0.3",
     "js-yaml": "^4.1.0",
-    "mocha": "^10.2.0",
+    "mocha": "^10.3.0",
     "npm-version": "^1.1.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
-    "stylelint": "^16.0.2",
+    "stylelint": "^16.2.1",
     "stylelint-config-standard": "^35.0.0",
     "ts-loader": "^9.5.1",
-    "typescript": "^4.9.5"
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5",
+    "undici-types": "^6.9.0"
   },
   "dependencies": {
     "aiprovider": "workspace:*",

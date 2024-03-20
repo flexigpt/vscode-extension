@@ -5,10 +5,7 @@
     "sourceMap": true,
     "target": "ES2020",
     "module": "commonjs",
-    "lib": [
-      "ES2020",
-      "DOM"
-    ],
+    "lib": ["ES2020", "DOM"],
     "baseUrl": "./",
     "esModuleInterop": true,
     "jsx": "react",
@@ -20,7 +17,7 @@
     ".vscode-test",
     "**/node_modules",
     "**/out",
-    "**/dist",
+    "**/dist"
   ],
   "include": [
     "./**/*.ts", // Include your source files

@@ -1,95 +1,95 @@
 module.exports = {
-  namespace: "LargeContext",
+  namespace: 'LargeContext',
   commands: [
     {
-      name: "Anthropic: Write Go workflow test with swagger",
+      name: 'Anthropic: Write Go workflow test with swagger',
       template: `Write workflow tests in golang using the following swagger.
             swagger:
             {system.selection}`,
       responseHandler: {
-        func: "writeFile",
+        func: 'writeFile',
         args: {
-          filePath: "user.testFileName",
-        },
+          filePath: 'user.testFileName'
+        }
       },
-      description: "Generate workflow tests for the selected swagger",
+      description: 'Generate workflow tests for the selected swagger',
       requestparams: {
-        model: "claude-2",
-      },
+        model: 'claude-2.1'
+      }
     },
     {
-      name: "Anthropic: Find bugs and races",
+      name: 'Anthropic: Find bugs and races',
       template: `Find bugs or race conditions in the below file. List them in priority order. give your reasons for choosing priority. give code after rectifying the top priority item:
             {system.readFile}`,
-      description: "Find bugs and races in the open file",
+      description: 'Find bugs and races in the open file',
       requestparams: {
-        model: "claude-2",
-      },
+        model: 'claude-2.1'
+      }
     },
     {
-      name: "OpenAI: Find bugs and races",
+      name: 'OpenAI: Find bugs and races',
       template: `Find bugs or race conditions in the below code. List them in priority order. give your reasons for choosing priority. give code after rectifying the top priority item:
             {system.selection}`,
-      description: "Find bugs",
+      description: 'Find bugs',
       requestparams: {
-        model: "gpt-3.5-turbo-16k",
-      },
+        model: 'gpt-3.5-turbo-16k'
+      }
     },
     {
-      name: "GoogleChat: Explain",
+      name: 'GoogleChat: Explain',
       template: `Explain the below code:
                   {system.selection}`,
-      description: "Explain chat",
+      description: 'Explain chat',
       requestparams: {
-        model: "chat-bison-001",
-      },
+        model: 'chat-bison-001'
+      }
     },
     {
-      name: "GoogleText: Explain",
+      name: 'GoogleText: Explain',
       template: `Explain the below code:
                   {system.selection}`,
-      description: "Explain text",
+      description: 'Explain text',
       requestparams: {
-        model: "text-bison-001",
-      },
+        model: 'gemini-1.0-pro'
+      }
     },
     {
-      name: "HFText: Explain",
+      name: 'HFText: Explain',
       template: `Explain the below code:
                     {system.selection}`,
-      description: "Explain text",
+      description: 'Explain text',
       requestparams: {
-        model: "bigcode/starcoderbase",
-      },
+        model: 'bigcode/starcoder2-15b'
+      }
     },
     {
-      name: "HFChat: Explain",
+      name: 'HFChat: Explain',
       template: `Explain the below code:
                       {system.selection}`,
-      description: "Explain text",
+      description: 'Explain text',
       requestparams: {
-        model: "microsoft/DialoGPT-large",
-      },
-    },
+        model: 'deepseek-ai/deepseek-coder-1.3b-instruct'
+      }
+    }
   ],
   functions: [{}],
   variables: [
     {
-      name: "unitTestFramework",
-      value: "testing",
+      name: 'unitTestFramework',
+      value: 'testing'
     },
     {
-      name: "start",
-      value: "start",
+      name: 'start',
+      value: 'start'
     },
     {
-      name: "end",
-      value: "end",
+      name: 'end',
+      value: 'end'
     },
     {
-      name: "testFileName",
+      name: 'testFileName',
       value: ({ fileFolder, fileName, fileExtension }) =>
-        `${fileFolder}\\${fileName}_test.${fileExtension}`,
-    },
-  ],
+        `${fileFolder}\\${fileName}_test.${fileExtension}`
+    }
+  ]
 };

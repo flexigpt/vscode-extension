@@ -6,7 +6,12 @@ import {
   CompletionRequest
 } from 'spec/chat';
 import { GptAPI } from './api';
-import { CompletionProvider } from './strategy';
+import { CompletionProvider, getCompletionRequest } from './strategy';
+
+interface Content {
+  role: string;
+  parts: { text: string }[];
+}
 
 export class GoogleGenerativeLanguageAPI
   extends GptAPI
@@ -39,6 +44,28 @@ export class GoogleGenerativeLanguageAPI
     );
   }
 
+  convertMessages(messages: ChatCompletionRequestMessage[]): Content[] {
+    return messages.map(message => {
+      let role: string = 'user';
+      switch (message.role) {
+        case ChatCompletionRoleEnum.user:
+          role = 'user';
+          break;
+        case ChatCompletionRoleEnum.assistant:
+          role = 'model';
+          break;
+      }
+      return {
+        role,
+        parts: [
+          {
+            text: message.content || '' // If content is undefined, use an empty string
+          }
+        ]
+      };
+    });
+  }
+
   async completion(input: CompletionRequest) {
     return this.chatCompletion(input);
   }
@@ -49,50 +76,34 @@ export class GoogleGenerativeLanguageAPI
     if (!input.messages) {
       throw Error('No input messages found');
     }
-    let chatModel = false;
-    if (input.model.startsWith('chat')) {
-      chatModel = true;
-    }
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const request: Record<string, any> = {
-      temperature: input.temperature,
-      topP: input.topP,
-      topK: input.topK,
-      candidateCount: input.n
+
+    let generateConfig: Record<string, any> = {
+      maxOutputTokens: input.maxTokens ? input.maxTokens : 4096,
+      temperature: input.temperature ? input.temperature : 0.1
     };
 
-    if (chatModel) {
-      request.prompt = {
-        messages: input.messages.map(item => {
-          return {
-            author: item.role,
-            content: item.content
-          };
-        })
-      };
-    } else {
-      request.prompt = { text: input.prompt };
-      request.maxOutputTokens = input.maxTokens;
-      let stoparg: string[] | null = null;
-      if (input.stop) {
-        if (Array.isArray(input.stop)) {
-          stoparg = input.stop;
-        } else {
-          stoparg = [input.stop];
+    if (input.additionalParameters) {
+      for (const key in input.additionalParameters) {
+        if (!generateConfig.hasOwnProperty(key)) {
+          generateConfig[key] = input.additionalParameters[key];
         }
       }
-      request.stopSequences = stoparg;
     }
 
-    let modelpath = `/v1beta2/models/${input.model}:generateText?key=${this.apiKey}`;
-    if (chatModel) {
-      modelpath = `/v1beta2/models/${input.model}:generateMessage?key=${this.apiKey}`;
-    }
+    let content = this.convertMessages(input.messages);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const request: Record<string, any> = {
+      contents: content,
+      generationConfig: generateConfig
+    };
+
+    const modelpath = `/v1/models/${input.model}:generateContent?key=${this.apiKey}`;
     const requestConfig: AxiosRequestConfig = {
       url: modelpath,
       method: 'POST',
       data: request
     };
+
     const data = await this.request(requestConfig);
     if (typeof data !== 'object' || data === null) {
       throw new Error('Invalid data response. Expected an object.' + data);
@@ -103,10 +114,14 @@ export class GoogleGenerativeLanguageAPI
       Array.isArray(data.candidates) &&
       data.candidates.length > 0
     ) {
-      if (chatModel) {
-        respText = data.candidates[0].content as string;
-      } else {
-        respText = data.candidates[0].output as string;
+      if (
+        'content' in data.candidates[0] &&
+        'parts' in data.candidates[0].content &&
+        Array.isArray(data.candidates[0].content.parts) &&
+        data.candidates[0].content.parts.length > 0 &&
+        'text' in data.candidates[0].content.parts[0]
+      ) {
+        respText = data.candidates[0].content.parts[0].text as string;
       }
     }
     return { fullResponse: data, data: respText };
@@ -117,38 +132,12 @@ export class GoogleGenerativeLanguageAPI
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    const model = (inputParams?.model as string) || this.defaultCompletionModel;
-    let chatModel = false;
-    if (model.startsWith('chat')) {
-      chatModel = true;
-    }
-    const completionRequest: CompletionRequest = {
-      model: model,
-      prompt: prompt,
-      messages: messages,
-      maxTokens: inputParams?.maxTokens,
-      temperature: inputParams?.temperature,
-      topP: inputParams?.topP,
-      topK: inputParams?.topK,
-      n: inputParams?.n,
-      stop: inputParams?.stop
-    };
-
-    if (completionRequest.prompt) {
-      const message: ChatCompletionRequestMessage = {
-        role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt
-      };
-      if (!completionRequest.messages) {
-        completionRequest.messages = [message];
-      } else {
-        completionRequest.messages.push(message);
-      }
-    }
-    if (chatModel && completionRequest.messages) {
-      completionRequest.prompt = null;
-    }
-    return completionRequest;
+    return getCompletionRequest(
+      this.defaultChatCompletionModel,
+      prompt,
+      messages,
+      inputParams
+    );
   }
 }
 
@@ -156,8 +145,8 @@ export function getGoogleGenerativeLanguageProvider(): CompletionProvider {
   // Default values for Google Generative Language Provider
   const apiKey = '';
   const timeout = 120;
-  const defaultCompletionModel = 'text-bison-001';
-  const defaultChatCompletionModel = 'chat-bison-001';
+  const defaultCompletionModel = 'gemini-1.0-pro';
+  const defaultChatCompletionModel = 'gemini-1.0-pro';
   const defaultOrigin = 'https://generativelanguage.googleapis.com';
 
   log.info('GoogleGenerativeLanguage API provider initialized');

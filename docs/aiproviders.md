@@ -36,14 +36,10 @@
 
 - Supported [API](https://docs.anthropic.com/claude/reference/getting-started-with-the-api)
 
-  - https://api.anthropic.com/v1/complete
+  - https://api.anthropic.com/v1/messages
+    - `claude-3-*`, `claude-2*`
 
-- Supported models - All models supported by above API
-
-  - `claude-2`
-  - `claude-instant-1`
-
-- FlexiGPT uses defaultChatCompletionModel: `claude-2`, unless the prompt overrides it.
+- FlexiGPT uses defaultChatCompletionModel: `claude-3-haiku-20240307`, unless the prompt overrides it.
 
 - Configuration Options:
 
@@ -52,7 +48,7 @@
   - flexigpt.anthropic.defaultChatCompletionModel: Default model to use for chat completion requests.
     - You can always override the default model per prompt via the prompt file command declaration.
     - FlexiGPT basic prompts will use the default models set.
-    - Default: `claude-2`.
+    - Default: `claude-3-haiku-20240307`.
   - flexigpt.anthropic.defaultCompletionModel: Default model to use for completion requests.
   - flexigpt.anthropic.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://api.anthropic.com`.
@@ -67,7 +63,7 @@
 
 - Supported models - All models supported by above API
 
-- FlexiGPT uses defaultChatCompletionModel: `DialoGPT-large`, unless the prompt overrides it.
+- FlexiGPT uses defaultChatCompletionModel: `deepseek-ai/deepseek-coder-1.3b-instruct`, unless the prompt overrides it.
 
 - Configuration Options:
 
@@ -76,27 +72,23 @@
   - flexigpt.huggingface.defaultChatCompletionModel: Default model to use for chat completion requests.
     - You can always override the default model per prompt via the prompt file command declaration.
     - FlexiGPT basic prompts will use the default models set.
-    - Default: `microsoft/DialoGPT-large`.
+    - Default: `deepseek-ai/deepseek-coder-1.3b-instruct`.
   - flexigpt.huggingface.defaultCompletionModel: Default model to use for completion requests.
-    - Default: `bigcode/starcoderbase`.
+    - Default: `bigcode/starcoder2-15b`.
   - flexigpt.huggingface.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://api-inference.huggingface.co`.
 
-## Google generative language - PaLM API
+## Google generative language - Gemini / PaLM2 API
 
-- Googlegl provider requires an API key to function. You can obtain one from the website [here](https://developers.generativeai.google/tutorials/setup).
+- Googlegl provider requires an API key to function. You can obtain one from the website [here](https://ai.google.dev/tutorials/setup).
 
-- Supported [APIs](https://developers.generativeai.google/api/rest/generativelanguage)
+- Supported API: https://ai.google.dev/api/rest/v1/models/generateContent
 
-  - https://generativelanguage.googleapis.com/v1beta2/{model=models/*}:generateMessage
-  - https://generativelanguage.googleapis.com/v1beta2/{model=models/*}:generateText
+  - `gemini-1.0-pro`
+  - `chat-bison-001` (legacy)
+  - `text-bison-001` (legacy)
 
-- Supported models - All models supported by above APIs
-
-  - `chat-bison-001`
-  - `text-bison-001`
-
-- FlexiGPT uses defaultChatCompletionModel: `chat-bison-001`, unless the prompt overrides it.
+- FlexiGPT uses defaultChatCompletionModel: `gemini-1.0-pro`, unless the prompt overrides it.
 
 - Configuration Options:
 
@@ -105,15 +97,16 @@
   - flexigpt.googlegl.defaultChatCompletionModel: Default model to use for chat completion requests.
     - You can always override the default model per prompt via the prompt file command declaration.
     - FlexiGPT basic prompts will use the default models set.
-    - Default: `chat-bison-001`.
+    - Default: `gemini-1.0-pro`.
   - flexigpt.googlegl.defaultCompletionModel: Default model to use for completion requests.
-    - Default: `text-bison-001`.
+    - Default: `gemini-1.0-pro`.
   - flexigpt.googlegl.defaultOrigin: Default origin to use for requests. This can be used to talk to any server that serves a compatible API.
     - Default: `https://generativelanguage.googleapis.com`.
 
 ## LLaMA cpp
 
 - Setup a llama.cpp server as noted [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server)
+
   - If you are running a python openai compatible server as described [here](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#api-like-oai), you can use the openai provider with modified default origin for talking to llama.cpp too.
   - This provider directly talkes to the default llama server built.
 

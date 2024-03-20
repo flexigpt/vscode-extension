@@ -9,3 +9,4 @@ conversations.yml
 .nx/**
 media/reactout/*
 .env
+.vscode

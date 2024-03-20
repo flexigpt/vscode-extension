@@ -105,7 +105,7 @@ export class GptAPI {
 
     if (currentType !== valueType) {
       log.error(
-        `Type mismatch: Expected ${currentType}, but got ${valueType}.`
+        `Type mismatch for ${key}: Expected ${currentType}, but got ${valueType}.`
       );
       return;
     }

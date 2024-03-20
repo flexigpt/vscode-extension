@@ -44,22 +44,22 @@ Options:
 // anthropic provider configuration
 "flexigpt.anthropic.apiKey": "sk-mkey",
 "flexigpt.anthropic.timeout": "120",
-"flexigpt.anthropic.defaultCompletionModel": "claude-2",
-"flexigpt.anthropic.defaultChatCompletionModel": "claude-2",
+"flexigpt.anthropic.defaultCompletionModel": "claude-3-haiku-20240307",
+"flexigpt.anthropic.defaultChatCompletionModel": "claude-3-haiku-20240307",
 "flexigpt.anthropic.defaultOrigin": "https://api.anthropic.com",
 
 // huggingface provider configuration
 "flexigpt.huggingface.apiKey": "hf-mkey",
 "flexigpt.huggingface.timeout": "120",
-"flexigpt.huggingface.defaultCompletionModel": "bigcode/starcoderbase",
-"flexigpt.huggingface.defaultChatCompletionModel": "microsoft/DialoGPT-large",
+"flexigpt.huggingface.defaultCompletionModel": "bigcode/starcoder2-15b",
+"flexigpt.huggingface.defaultChatCompletionModel": "deepseek-ai/deepseek-coder-1.3b-instruct",
 "flexigpt.huggingface.defaultOrigin": "https://api-inference.huggingface.co",
 
 // googlegl provider configuration
 "flexigpt.googlegl.apiKey": "gl-mkey",
 "flexigpt.googlegl.timeout": "120",
-"flexigpt.googlegl.defaultCompletionModel": "text-bison-001",
-"flexigpt.googlegl.defaultChatCompletionModel": "chat-bison-001",
+"flexigpt.googlegl.defaultCompletionModel": "gemini-1.0-pro",
+"flexigpt.googlegl.defaultChatCompletionModel": "gemini-1.0-pro",
 "flexigpt.googlegl.defaultOrigin": "https://generativelanguage.googleapis.com",
 
 // llamacpp provider configuration

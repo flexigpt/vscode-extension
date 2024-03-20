@@ -1,38 +1,51 @@
 import * as path from 'path';
 import Mocha from 'mocha';
-import glob from 'glob';
+import fs from 'fs';
+
+function getTestFiles(dir: string): string[] {
+  const files: string[] = [];
+  const items = fs.readdirSync(dir);
+  for (const item of items) {
+    const filePath = path.join(dir, item);
+    const stat = fs.statSync(filePath);
+    if (stat.isDirectory()) {
+      files.push(...getTestFiles(filePath)); // Recursively add files from subdirectories
+    } else if (item.endsWith('.test.js')) {
+      files.push(filePath);
+    }
+  }
+  return files;
+}
 
 export function run(): Promise<void> {
+  const testsRoot = path.resolve(__dirname, '..');
+  const testFiles = getTestFiles(testsRoot);
+  const requirePath = path.join(testsRoot, '../../../node_modules/aiprovider');
+  console.log(requirePath);
   // Create the mocha test
   const mocha = new Mocha({
     ui: 'tdd',
-    color: true
+    color: true,
+    require: [requirePath]
   });
 
-  const testsRoot = path.resolve(__dirname, '..');
+  testFiles.forEach(file => {
+    mocha.addFile(file);
+  });
 
-  return new Promise((c, e) => {
-    glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
-      if (err) {
-        return e(err);
-      }
-
-      // Add files to the test suite
-      files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
-
-      try {
-        // Run the mocha test
-        mocha.run(failures => {
-          if (failures > 0) {
-            e(new Error(`${failures} tests failed.`));
-          } else {
-            c();
-          }
-        });
-      } catch (err) {
-        console.error(err);
-        e(err);
-      }
-    });
+  return new Promise((resolve, reject) => {
+    try {
+      // Run the mocha test
+      mocha.run(failures => {
+        if (failures > 0) {
+          reject(new Error(`${failures} tests failed.`));
+        } else {
+          resolve();
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
   });
 }

@@ -6,7 +6,7 @@ import {
   CompletionRequest
 } from 'spec/chat';
 import { GptAPI } from './api';
-import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
+import { CompletionProvider, getCompletionRequest } from './strategy';
 
 export class LlamaCPPAPIProvider extends GptAPI implements CompletionProvider {
   constructor(
@@ -41,23 +41,17 @@ export class LlamaCPPAPIProvider extends GptAPI implements CompletionProvider {
 
   convertChat(
     messages: ChatCompletionRequestMessage[],
-    chatPrompt = 'A chat between a curious user and an artificial intelligence assistant',
-    systemName = "\\nASSISTANT's RULE: ",
     userName = '\\nUSER: ',
     aiName = '\\nASSISTANT: ',
     stop = '</s>'
   ): string {
-    let prompt = '' + chatPrompt.replace('\\n', '\n');
+    let prompt = '';
 
-    const systemN = systemName.replace('\\n', '\n');
     const userN = userName.replace('\\n', '\n');
     const aiN = aiName.replace('\\n', '\n');
     const stopSymbol = stop.replace('\\n', '\n');
 
     for (const line of messages) {
-      if (line.role === ChatCompletionRoleEnum.system) {
-        prompt += `${systemN}${line.content}`;
-      }
       if (line.role === ChatCompletionRoleEnum.user) {
         prompt += `${userN}${line.content}`;
       }
@@ -80,44 +74,31 @@ export class LlamaCPPAPIProvider extends GptAPI implements CompletionProvider {
     if (!input.messages) {
       throw Error('No input messages found');
     }
-    // let chatModel = true;
-    // if (input.model.startsWith("gpt-3.5") || input.model.startsWith("gpt-4")) {
-    //   chatModel = true;
-    // }
-    let stoparg: string[] | null = null;
-    if (input.stop) {
-      if (Array.isArray(input.stop)) {
-        stoparg = input.stop;
-      } else {
-        stoparg = [input.stop];
-      }
-    }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const request: Record<string, any> = {
       prompt: this.convertChat(input.messages),
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      n_predict: input.maxTokens,
-      stream: false,
-      stop: stoparg
+      n_predict: input.maxTokens ? input.maxTokens : 1024,
+      temperature: input.temperature ? input.temperature : 0.1,
+      stream: false
     };
+
     if (input.additionalParameters) {
       for (const key in input.additionalParameters) {
+        if (key === 'systemPrompt' && typeof key === 'string') {
+          request['system_prompt'] = input.additionalParameters[key];
+          continue;
+        }
         // eslint-disable-next-line no-prototype-builtins
         if (!request.hasOwnProperty(key)) {
           request[key] = input.additionalParameters[key];
         }
       }
     }
-    const modelpath = '/completion';
-    let filterTokens = 2048;
-    if (input.maxTokens) {
-      filterTokens = input.maxTokens;
-    }
-    request.messages = filterMessagesByTokenCount(input.messages, filterTokens);
 
     const requestConfig: AxiosRequestConfig = {
-      url: modelpath,
+      url: '/completion',
       method: 'POST',
       data: request
     };
@@ -143,47 +124,16 @@ export class LlamaCPPAPIProvider extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    const model =
-      (inputParams?.model as string) || this.defaultChatCompletionModel;
-    const completionRequest: CompletionRequest = {
-      model: model,
-      prompt: prompt,
-      messages: messages,
-      suffix: inputParams?.suffix || undefined,
-      maxTokens: inputParams?.maxTokens,
-      stream: false,
-      stop: inputParams?.stop || undefined
-    };
-
-    if (inputParams) {
-      for (const key in inputParams) {
-        completionRequest.additionalParameters =
-          completionRequest.additionalParameters || {};
-        // eslint-disable-next-line no-prototype-builtins
-        if (!completionRequest.hasOwnProperty(key) && key !== 'provider') {
-          completionRequest.additionalParameters[key] = inputParams[key];
-        }
-      }
-    }
-
-    if (completionRequest.prompt) {
-      const message: ChatCompletionRequestMessage = {
-        role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt
-      };
-      if (!completionRequest.messages) {
-        completionRequest.messages = [message];
-      } else {
-        completionRequest.messages.push(message);
-      }
-    }
-    completionRequest.prompt = null;
-
-    return completionRequest;
+    return getCompletionRequest(
+      this.defaultChatCompletionModel,
+      prompt,
+      messages,
+      inputParams
+    );
   }
 }
 
-export function getLlamaCPPAPIProvider(): CompletionProvider {
+export function getDefaultLlamaCPPAPIProvider(): CompletionProvider {
   // Default values for LlamaCPP API Provider
   const apiKey = '';
   const timeout = 120;

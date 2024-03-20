@@ -6,7 +6,7 @@ import {
   CompletionRequest
 } from 'spec/chat';
 import { GptAPI } from './api';
-import { CompletionProvider, filterMessagesByTokenCount } from './strategy';
+import { CompletionProvider, getCompletionRequest } from './strategy';
 
 export class AnthropicAPI extends GptAPI implements CompletionProvider {
   constructor(
@@ -39,72 +39,42 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     );
   }
 
-  generateMessageString(messages: ChatCompletionRequestMessage[]): string {
-    return (
-      messages
-        .map(message => {
-          let roleString: string;
-          switch (message.role) {
-            case ChatCompletionRoleEnum.system:
-              roleString = '\n\nHuman:';
-              break;
-            case ChatCompletionRoleEnum.user:
-              roleString = '\n\nHuman:';
-              break;
-            case ChatCompletionRoleEnum.assistant:
-              roleString = '\n\nAssistant:';
-              break;
-            default:
-              roleString = '';
-              break;
-          }
-          return `${roleString} ${message.content}`;
-        })
-        .join('') + '\n\nAssistant:'
-    );
-  }
-
   async completion(input: CompletionRequest): Promise<any> {
     return this.chatCompletion(input);
   }
 
   async chatCompletion(input: CompletionRequest): Promise<any> {
-    if (!input.prompt) {
+    // return tempCodeString;
+    // let messages: ChatCompletionRequestMessage[] = [{"role": "user", "content": "Hello!"}];
+    if (!input.messages) {
       throw Error('No input messages found');
     }
 
-    let stoparg: string | string[] = ['\n\nHuman:'];
-    if (input.stop) {
-      if (Array.isArray(input.stop)) {
-        stoparg = input.stop;
-      } else {
-        stoparg = [input.stop];
+    const request: Record<string, any> = {
+      model: input.model,
+      messages: input.messages,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      max_tokens: input.maxTokens ? input.maxTokens : 4096,
+      temperature: input.temperature ? input.temperature : 0.1,
+      stream: false
+    };
+
+    if (input.additionalParameters) {
+      for (const key in input.additionalParameters) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (key === 'systemPrompt' && typeof key === 'string') {
+          request['system'] = input.additionalParameters[key];
+          continue;
+        }
+        if (!request.hasOwnProperty(key)) {
+          request[key] = input.additionalParameters[key];
+        }
       }
     }
-    let metadata = {};
-    if (input.user) {
-      metadata = {
-        user: input.user
-      };
-    }
-    const request = {
-      model: input.model,
-      prompt: input.prompt,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      max_tokens_to_sample: input.maxTokens ? input.maxTokens : 4096,
-      temperature: input.temperature,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_p: input.topP,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_k: input.topK,
-      stream: false,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      stop_sequences: stoparg,
-      metadata: metadata
-    };
+
     // eslint-disable-next-line prefer-const
     let requestConfig: AxiosRequestConfig = {
-      url: '/v1/complete',
+      url: '/v1/messages',
       method: 'POST',
       data: request
     };
@@ -113,8 +83,14 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
       throw new Error('Invalid data response. Expected an object.');
     }
     let respText = '';
-    if ('completion' in data) {
-      respText = data.completion as string;
+    if (
+      'content' in data &&
+      Array.isArray(data.content) &&
+      data.content.length > 0
+    ) {
+      for (const resp of data.content) {
+        respText += resp.text + '\n';
+      }
     }
     return { fullResponse: data, data: respText };
   }
@@ -124,63 +100,21 @@ export class AnthropicAPI extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    let stoparg: string | string[] = ['\n\nHuman:'];
-    if (inputParams?.stop) {
-      if (Array.isArray(inputParams.stop)) {
-        stoparg = inputParams.stop;
-      } else {
-        stoparg = [inputParams.stop];
-      }
-    }
-    if (!inputParams) {
-      inputParams = {};
-    }
-    inputParams.stop = stoparg;
-
-    const completionRequest: CompletionRequest = {
-      model: (inputParams?.model as string) || this.defaultCompletionModel,
-      prompt: prompt,
-      messages: messages,
-      maxTokens: inputParams?.maxTokens || 16000,
-      temperature: inputParams?.temperature,
-      topP: inputParams?.topP,
-      topK: inputParams?.topK,
-      stream: false,
-      stop: inputParams?.stop || undefined
-    };
-
-    if (completionRequest.prompt) {
-      const message: ChatCompletionRequestMessage = {
-        role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt
-      };
-      if (!completionRequest.messages) {
-        completionRequest.messages = [message];
-      } else {
-        completionRequest.messages.push(message);
-      }
-    }
-    if (completionRequest.messages) {
-      let filterTokens = 2048;
-      if (completionRequest.maxTokens) {
-        filterTokens = completionRequest.maxTokens;
-      }
-      const messages = filterMessagesByTokenCount(
-        completionRequest.messages,
-        filterTokens
-      );
-      completionRequest.prompt = this.generateMessageString(messages);
-    }
-    return completionRequest;
+    return getCompletionRequest(
+      this.defaultChatCompletionModel,
+      prompt,
+      messages,
+      inputParams
+    );
   }
 }
 
-export function getAnthropicProvider(): CompletionProvider {
+export function getDefaultAnthropicProvider(): CompletionProvider {
   // Default values for Anthropic Provider
   const apiKey = '';
   const timeout = 120;
-  const defaultCompletionModel = 'claude-2';
-  const defaultChatCompletionModel = 'claude-2';
+  const defaultCompletionModel = 'claude-3-haiku-20240307';
+  const defaultChatCompletionModel = 'claude-3-haiku-20240307';
   const defaultOrigin = 'https://api.anthropic.com';
 
   log.info('Anthropic API provider initialized');

@@ -8,7 +8,7 @@ import {
 import { GptAPI } from './api';
 import {
   CompletionProvider,
-  filterMessagesByTokenCount,
+  getCompletionRequest,
   unescapeChars
 } from './strategy';
 
@@ -58,50 +58,44 @@ export class OpenAIAPIProvider extends GptAPI implements CompletionProvider {
     if (input.model.startsWith('gpt-3.5') || input.model.startsWith('gpt-4')) {
       chatModel = true;
     }
-    let stoparg: string | string[] = '';
-    if (input.stop) {
-      stoparg = input.stop;
-    }
+
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const request: Record<string, any> = {
       model: input.model,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      max_tokens: input.maxTokens,
-      temperature: input.temperature,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      top_p: input.topP,
-      n: input.n,
-      stream: false,
-      stop: stoparg,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      presence_penalty: input.presencePenalty,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      frequency_penalty: input.frequencyPenalty,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      logit_bias: input.logitBias,
-      user: input.user
+      max_tokens: input.maxTokens ? input.maxTokens : 4096,
+      temperature: input.temperature ? input.temperature : 0.1,
+      stream: false
     };
+
+    if (input.additionalParameters) {
+      for (const key in input.additionalParameters) {
+        if (!request.hasOwnProperty(key) && key !== 'systemPrompt') {
+          request[key] = input.additionalParameters[key];
+        }
+      }
+    }
+
     let modelpath = '/v1/completions';
     if (chatModel) {
       modelpath = '/v1/chat/completions';
-      let filterTokens = 2048;
-      if (input.maxTokens) {
-        filterTokens = input.maxTokens;
+      request.messages = input.messages;
+      if (input.additionalParameters) {
+        for (const key in input.additionalParameters) {
+          // eslint-disable-next-line no-prototype-builtins
+          if (key === 'systemPrompt' && typeof key === 'string') {
+            request['system'] = input.additionalParameters[key];
+            const message: ChatCompletionRequestMessage = {
+              role: ChatCompletionRoleEnum.system,
+              content: input.additionalParameters[key]
+            };
+            request.messages = input.messages.unshift(message);
+            break;
+          }
+        }
       }
-      request.messages = filterMessagesByTokenCount(
-        input.messages,
-        filterTokens
-      );
-      request.functions = input?.functions;
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      request.function_call = input?.functionCall;
     } else {
-      request.prompt = input.prompt;
-      request.suffix = input.suffix;
-      request.best_of = input.bestOf;
-      request.echo = input.echo;
-      request.logprobs = input.logprobs;
-      request.max_tokens = input.maxTokens ? input.maxTokens : 2048;
+      request.prompt = input.messages[-1].content || '';
     }
 
     const requestConfig: AxiosRequestConfig = {
@@ -123,35 +117,39 @@ export class OpenAIAPIProvider extends GptAPI implements CompletionProvider {
         Array.isArray(data.choices) &&
         data.choices.length > 0
       ) {
-        if (chatModel) {
+        if (!chatModel) {
+          respText = data.choices[0].text ? data.choices[0].text : '';
+        } else {
           const responseMessage = data.choices[0].message;
           respText = responseMessage?.content
             ? (responseMessage?.content as string)
             : '';
           if (
-            'function_call' in responseMessage &&
-            responseMessage['function_call']
+            'tool_calls' in responseMessage &&
+            responseMessage['tool_calls'].length > 0 &&
+            'function' in responseMessage['tool_calls'][0]
           ) {
-            functionName = responseMessage['function_call']['name'];
+            functionName = responseMessage['tool_calls'][0]['function']['name'];
             respText += '\nFunction call:\nName:' + functionName;
             try {
               functionArgs = JSON.parse(
-                unescapeChars(responseMessage['function_call']['arguments'])
+                unescapeChars(
+                  responseMessage['tool_calls'][0]['function']['arguments']
+                )
               );
             } catch (error) {
               log.error(
                 'Error parsing function call arguments: ' +
                   error +
                   ' ' +
-                  responseMessage['function_call']['arguments']
+                  responseMessage['tool_calls'][0]['function']['arguments']
               );
               respText += '\nError in parsing returned args\n';
-              functionArgs = responseMessage['function_call']['arguments'];
+              functionArgs =
+                responseMessage['tool_calls'][0]['function']['arguments'];
             }
             respText += '\nArgs: ' + JSON.stringify(functionArgs, null, 2);
           }
-        } else {
-          respText = data.choices[0].text ? data.choices[0].text : '';
         }
       }
       return {
@@ -171,58 +169,12 @@ export class OpenAIAPIProvider extends GptAPI implements CompletionProvider {
     messages: Array<ChatCompletionRequestMessage> | null,
     inputParams?: { [key: string]: any }
   ): CompletionRequest {
-    const model =
-      (inputParams?.model as string) || this.defaultChatCompletionModel;
-    let chatModel = false;
-    if (model.startsWith('gpt-3.5') || model.startsWith('gpt-4')) {
-      chatModel = true;
-    }
-    const completionRequest: CompletionRequest = {
-      model: model,
-      prompt: prompt,
-      messages: messages,
-      suffix: inputParams?.suffix || undefined,
-      maxTokens: inputParams?.maxTokens,
-      temperature:
-        inputParams?.temperature === 0 ? 0 : inputParams?.temperature || 0.1,
-      topP: inputParams?.topP === 0 ? 0 : inputParams?.topP || undefined,
-      n: inputParams?.n === 0 ? 0 : inputParams?.n || undefined,
-      stream: false,
-      logprobs:
-        inputParams?.logprobs === 0 ? 0 : inputParams?.logprobs || undefined,
-      echo: (inputParams?.echo as boolean) || undefined,
-      stop: inputParams?.stop || undefined,
-      presencePenalty:
-        inputParams?.presencePenalty === 0
-          ? 0
-          : inputParams?.presencePenalty || 0.0,
-      frequencyPenalty:
-        inputParams?.frequencyPenalty === 0
-          ? 0
-          : inputParams?.frequencyPenalty || 0.5,
-      bestOf: inputParams?.bestOf === 0 ? 0 : inputParams?.bestOf || 1,
-      logitBias: inputParams?.logitBias || undefined,
-      user: (inputParams?.user as string) || undefined
-    };
-    if (chatModel) {
-      completionRequest.functions = inputParams?.functions || undefined;
-      completionRequest.functionCall = inputParams?.functionCall || undefined;
-    }
-    if (completionRequest.prompt) {
-      const message: ChatCompletionRequestMessage = {
-        role: ChatCompletionRoleEnum.user,
-        content: completionRequest.prompt
-      };
-      if (!completionRequest.messages) {
-        completionRequest.messages = [message];
-      } else {
-        completionRequest.messages.push(message);
-      }
-    }
-    if (chatModel && completionRequest.messages) {
-      completionRequest.prompt = null;
-    }
-    return completionRequest;
+    return getCompletionRequest(
+      this.defaultChatCompletionModel,
+      prompt,
+      messages,
+      inputParams
+    );
   }
 }
 

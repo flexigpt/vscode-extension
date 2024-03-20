@@ -8,54 +8,60 @@ export function updateAIProvider(
   workflowProvider: WorkflowProvider,
   aiProviderName: string
 ) {
-  if (!aiProviderName) {
-    log.error('No AI provider name given');
-    return;
+  try {
+    if (!aiProviderName) {
+      log.error('No AI provider name given');
+      return;
+    }
+    const apiKey = config.get(`${aiProviderName}.apiKey`) as string;
+    if (!apiKey) {
+      log.info(`${aiProviderName} API provider not initialized, no apikey`);
+      return;
+    }
+    workflowProvider.aiproviders.setAttribute(aiProviderName, 'apiKey', apiKey);
+    const timeout = config.get(`${aiProviderName}.timeout`) as number;
+    if (timeout) {
+      workflowProvider.aiproviders.setAttribute(
+        aiProviderName,
+        'timeout',
+        timeout
+      );
+    }
+    const defaultCompletionModel = config.get(
+      `${aiProviderName}.defaultCompletionModel`
+    ) as string;
+    if (defaultCompletionModel) {
+      workflowProvider.aiproviders.setAttribute(
+        aiProviderName,
+        'defaultCompletionModel',
+        defaultCompletionModel
+      );
+    }
+    const defaultChatCompletionModel = config.get(
+      `${aiProviderName}.defaultChatCompletionModel`
+    ) as string;
+    if (defaultChatCompletionModel) {
+      workflowProvider.aiproviders.setAttribute(
+        aiProviderName,
+        'defaultChatCompletionModel',
+        defaultChatCompletionModel
+      );
+    }
+    const defaultOrigin = config.get(
+      `${aiProviderName}.defaultOrigin`
+    ) as string;
+    if (defaultOrigin) {
+      workflowProvider.aiproviders.setAttribute(
+        aiProviderName,
+        'origin',
+        defaultOrigin
+      );
+    }
+    log.info(`${aiProviderName} API provider initialized`);
+  } catch (error) {
+    log.error(`Got error in updating API provider: ${aiProviderName}`);
+    log.error(error);
   }
-  const apiKey = config.get(`${aiProviderName}.apiKey`) as string;
-  if (!apiKey) {
-    log.info(`${aiProviderName} API provider not initialized, no apikey`);
-    return;
-  }
-  workflowProvider.aiproviders.setAttribute(aiProviderName, 'apiKey', apiKey);
-  const timeout = config.get(`${aiProviderName}.timeout`) as number;
-  if (timeout) {
-    workflowProvider.aiproviders.setAttribute(
-      aiProviderName,
-      'timeout',
-      timeout
-    );
-  }
-  const defaultCompletionModel = config.get(
-    `${aiProviderName}.defaultCompletionModel`
-  ) as string;
-  if (defaultCompletionModel) {
-    workflowProvider.aiproviders.setAttribute(
-      aiProviderName,
-      'defaultCompletionModel',
-      defaultCompletionModel
-    );
-  }
-  const defaultChatCompletionModel = config.get(
-    `${aiProviderName}.defaultChatCompletionModel`
-  ) as string;
-  if (defaultChatCompletionModel) {
-    workflowProvider.aiproviders.setAttribute(
-      aiProviderName,
-      'defaultChatCompletionModel',
-      defaultChatCompletionModel
-    );
-  }
-  const defaultOrigin = config.get(`${aiProviderName}.defaultOrigin`) as string;
-  if (defaultOrigin) {
-    workflowProvider.aiproviders.setAttribute(
-      aiProviderName,
-      'origin',
-      timeout
-    );
-  }
-
-  log.info(`${aiProviderName} API provider initialized`);
 }
 
 export function updateDefaultProvider(
@@ -66,6 +72,7 @@ export function updateDefaultProvider(
   if (defaultProvider) {
     workflowProvider.aiproviders.defaultProvider = defaultProvider;
   }
+  log.info(`Default provider set as: ${defaultProvider}`);
 }
 
 export function getWorkflowProvider(): WorkflowProvider {

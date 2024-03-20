@@ -1,12 +1,26 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-      "outDir": "./out/test",
-      "rootDir": "src",
-      "types": ["mocha", "node", "chai"],
-      "preserveSymlinks": true
-    },
-    "include": ["src/test/**/*.ts"],
-    "exclude": ["node_modules/*", "media/*", "docs/*", "dist/*", "out/*"]
-  }
-  
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDirs": ["src"],
+    "outDir": "./out/test",
+    "types": ["mocha", "node", "chai"],
+    "preserveSymlinks": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020", "DOM"],
+    "baseUrl": "."
+  },
+  "exclude": [
+    "node_modules",
+    ".vscode-test",
+    "**/node_modules",
+    "**/out",
+    "**/dist",
+    "media/reactout/**",
+    "packages/reactui/*"
+  ],
+  "include": ["./src/test/**/*.ts"]
+}
