@@ -320,8 +320,7 @@
     "lint": "eslint src --ext ts --fix",
     "debug": "node --inspect-brk $(which vscode-inspect-brk) . --extensionDevelopmentPath=$HOME/github/vscode-flexigpt",
     "truncate-yaml": "echo '' > ./conversations.yml",
-    "prepublish": "pnpm run truncate-yaml",
-    "vscode:prepublish": "pnpm run truncate-yaml && pnpm run build --minify"
+    "vscode:prepublish": "pnpm run truncate-yaml && pnpm run build --minify && pnpm install && vsce package"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
