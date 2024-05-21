@@ -2,7 +2,7 @@
   "name": "flexigpt",
   "displayName": "FlexiGPT",
   "description": "Interact with GPT AI models (GPT 3.5/4, Anthropic Claude, All models of HuggingFace Inference API, Gemini/Bison/Gecko by GoogleGL i.e Gemini API, etc, All models from llama.cpp like LLaMA1/2, Mistral, Vicuna, GPT4All, etc) as a power user",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "publisher": "ppipada",
   "pricing": "Free",
   "icon": "resources/extensionIcon.png",
