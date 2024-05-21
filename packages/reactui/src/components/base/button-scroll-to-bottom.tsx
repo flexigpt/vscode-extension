@@ -1,7 +1,7 @@
 import { Button, ButtonProps } from 'grommet';
 import { LinkDown } from 'grommet-icons';
 import * as React from 'react';
-import { useAtBottom } from '../../lib/hooks/use-at-bottom';
+import { useAtBottom } from '../../lib-hooks/use-at-bottom';
 
 export function ButtonScrollToBottom({ ...props }: ButtonProps) {
   const isAtBottom = useAtBottom();

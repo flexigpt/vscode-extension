@@ -4,16 +4,19 @@ import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import '../globals/globals.css';
 
-import { nanoid } from './lib/utils';
+import { nanoid } from './lib-base/utils';
 
 import { Chat } from './components/chat-screen';
 
 import { AppHeader } from './components/navbar';
 
 import { FlexiSidebar } from './components/sidebar';
-import messages from './lib/messages-sample';
+import messages from './lib-base/messages-sample';
 import { RosePineMergedTheme } from './theme';
-import { WorkflowProviderContext, workflowProvider } from './providercontext';
+import {
+  WorkflowProviderContext,
+  workflowProvider
+} from './lib-providercontext/providercontext';
 
 const App: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);

@@ -10,7 +10,7 @@ import {
 } from 'grommet';
 import { DocumentText, Github, Next } from 'grommet-icons';
 import * as React from 'react';
-import { DOCS_SITE_URL, GITHUB_REPO_URL } from '../lib/consts';
+import { DOCS_SITE_URL, GITHUB_REPO_URL } from '../lib-base/consts';
 
 import { HorizontalDivider } from './base/divider';
 
@@ -35,7 +35,7 @@ export function EmptyScreen() {
       align="center"
       justify="center"
       width="100vw"
-      height="80vh"
+      height="100vh"
       overflow="hidden"
     >
       <Card elevation="none" border="all" pad="medium" width={{ max: 'large' }}>

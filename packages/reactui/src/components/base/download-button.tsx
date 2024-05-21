@@ -3,8 +3,8 @@ import React, { FC } from 'react';
 import { Button, ButtonProps } from 'grommet';
 import { Download } from 'grommet-icons';
 
-import { programmingLanguages } from '../../lib/code-types';
-import { generateRandomString } from '../../lib/utils';
+import { programmingLanguages } from '../../lib-base/code-types';
+import { generateRandomString } from '../../lib-base/utils';
 
 export interface DownloadButtonProps extends ButtonProps {
   language: string;

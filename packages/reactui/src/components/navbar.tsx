@@ -4,7 +4,7 @@ import { IconFlexiGPT } from './base/icons';
 
 import { Anchor, Box, Button, Header } from 'grommet';
 import { Menu, Moon, Sun } from 'grommet-icons';
-import { GITHUB_REPO_URL } from '../lib/consts';
+import { GITHUB_REPO_URL } from '../lib-base/consts';
 
 export interface AppHeaderProps {
   onMenuClick: () => void;

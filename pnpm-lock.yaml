@@ -152,9 +152,15 @@ importers:
 
   packages/reactui:
     dependencies:
+      aiprovider:
+        specifier: workspace:*
+        version: link:../aiprovider
       clsx:
         specifier: ^2.0.0
         version: 2.0.0
+      conversations:
+        specifier: workspace:*
+        version: link:../conversations
       grommet:
         specifier: ^2.34.2
         version: 2.34.2(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.10)
@@ -170,6 +176,9 @@ importers:
       postcss-preset-env:
         specifier: ^9.1.4
         version: 9.1.4(postcss@8.4.37)
+      prompts:
+        specifier: workspace:*
+        version: link:../prompts
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -522,7 +531,7 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
     dependencies:
-      '@babel/types': 7.17.0
+      '@babel/types': 7.24.0
 
   /@babel/plugin-syntax-jsx@7.23.3(@babel/core@7.24.3):
     resolution: {integrity: sha512-EB2MELswq55OHUoRZLGg/zC7QWUKfNLpE57m/S2yr1uEneIgsTgrSzXP3NXEsMkVn76OlaVVnzN+ugObuYGwhg==}
@@ -618,6 +627,7 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
+    dev: true
 
   /@babel/types@7.23.4:
     resolution: {integrity: sha512-7uIFwVYpoplT5jp/kVv6EF93VaJ8H+Yn5IczYiaAi98ajzjfoZfslet/e0sLh+wVBjb2qqIut1b0S26VSafsSQ==}

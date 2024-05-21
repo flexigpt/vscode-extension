@@ -1,12 +1,14 @@
 # FlexiGPT
 
-- [Full Documentation site](https://pankajpipada.com/flexigpt/#/)
+- [Full Documentation site](https://flexigpt.site/)
 - [Download from - VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ppipada.flexigpt)
 
 ---
 
 # Table of Contents
 
+- [FlexiGPT](#flexigpt)
+- [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Getting started](#getting-started)
   - [Installation](#installation)
@@ -17,7 +19,7 @@
   - [OpenAI](#openai)
   - [Anthropic Claude](#anthropic-claude)
   - [Huggingface](#huggingface)
-  - [Google generative language - Gemini / PaLM2 API](#google-generative-language---gemini-/-palm2-api)
+  - [Google generative language - Gemini / PaLM2 API](#google-generative-language---gemini--palm2-api)
   - [LLaMA cpp](#llama-cpp)
 - [Features](#features)
   - [Get Code](#get-code)
@@ -36,10 +38,10 @@
   - [Search Stack Overflow](#search-stack-overflow)
   - [Run Custom CLIs from within editor](#run-custom-clis-from-within-editor)
 - [Prompting](#prompting)
-  - [Prompting](#prompting)
-    - [Features](#features)
-    - [UI behavior](#ui-behavior)
-  - [Inbuilt prompts](#inbuilt-prompts)
+  - [Prompting](#prompting-1)
+    - [Features](#features-1)
+    - [UI behavior](#ui-behavior-1)
+  - [Inbuilt prompts](#inbuilt-prompts-1)
 - [Prompt files format](#prompt-files-format)
   - [Sample prompt files in repo](#sample-prompt-files-in-repo)
   - [Simple javascript prompt file](#simple-javascript-prompt-file)

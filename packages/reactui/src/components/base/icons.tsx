@@ -1,8 +1,11 @@
 import * as React from 'react';
 
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib-base/utils';
 
-export function IconFlexiGPT({ className, ...props }: React.ComponentProps<'img'>) {
+export function IconFlexiGPT({
+  className,
+  ...props
+}: React.ComponentProps<'img'>) {
   const iconPath = (window as any).__ICON_PATHS__.icon36x36;
   return (
     <div>
@@ -15,6 +18,3 @@ export function IconFlexiGPT({ className, ...props }: React.ComponentProps<'img'
     </div>
   );
 }
-
-
-
