@@ -31,7 +31,7 @@ Interact with GPT AI models as a power user.
     - Generate Documentation
     - Find problems
     - Optimize selection
-  - Openly available [prompt files](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts) that can be tweaked as needed.
+  - Openly available [prompt files](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts) that can be tweaked as needed.
   - Prompts can be enriched with custom or predefined functions that can be engineered and fine-tuned to meet specific user needs.
   - Prompts can be saved and used directly within VSCode
   - Modify request parameters for GPT APIs as needed

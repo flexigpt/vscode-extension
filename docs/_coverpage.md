@@ -6,5 +6,5 @@
 
 > Interact with GPT AI models as a power user.
 
-[GitHub](https://github.com/ppipada/vscode-flexigpt)
+[GitHub](https://github.com/flexigpt/vscode-extension)
 [Get Started](#flexigpt)

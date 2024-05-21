@@ -86,7 +86,7 @@ Search for stack overflow questions from your editor.
 ## Run Custom CLIs from within editor
 
 - Define your custom CLIs as `cliCommands` in your prompt files.
-  - Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+  - Example can be found [here](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js)
   - Full documentation of how to define the prompt is in the [prompt files format](/promptfiles#creating-cli-commands) documentation.
 - Press `Ctrl` + `Alt` + `C`
   - Also available via right click in editor as `FlexiGPT: Run CLI Command` to click/enter

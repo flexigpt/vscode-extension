@@ -1,8 +1,8 @@
 ## Sample prompt files in repo
 
-- [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
-- [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
-- [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
+- [FlexiGPT basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/flexigptbasic.js)
+- [Go basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js)
+- [Go sqlx + squirrel prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gosql.js)
 
 ## Simple javascript prompt file
 

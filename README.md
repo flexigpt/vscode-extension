@@ -7,8 +7,6 @@
 
 # Table of Contents
 
-- [FlexiGPT](#flexigpt)
-- [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Getting started](#getting-started)
   - [Installation](#installation)
@@ -19,7 +17,7 @@
   - [OpenAI](#openai)
   - [Anthropic Claude](#anthropic-claude)
   - [Huggingface](#huggingface)
-  - [Google generative language - Gemini / PaLM2 API](#google-generative-language---gemini--palm2-api)
+  - [Google generative language - Gemini / PaLM2 API](#google-generative-language---gemini-/-palm2-api)
   - [LLaMA cpp](#llama-cpp)
 - [Features](#features)
   - [Get Code](#get-code)
@@ -38,10 +36,10 @@
   - [Search Stack Overflow](#search-stack-overflow)
   - [Run Custom CLIs from within editor](#run-custom-clis-from-within-editor)
 - [Prompting](#prompting)
-  - [Prompting](#prompting-1)
-    - [Features](#features-1)
-    - [UI behavior](#ui-behavior-1)
-  - [Inbuilt prompts](#inbuilt-prompts-1)
+  - [Prompting](#prompting)
+    - [Features](#features)
+    - [UI behavior](#ui-behavior)
+  - [Inbuilt prompts](#inbuilt-prompts)
 - [Prompt files format](#prompt-files-format)
   - [Sample prompt files in repo](#sample-prompt-files-in-repo)
   - [Simple javascript prompt file](#simple-javascript-prompt-file)
@@ -92,7 +90,7 @@ Interact with GPT AI models as a power user.
     - Generate Documentation
     - Find problems
     - Optimize selection
-  - Openly available [prompt files](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts) that can be tweaked as needed.
+  - Openly available [prompt files](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts) that can be tweaked as needed.
   - Prompts can be enriched with custom or predefined functions that can be engineered and fine-tuned to meet specific user needs.
   - Prompts can be saved and used directly within VSCode
   - Modify request parameters for GPT APIs as needed
@@ -139,7 +137,7 @@ Steps:
 Options:
 
 - flexigpt.promptFiles: A semicolon-separated list of paths to user-defined prompt configuration files. Prompt file configuration is detailed [here](/promptfiles).
-- flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/ppipada/vscode-flexigpt/tree/main/media/prompts). Current values are: "flexigptbasic.js", "gobasic.js" and "gosql.js".
+- flexigpt.inBuiltPrompts: A semicolon-separated list of inbuilt prompt filenames to enable. For multiple names separate with ';'. 'flexigptbasic.js' will always be enabled. Inbuilt prompts can be found at [this path](https://github.com/flexigpt/vscode-extension/tree/main/media/prompts). Current values are: "flexigptbasic.js", "gobasic.js" and "gosql.js".
 - flexigpt.defaultProvider: The provider to use if multiple providers are configured. Currently, supported values: "openai", "anthropic", "huggingface", "googlegl".
 
 ### Sample Full configuration
@@ -206,7 +204,7 @@ Options:
 
 - FlexiGPT uses defaultChatCompletionModel: `gpt-3.5-turbo`, unless the prompt overrides it.
 
-- For an example on how to use `Function calling` feature of OpenAI look at this prompt file [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js).
+- For an example on how to use `Function calling` feature of OpenAI look at this prompt file [here](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js).
 
 - Configuration Options:
 
@@ -404,7 +402,7 @@ Search for stack overflow questions from your editor.
 ## Run Custom CLIs from within editor
 
 - Define your custom CLIs as `cliCommands` in your prompt files.
-  - Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
+  - Example can be found [here](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js)
   - Full documentation of how to define the prompt is in the [prompt files format](/promptfiles#creating-cli-commands) documentation.
 - Press `Ctrl` + `Alt` + `C`
   - Also available via right click in editor as `FlexiGPT: Run CLI Command` to click/enter
@@ -432,13 +430,13 @@ Search for stack overflow questions from your editor.
     - Use `{system.readfile <your file path>}` to pass on the file at a given path
   - Note that the `system.` prefix for a system variable is optional. Therefore, you can even use only `{selection}` to use the selected text, or `{language}` instead of `{system.language}` for language of your file.
 
-- Supports post-processing response via responseHandlers in prompts. Multiple inbuilt [predefined responseHandlers](/promptfiles#predefined-system-functions) available. Also supports custom responseHandlers. Example can be found [here](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js).
+- Supports post-processing response via responseHandlers in prompts. Multiple inbuilt [predefined responseHandlers](/promptfiles#predefined-system-functions) available. Also supports custom responseHandlers. Example can be found [here](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gosql.js).
 
-- Function calling feature of GPT3.5/4 models is also supported. Example can be found in [this prompt file](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js).
+- Function calling feature of GPT3.5/4 models is also supported. Example can be found in [this prompt file](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js).
 
 ### UI behavior
 
-- On clicking on the input text box, [basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode may take some time to load dynamic lists from files.)
+- On clicking on the input text box, [basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/flexigptbasic.js) provided by FlexiGPT itself, any prompts defined in `flexigpt.promptFiles`, and any inbuilt prompts enabled using `flexigpt.inBuiltPrompts`, as defined in the configuration should be loaded. (If first time click on text box doesn't load some preconfigured prompts, try escaping options and clicking again. VSCode may take some time to load dynamic lists from files.)
 
 - If you select the preconfigured prompts the question template defined in the prompt command will be used after substituting defined system/user variables. Other command options will also be taken from the definition itself.
 
@@ -449,7 +447,7 @@ Search for stack overflow questions from your editor.
 
 ## Inbuilt prompts
 
-- [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js) (Default: enabled)
+- [FlexiGPT basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/flexigptbasic.js) (Default: enabled)
 
   - Refactor selection
   - Generate unit test
@@ -459,12 +457,12 @@ Search for stack overflow questions from your editor.
   - Find problems
   - Optimize selection
 
-- [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js) (Default: disabled, enable in configuration)
+- [Go basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js) (Default: disabled, enable in configuration)
 
   - Write godoc string
   - Generate unit test
 
-- [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js) (Default: disabled, enable in configuration)
+- [Go sqlx + squirrel prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gosql.js) (Default: disabled, enable in configuration)
   - Generate Create, Read, Update, Delete (CRUD) code for a table specified as a struct selection in the editor using sqlx for db operations and squirrel for query building.
 
 
@@ -472,9 +470,9 @@ Search for stack overflow questions from your editor.
 
 ## Sample prompt files in repo
 
-- [FlexiGPT basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/flexigptbasic.js)
-- [Go basic prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gobasic.js)
-- [Go sqlx + squirrel prompts](https://github.com/ppipada/vscode-flexigpt/blob/main/media/prompts/gosql.js)
+- [FlexiGPT basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/flexigptbasic.js)
+- [Go basic prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gobasic.js)
+- [Go sqlx + squirrel prompts](https://github.com/flexigpt/vscode-extension/blob/main/media/prompts/gosql.js)
 
 ## Simple javascript prompt file
 
@@ -915,17 +913,17 @@ Note that the `system.` prefix for a system variable is optional. Therefore, you
 
 # License
 
-FlexiGPT is a fully open source software licensed under the [MIT license](https://github.com/ppipada/vscode-flexigpt/blob/main/LICENSE).
+FlexiGPT is a fully open source software licensed under the [MIT license](https://github.com/flexigpt/vscode-extension/blob/main/LICENSE).
 
 
 # Contributions
 
-Contributions are welcome! Feel free to submit a pull request on [GitHub](https://github.com/ppipada/vscode-flexigpt).
+Contributions are welcome! Feel free to submit a pull request on [GitHub](https://github.com/flexigpt/vscode-extension).
 
 
 # Support
 
-If you have any questions or problems, please open an issue on GitHub at the [issues](https://github.com/ppipada/vscode-flexigpt/issues) page.
+If you have any questions or problems, please open an issue on GitHub at the [issues](https://github.com/flexigpt/vscode-extension/issues) page.
 
 
 
